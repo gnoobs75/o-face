@@ -1,0 +1,75 @@
+# Slack App Manifest for MemeBoss
+# Use this to create your Slack app at https://api.slack.com/apps
+# Go to "App Manifest" and paste this YAML
+
+display_information:
+  name: MemeBoss
+  description: Drops relevant memes in your channels powered by Tenor
+  background_color: "#1a1a2e"
+  long_description: |
+    MemeBoss listens to your team conversations and occasionally drops
+    perfectly relevant memes from Tenor. Mention @MemeBoss directly to
+    get a meme on demand, or let it surprise you with its random wit.
+
+    Features:
+    - Passive channel listening with random meme drops
+    - Direct mention for on-demand memes
+    - Slash commands for quick meme access
+    - Trending memes from Tenor
+
+features:
+  app_home:
+    home_tab_enabled: false
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: MemeBoss
+    always_online: true
+  slash_commands:
+    - command: /meme
+      url: https://your-server.com/slack/events
+      description: Get a meme (optionally specify a topic)
+      usage_hint: "[topic]"
+      should_escape: false
+    - command: /trending
+      url: https://your-server.com/slack/events
+      description: Get a trending meme
+      should_escape: false
+    - command: /meme-help
+      url: https://your-server.com/slack/events
+      description: Show MemeBoss help
+      should_escape: false
+
+oauth_config:
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - channels:read
+      - chat:write
+      - commands
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - im:write
+      - mpim:history
+      - mpim:read
+      - users:read
+
+settings:
+  event_subscriptions:
+    # For HTTP mode, set your endpoint URL here
+    # request_url: https://your-server.com/slack/events
+    bot_events:
+      - app_mention
+      - member_joined_channel
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+  interactivity:
+    is_enabled: false
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false

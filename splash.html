@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>o-face</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .skip-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255,255,255,0.5);
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 12px;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        body:hover .skip-hint {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body onclick="skip()">
+    <video id="splashVideo" autoplay>
+        <source src="assets/mancorn.mp4" type="video/mp4">
+    </video>
+    <div class="skip-hint">Click anywhere to skip</div>
+
+    <script>
+        const video = document.getElementById('splashVideo');
+
+        function goToMain() {
+            window.location.href = 'meme.html';
+        }
+
+        // Go to main when video ends
+        video.addEventListener('ended', goToMain);
+
+        // Skip on click
+        function skip() {
+            video.pause();
+            goToMain();
+        }
+
+        // Skip on any key press
+        document.addEventListener('keydown', skip);
+
+        // Fallback if video fails to load
+        video.addEventListener('error', () => {
+            console.error('Video failed to load, skipping to main');
+            goToMain();
+        });
+    </script>
+</body>
+</html>

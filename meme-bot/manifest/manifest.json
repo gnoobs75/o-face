@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "{{MICROSOFT_APP_ID}}",
+  "packageName": "com.memeboss.teamsbot",
+  "developer": {
+    "name": "MemeBoss",
+    "websiteUrl": "https://github.com/yourusername/memeboss",
+    "privacyUrl": "https://github.com/yourusername/memeboss/privacy",
+    "termsOfUseUrl": "https://github.com/yourusername/memeboss/terms"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "MemeBoss",
+    "full": "MemeBoss - Meme Response Bot"
+  },
+  "description": {
+    "short": "Drops relevant memes in your channels",
+    "full": "MemeBoss listens to your team conversations and occasionally drops perfectly relevant memes from Tenor. Mention @MemeBoss directly to get a meme on demand, or let it surprise you with its random wit."
+  },
+  "accentColor": "#00FFFF",
+  "bots": [
+    {
+      "botId": "{{MICROSOFT_APP_ID}}",
+      "scopes": ["personal", "team", "groupchat"],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal", "team", "groupchat"],
+          "commands": [
+            {
+              "title": "meme",
+              "description": "Get a random meme (or specify a topic)"
+            },
+            {
+              "title": "trending",
+              "description": "Get a trending meme"
+            },
+            {
+              "title": "help",
+              "description": "Show help information"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": ["tenor.com", "media.tenor.com", "*.ngrok.io", "*.ngrok-free.app"]
+}
