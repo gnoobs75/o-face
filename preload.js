@@ -21,6 +21,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
         close: () => ipcRenderer.invoke('window:close'),
         openTerminal: () => ipcRenderer.invoke('window:openTerminal')
     },
+    dialog: {
+        openAudioFiles: () => ipcRenderer.invoke('dialog:openAudioFiles')
+    },
     platform: process.platform,
     isElectron: true
 });

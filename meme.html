@@ -74,6 +74,17 @@
             cursor: pointer;
             transition: all 0.15s;
             font-family: inherit;
+            -webkit-app-region: no-drag;
+        }
+
+        .nav-btn.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+
+        .nav-btn.drag-over {
+            border-color: var(--accent);
+            background: rgba(197, 38, 56, 0.2);
         }
 
         .nav-btn:hover {
@@ -93,12 +104,61 @@
             border: 1px solid #444;
             color: #0f0;
             font-family: 'Consolas', monospace;
+            position: relative;
+            overflow: hidden;
         }
 
         .nav-btn.terminal-btn:hover {
             background: linear-gradient(180deg, #444 0%, #222 100%);
             border-color: #0f0;
             box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+        }
+
+        .nav-btn.terminal-btn.on-fire {
+            animation: fireGlow 0.15s ease-in-out infinite alternate;
+            background: linear-gradient(180deg, #ff6600 0%, #cc3300 50%, #881100 100%);
+            border-color: #ff8800;
+            color: #fff;
+            text-shadow: 0 0 5px #ff0, 0 0 10px #f80;
+        }
+
+        .nav-btn.terminal-btn.on-fire::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 100%, #ff6600 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, #ff4400 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 100%, #ff6600 0%, transparent 50%);
+            animation: flicker 0.1s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .nav-btn.terminal-btn.on-fire::after {
+            content: '🔥';
+            position: absolute;
+            font-size: 10px;
+            animation: ember 0.5s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fireGlow {
+            from { box-shadow: 0 0 5px #f80, 0 0 10px #f60, 0 0 15px #f40; }
+            to { box-shadow: 0 0 8px #fa0, 0 0 15px #f80, 0 0 20px #f60; }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 0.6; transform: scaleY(1); }
+            50% { opacity: 0.8; transform: scaleY(1.1); }
+        }
+
+        @keyframes ember {
+            0% { top: 80%; left: 50%; opacity: 1; transform: scale(1); }
+            100% { top: -20%; left: 30%; opacity: 0; transform: scale(0.5); }
         }
 
         .nav-right {
@@ -774,17 +834,790 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        /* Music Button */
+        .nav-btn.music-btn {
+            background: linear-gradient(180deg, #2d2d35 0%, #1a1a20 100%);
+            border: 1px solid #444;
+            color: #4af;
+        }
+
+        .nav-btn.music-btn:hover {
+            background: linear-gradient(180deg, #3d3d45 0%, #2a2a30 100%);
+            border-color: #4af;
+        }
+
+        .nav-btn.music-btn.active {
+            background: linear-gradient(180deg, #4af 0%, #28d 100%);
+            color: #000;
+            border-color: #4af;
+        }
+
+        /* ========================================
+           WINAMP PLAYER
+           ======================================== */
+        .winamp-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            z-index: 9999;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .winamp-player.visible {
+            display: block;
+        }
+
+        .winamp-player.minimized .winamp-body,
+        .winamp-player.minimized .winamp-visualizer,
+        .winamp-player.minimized .winamp-playlist,
+        .winamp-player.minimized .winamp-footer {
+            display: none;
+        }
+
+        /* Titlebar */
+        .winamp-titlebar {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .winamp-drag-handle {
+            width: 24px;
+            height: 20px;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0.7;
+            margin-right: 4px;
+        }
+
+        .winamp-drag-handle:hover {
+            opacity: 1;
+        }
+
+        .winamp-title {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .winamp-controls {
+            display: flex;
+            gap: 4px;
+            -webkit-app-region: no-drag;
+        }
+
+        .winamp-ctrl-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 2px;
+        }
+
+        /* LCD Display */
+        .winamp-display {
+            height: 60px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .winamp-track-info {
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .winamp-track-scroll {
+            display: inline-block;
+            animation: scroll-text 10s linear infinite;
+        }
+
+        @keyframes scroll-text {
+            0%, 10% { transform: translateX(0); }
+            90%, 100% { transform: translateX(-50%); }
+        }
+
+        .winamp-time-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .winamp-time {
+            font-family: 'Consolas', monospace;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .winamp-kbps, .winamp-khz {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        /* Seek bar */
+        .winamp-seek-container {
+            padding: 4px 12px 8px;
+        }
+
+        .winamp-seek {
+            width: 100%;
+            height: 16px;
+            -webkit-appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .winamp-seek::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .winamp-seek::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-top: -4px;
+            cursor: pointer;
+        }
+
+        /* Controls */
+        .winamp-body {
+            padding: 8px 12px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .winamp-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .winamp-btn {
+            width: 36px;
+            height: 32px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .winamp-btn:active {
+            transform: scale(0.95);
+        }
+
+        .winamp-volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .winamp-volume {
+            width: 80px;
+            height: 12px;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .winamp-volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Visualizer */
+        .winamp-visualizer {
+            height: 120px;
+            padding: 4px 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .winamp-visualizer canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .winamp-viz-mode {
+            position: absolute;
+            bottom: 4px;
+            right: 8px;
+            font-size: 9px;
+            opacity: 0.5;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        /* Playlist */
+        .winamp-playlist {
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .winamp-playlist-item {
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .winamp-playlist-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .winamp-playlist-item.active {
+            font-weight: bold;
+        }
+
+        /* Footer with options */
+        .winamp-footer {
+            display: flex;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .winamp-footer-btn {
+            flex: 1;
+            padding: 10px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            background: transparent;
+            transition: background 0.15s;
+        }
+
+        .winamp-footer-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .winamp-footer-btn:not(:last-child) {
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .winamp-footer-btn.spotify {
+            color: #1DB954;
+        }
+
+        .winamp-footer-btn.spotify:hover {
+            background: rgba(29, 185, 84, 0.2);
+        }
+
+        .winamp-footer-btn.spotify.connected {
+            background: rgba(29, 185, 84, 0.3);
+        }
+
+        .winamp-footer-btn.spotify.connected::before {
+            content: '● ';
+            color: #1DB954;
+        }
+
+        /* Spotify Modal */
+        .spotify-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spotify-modal.visible {
+            display: flex;
+        }
+
+        .spotify-modal-content {
+            background: #121212;
+            border-radius: 8px;
+            padding: 32px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #282828;
+        }
+
+        .spotify-logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .spotify-modal h2 {
+            color: #fff;
+            font-size: 24px;
+            margin: 0 0 8px 0;
+        }
+
+        .spotify-modal p {
+            color: #b3b3b3;
+            font-size: 14px;
+            margin: 0 0 24px 0;
+        }
+
+        .spotify-input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #282828;
+            border-radius: 4px;
+            background: #282828;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        .spotify-input:focus {
+            outline: none;
+            border-color: #1DB954;
+        }
+
+        .spotify-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 500px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .spotify-btn.primary {
+            background: #1DB954;
+            color: #000;
+        }
+
+        .spotify-btn.primary:hover {
+            background: #1ed760;
+            transform: scale(1.02);
+        }
+
+        .spotify-btn.secondary {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #727272;
+        }
+
+        .spotify-btn.secondary:hover {
+            border-color: #fff;
+        }
+
+        .spotify-btn.danger {
+            background: transparent;
+            color: #f15e5e;
+            border: 1px solid #f15e5e;
+        }
+
+        .spotify-btn.danger:hover {
+            background: rgba(241, 94, 94, 0.1);
+        }
+
+        .spotify-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(29, 185, 84, 0.1);
+            border-radius: 4px;
+            margin-bottom: 16px;
+            color: #1DB954;
+        }
+
+        .spotify-link {
+            color: #1DB954;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .spotify-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Skin selector */
+        .winamp-skin-selector {
+            position: absolute;
+            top: 28px;
+            right: 8px;
+            background: #222;
+            border: 1px solid #444;
+            display: none;
+            z-index: 10;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .winamp-skin-selector.visible {
+            display: block;
+        }
+
+        .winamp-skin-option {
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .winamp-skin-option:hover {
+            background: #333;
+        }
+
+        /* ========================================
+           SKIN: CLASSIC WINAMP
+           ======================================== */
+        .winamp-player.skin-classic {
+            background: #232323;
+            border: 1px solid #0a0a0a;
+        }
+
+        .skin-classic .winamp-titlebar {
+            background: linear-gradient(180deg, #4a6a8a 0%, #1a3a5a 50%, #0a2a4a 100%);
+        }
+
+        .skin-classic .winamp-title {
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .skin-classic .winamp-ctrl-btn {
+            background: #3a5a7a;
+            color: #fff;
+            border: 1px outset #6a8aaa;
+        }
+
+        .skin-classic .winamp-ctrl-btn:hover {
+            background: #4a6a8a;
+        }
+
+        .skin-classic .winamp-display {
+            background: #000;
+            border: 2px inset #1a1a1a;
+        }
+
+        .skin-classic .winamp-track-info,
+        .skin-classic .winamp-time {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .skin-classic .winamp-kbps,
+        .skin-classic .winamp-khz {
+            color: #00aa00;
+        }
+
+        .skin-classic .winamp-seek::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #005500 0%, #00aa00 50%, #005500 100%);
+            border: 1px inset #002200;
+        }
+
+        .skin-classic .winamp-seek::-webkit-slider-thumb {
+            background: linear-gradient(180deg, #00ff00 0%, #008800 100%);
+            border: 1px solid #004400;
+        }
+
+        .skin-classic .winamp-body {
+            background: #232323;
+        }
+
+        .skin-classic .winamp-btn {
+            background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+            border: 1px outset #5a5a5a;
+            color: #ccc;
+        }
+
+        .skin-classic .winamp-btn:hover {
+            background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%);
+        }
+
+        .skin-classic .winamp-btn:active {
+            border-style: inset;
+        }
+
+        .skin-classic .winamp-volume::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #005500 0%, #00aa00 100%);
+            height: 4px;
+        }
+
+        .skin-classic .winamp-volume::-webkit-slider-thumb {
+            background: #00ff00;
+            border: 1px solid #008800;
+            margin-top: -5px;
+        }
+
+        .skin-classic .winamp-visualizer {
+            background: #000;
+        }
+
+        .skin-classic .winamp-playlist {
+            background: #0a0a0a;
+            color: #00ff00;
+        }
+
+        .skin-classic .winamp-playlist-item.active {
+            color: #00ffff;
+        }
+
+        .skin-classic .winamp-add-files {
+            background: #1a1a1a;
+            color: #00aa00;
+        }
+
+        .skin-classic .winamp-add-files:hover {
+            color: #00ff00;
+        }
+
+        /* ========================================
+           SKIN: SAMURAI (RONIN)
+           ======================================== */
+        .winamp-player.skin-samurai {
+            background: linear-gradient(180deg, #1a0a0a 0%, #0a0000 100%);
+            border: 2px solid #3a1515;
+            border-image: linear-gradient(180deg, #6a2020 0%, #2a0a0a 100%) 1;
+        }
+
+        .skin-samurai .winamp-titlebar {
+            background: linear-gradient(180deg, #4a1515 0%, #2a0808 100%);
+            border-bottom: 1px solid #6a2020;
+        }
+
+        .skin-samurai .winamp-title {
+            color: #ff6a5a;
+            font-family: 'Georgia', serif;
+            letter-spacing: 2px;
+        }
+
+        .skin-samurai .winamp-ctrl-btn {
+            background: linear-gradient(180deg, #5a2020 0%, #3a1010 100%);
+            color: #ff8a7a;
+            border: 1px solid #6a2a2a;
+        }
+
+        .skin-samurai .winamp-display {
+            background: linear-gradient(180deg, #0a0000 0%, #150505 100%);
+            border: 1px solid #3a1515;
+        }
+
+        .skin-samurai .winamp-track-info,
+        .skin-samurai .winamp-time {
+            color: #ff4a3a;
+            text-shadow: 0 0 8px #ff2a1a;
+        }
+
+        .skin-samurai .winamp-kbps,
+        .skin-samurai .winamp-khz {
+            color: #aa3a2a;
+        }
+
+        .skin-samurai .winamp-seek::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #3a0a0a 0%, #6a1a1a 50%, #3a0a0a 100%);
+            border: 1px solid #2a0505;
+        }
+
+        .skin-samurai .winamp-seek::-webkit-slider-thumb {
+            background: radial-gradient(circle, #ff4a3a 0%, #aa1a0a 100%);
+            border: 1px solid #ff6a5a;
+            box-shadow: 0 0 5px #ff2a1a;
+        }
+
+        .skin-samurai .winamp-btn {
+            background: linear-gradient(180deg, #3a1515 0%, #1a0808 100%);
+            border: 1px solid #5a2020;
+            color: #ff8a7a;
+        }
+
+        .skin-samurai .winamp-btn:hover {
+            background: linear-gradient(180deg, #4a2020 0%, #2a1010 100%);
+            box-shadow: 0 0 5px #ff4a3a;
+        }
+
+        .skin-samurai .winamp-volume::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #3a0a0a 0%, #8a2a1a 100%);
+            height: 4px;
+        }
+
+        .skin-samurai .winamp-volume::-webkit-slider-thumb {
+            background: #ff4a3a;
+            border: 1px solid #aa2a1a;
+            margin-top: -5px;
+        }
+
+        .skin-samurai .winamp-visualizer {
+            background: #0a0000;
+        }
+
+        .skin-samurai .winamp-playlist {
+            background: #0a0000;
+            color: #ff6a5a;
+        }
+
+        .skin-samurai .winamp-playlist-item.active {
+            color: #ffaa9a;
+            text-shadow: 0 0 5px #ff4a3a;
+        }
+
+        .skin-samurai .winamp-add-files {
+            background: #150505;
+            color: #aa4a3a;
+        }
+
+        .skin-samurai .winamp-add-files:hover {
+            color: #ff6a5a;
+        }
+
+        /* ========================================
+           SKIN: FIRE
+           ======================================== */
+        .winamp-player.skin-fire {
+            background: linear-gradient(180deg, #2a1500 0%, #0a0500 100%);
+            border: 2px solid #ff6600;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.5), inset 0 0 30px rgba(255, 68, 0, 0.1);
+            animation: fire-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire-glow {
+            0% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.5), inset 0 0 30px rgba(255, 68, 0, 0.1); }
+            100% { box-shadow: 0 0 30px rgba(255, 68, 0, 0.7), inset 0 0 40px rgba(255, 34, 0, 0.2); }
+        }
+
+        .skin-fire .winamp-titlebar {
+            background: linear-gradient(180deg, #ff6600 0%, #cc3300 50%, #881100 100%);
+        }
+
+        .skin-fire .winamp-title {
+            color: #fff;
+            text-shadow: 0 0 10px #ff0, 2px 2px 0 #a00;
+        }
+
+        .skin-fire .winamp-ctrl-btn {
+            background: linear-gradient(180deg, #ff8800 0%, #cc4400 100%);
+            color: #fff;
+            border: 1px solid #ffaa00;
+        }
+
+        .skin-fire .winamp-display {
+            background: linear-gradient(180deg, #1a0a00 0%, #0a0500 100%);
+            border: 1px solid #663300;
+        }
+
+        .skin-fire .winamp-track-info,
+        .skin-fire .winamp-time {
+            color: #ff8800;
+            text-shadow: 0 0 10px #ff4400, 0 0 20px #ff2200;
+            animation: fire-text 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire-text {
+            0% { text-shadow: 0 0 10px #ff4400, 0 0 20px #ff2200; }
+            100% { text-shadow: 0 0 15px #ff6600, 0 0 25px #ff4400; }
+        }
+
+        .skin-fire .winamp-kbps,
+        .skin-fire .winamp-khz {
+            color: #aa5500;
+        }
+
+        .skin-fire .winamp-seek::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #441100 0%, #ff4400 50%, #ff8800 75%, #ff4400 100%);
+            border: 1px solid #662200;
+        }
+
+        .skin-fire .winamp-seek::-webkit-slider-thumb {
+            background: radial-gradient(circle, #ffcc00 0%, #ff6600 50%, #cc3300 100%);
+            border: 2px solid #ffaa00;
+            box-shadow: 0 0 10px #ff6600;
+        }
+
+        .skin-fire .winamp-btn {
+            background: linear-gradient(180deg, #884400 0%, #552200 100%);
+            border: 1px solid #aa5500;
+            color: #ffcc88;
+        }
+
+        .skin-fire .winamp-btn:hover {
+            background: linear-gradient(180deg, #aa5500 0%, #773300 100%);
+            box-shadow: 0 0 10px #ff6600;
+        }
+
+        .skin-fire .winamp-volume::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #441100 0%, #ff6600 100%);
+            height: 4px;
+        }
+
+        .skin-fire .winamp-volume::-webkit-slider-thumb {
+            background: linear-gradient(180deg, #ffcc00 0%, #ff6600 100%);
+            border: 1px solid #ff8800;
+            margin-top: -5px;
+            box-shadow: 0 0 5px #ff6600;
+        }
+
+        .skin-fire .winamp-visualizer {
+            background: #0a0500;
+        }
+
+        .skin-fire .winamp-playlist {
+            background: #0a0500;
+            color: #ff8844;
+        }
+
+        .skin-fire .winamp-playlist-item.active {
+            color: #ffcc00;
+            text-shadow: 0 0 5px #ff6600;
+        }
+
+        .skin-fire .winamp-add-files {
+            background: #1a0a00;
+            color: #aa6633;
+        }
+
+        .skin-fire .winamp-add-files:hover {
+            color: #ff8844;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation Ribbon -->
     <nav class="nav-ribbon">
-        <div class="nav-left">
+        <div class="nav-left" id="navButtonContainer">
             <span class="nav-brand"><span>ō</span>-face</span>
-            <button class="nav-btn active" onclick="showTab('search')">GIFs</button>
-            <button class="nav-btn" onclick="showTab('generator')">Memes</button>
-            <button class="nav-btn" onclick="showTab('favorites')">Favorites</button>
-            <button class="nav-btn terminal-btn" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn active" data-btn-id="gifs" draggable="true" onclick="showTab('search')">GIFs</button>
+            <button class="nav-btn" data-btn-id="memes" draggable="true" onclick="showTab('generator')">Memes</button>
+            <button class="nav-btn" data-btn-id="favorites" draggable="true" onclick="showTab('favorites')">Favorites</button>
+            <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
         </div>
         <div class="nav-right">
             <button class="window-btn" onclick="minimizeWindow()">&#x2212;</button>
@@ -885,6 +1718,91 @@
             <span class="retro-text bottom">Ctrl+C to copy noob</span>
         </div>
     </main>
+
+    <!-- Winamp Player -->
+    <div class="winamp-player skin-classic" id="winampPlayer">
+        <div class="winamp-titlebar" id="winampTitlebar">
+            <span class="winamp-title">o-face Player</span>
+            <div class="winamp-controls">
+                <button class="winamp-ctrl-btn" onclick="showSkinSelector(event)" title="Skins">S</button>
+                <button class="winamp-ctrl-btn" onclick="togglePlayerMinimize()" title="Minimize">_</button>
+                <button class="winamp-ctrl-btn" onclick="togglePlayer()" title="Close">x</button>
+                <div class="winamp-drag-handle" id="winampDragHandle" title="Drag to move">&#9783;</div>
+            </div>
+        </div>
+        <div class="winamp-skin-selector" id="skinSelector">
+            <div class="winamp-skin-option" onclick="setSkin('classic')">Classic</div>
+            <div class="winamp-skin-option" onclick="setSkin('samurai')">Samurai</div>
+            <div class="winamp-skin-option" onclick="setSkin('fire')">Fire</div>
+        </div>
+        <div class="winamp-display">
+            <div class="winamp-track-info">
+                <span class="winamp-track-scroll" id="trackName">No track loaded</span>
+            </div>
+            <div class="winamp-time-row">
+                <span class="winamp-time" id="currentTime">0:00</span>
+                <span class="winamp-kbps">128kbps</span>
+                <span class="winamp-khz">44khz</span>
+            </div>
+        </div>
+        <div class="winamp-seek-container">
+            <input type="range" class="winamp-seek" id="seekBar" min="0" max="100" value="0">
+        </div>
+        <div class="winamp-body">
+            <div class="winamp-buttons">
+                <button class="winamp-btn" onclick="prevTrack()" title="Previous">⏮</button>
+                <button class="winamp-btn" onclick="togglePlay()" id="playBtn" title="Play">▶</button>
+                <button class="winamp-btn" onclick="stopTrack()" title="Stop">⏹</button>
+                <button class="winamp-btn" onclick="nextTrack()" title="Next">⏭</button>
+                <button class="winamp-btn" onclick="toggleShuffle()" id="shuffleBtn" title="Shuffle">🔀</button>
+                <button class="winamp-btn" onclick="toggleRepeat()" id="repeatBtn" title="Repeat">🔁</button>
+            </div>
+            <div class="winamp-volume-container">
+                <span>🔊</span>
+                <input type="range" class="winamp-volume" id="volumeBar" min="0" max="100" value="70">
+            </div>
+        </div>
+        <div class="winamp-visualizer" onclick="cycleVisualizerMode()" title="Click to change visualization">
+            <canvas id="visualizerCanvas"></canvas>
+            <span class="winamp-viz-mode" id="vizModeLabel">bars</span>
+        </div>
+        <div class="winamp-playlist" id="playlist"></div>
+        <div class="winamp-footer">
+            <button class="winamp-footer-btn" onclick="openAudioFiles()">+ Add Files</button>
+            <button class="winamp-footer-btn" onclick="clearPlaylist()">Clear</button>
+            <button class="winamp-footer-btn spotify" id="spotifyBtn" onclick="connectSpotify()">Spotify</button>
+        </div>
+    </div>
+
+    <!-- Spotify Modal -->
+    <div class="spotify-modal" id="spotifyModal">
+        <div class="spotify-modal-content">
+            <div class="spotify-logo">🎵</div>
+            <h2>Connect to Spotify</h2>
+            <p id="spotifyModalDesc">Link your Spotify account to stream music</p>
+
+            <div id="spotifyNotConnected">
+                <input type="text" class="spotify-input" id="spotifyClientId" placeholder="Spotify Client ID">
+                <input type="text" class="spotify-input" id="spotifyRedirectUri" placeholder="Redirect URI (optional)">
+                <button class="spotify-btn primary" onclick="saveSpotifyConfig()">Connect Spotify</button>
+                <button class="spotify-btn secondary" onclick="closeSpotifyModal()">Cancel</button>
+                <br><br>
+                <a href="https://developer.spotify.com/dashboard" target="_blank" class="spotify-link">Get your Client ID at developer.spotify.com</a>
+            </div>
+
+            <div id="spotifyConnected" style="display:none;">
+                <div class="spotify-status">
+                    <span>●</span> Spotify Configured
+                </div>
+                <p style="font-size:12px; color:#666; margin-bottom:16px;">
+                    Client ID: <span id="spotifyClientIdDisplay">...</span>
+                </p>
+                <button class="spotify-btn primary" onclick="launchSpotifyAuth()">Authorize & Play</button>
+                <button class="spotify-btn danger" onclick="disconnectSpotify()">Disconnect</button>
+                <button class="spotify-btn secondary" onclick="closeSpotifyModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const KLIPY_API_KEY = 'zQjTXzloetXZMmr6sxu3bnzPCa1XBJ5oFVqqFV19dojXLWnw5VhtPQsJui4ieqaZ';
@@ -1616,6 +2534,828 @@
         }
 
         loadTrending();
+
+        // ========================================
+        // WINAMP PLAYER
+        // ========================================
+        const playerState = {
+            audio: new Audio(),
+            playlist: [],
+            currentIndex: 0,
+            isPlaying: false,
+            shuffle: false,
+            repeat: false,
+            volume: 0.7,
+            audioContext: null,
+            analyser: null,
+            dataArray: null,
+            animationId: null,
+            vizMode: 0,
+            vizModes: ['bars', 'starfield', 'psychedelic', 'aquarium'],
+            stars: [],
+            fish: [],
+            psychedelicHue: 0
+        };
+
+        // Initialize player
+        function initPlayer() {
+            const audio = playerState.audio;
+            const seekBar = document.getElementById('seekBar');
+            const volumeBar = document.getElementById('volumeBar');
+
+            // Load saved preferences
+            const savedSkin = localStorage.getItem('winamp_skin') || 'classic';
+            const savedVolume = localStorage.getItem('winamp_volume');
+            const savedPosition = localStorage.getItem('winamp_position');
+
+            setSkin(savedSkin);
+            if (savedVolume) {
+                playerState.volume = parseFloat(savedVolume);
+                volumeBar.value = playerState.volume * 100;
+            }
+            audio.volume = playerState.volume;
+
+            // Restore position
+            if (savedPosition) {
+                try {
+                    const pos = JSON.parse(savedPosition);
+                    const player = document.getElementById('winampPlayer');
+                    player.style.right = 'auto';
+                    player.style.left = pos.left + 'px';
+                    player.style.top = pos.top + 'px';
+                    player.style.bottom = 'auto';
+                } catch (e) {}
+            }
+
+            // Audio events
+            audio.addEventListener('timeupdate', updateProgress);
+            audio.addEventListener('ended', onTrackEnd);
+            audio.addEventListener('loadedmetadata', updateTrackInfo);
+
+            // Seek bar
+            seekBar.addEventListener('input', () => {
+                const time = (seekBar.value / 100) * audio.duration;
+                audio.currentTime = time;
+            });
+
+            // Volume bar
+            volumeBar.addEventListener('input', () => {
+                playerState.volume = volumeBar.value / 100;
+                audio.volume = playerState.volume;
+                localStorage.setItem('winamp_volume', playerState.volume);
+            });
+
+            // Make player draggable
+            makeDraggable();
+
+            // Setup visualizer
+            setupVisualizer();
+
+            // Load saved playlist
+            loadSavedPlaylist();
+        }
+
+        function togglePlayer() {
+            const player = document.getElementById('winampPlayer');
+            const btn = document.querySelector('.nav-btn.music-btn');
+            player.classList.toggle('visible');
+            btn.classList.toggle('active');
+
+            if (player.classList.contains('visible') && !playerState.audioContext) {
+                setupVisualizer();
+            }
+        }
+
+        function togglePlayerMinimize() {
+            const player = document.getElementById('winampPlayer');
+            player.classList.toggle('minimized');
+        }
+
+        function showSkinSelector(event) {
+            event.stopPropagation();
+            const selector = document.getElementById('skinSelector');
+            selector.classList.toggle('visible');
+
+            // Close when clicking elsewhere
+            setTimeout(() => {
+                document.addEventListener('click', function closeSkinSelector() {
+                    selector.classList.remove('visible');
+                    document.removeEventListener('click', closeSkinSelector);
+                });
+            }, 10);
+        }
+
+        function setSkin(skin) {
+            const player = document.getElementById('winampPlayer');
+            player.className = 'winamp-player skin-' + skin;
+            if (player.classList.contains('visible')) {
+                player.classList.add('visible');
+            }
+            localStorage.setItem('winamp_skin', skin);
+            document.getElementById('skinSelector').classList.remove('visible');
+        }
+
+        async function openAudioFiles() {
+            if (window.electronAPI && window.electronAPI.dialog) {
+                const files = await window.electronAPI.dialog.openAudioFiles();
+                if (files && files.length > 0) {
+                    files.forEach(file => {
+                        const name = file.split(/[/\\]/).pop();
+                        playerState.playlist.push({ path: file, name: name });
+                    });
+                    renderPlaylist();
+                    savePlaylist(); // Remember files
+                    if (!playerState.isPlaying && playerState.playlist.length > 0) {
+                        loadTrack(playerState.playlist.length - files.length);
+                    }
+                }
+            } else {
+                // Fallback for browser - use file input
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.multiple = true;
+                input.accept = 'audio/*';
+                input.onchange = (e) => {
+                    Array.from(e.target.files).forEach(file => {
+                        const url = URL.createObjectURL(file);
+                        playerState.playlist.push({ path: url, name: file.name });
+                    });
+                    renderPlaylist();
+                    if (!playerState.isPlaying && playerState.playlist.length > 0) {
+                        loadTrack(0);
+                    }
+                };
+                input.click();
+            }
+        }
+
+        function clearPlaylist() {
+            playerState.audio.pause();
+            playerState.audio.src = '';
+            playerState.playlist = [];
+            playerState.currentIndex = 0;
+            playerState.isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶';
+            document.getElementById('trackName').textContent = 'No track loaded';
+            document.getElementById('currentTime').textContent = '0:00';
+            document.getElementById('seekBar').value = 0;
+            renderPlaylist();
+            localStorage.removeItem('winamp_playlist');
+        }
+
+        function savePlaylist() {
+            // Only save local file paths (not blob URLs)
+            const saveable = playerState.playlist.filter(t => !t.path.startsWith('blob:'));
+            localStorage.setItem('winamp_playlist', JSON.stringify(saveable));
+        }
+
+        function loadSavedPlaylist() {
+            try {
+                const saved = localStorage.getItem('winamp_playlist');
+                if (saved) {
+                    const tracks = JSON.parse(saved);
+                    if (tracks && tracks.length > 0) {
+                        playerState.playlist = tracks;
+                        renderPlaylist();
+                    }
+                }
+            } catch (e) {
+                console.log('Could not load saved playlist:', e);
+            }
+        }
+
+        function connectSpotify() {
+            const modal = document.getElementById('spotifyModal');
+            const spotifyClientId = localStorage.getItem('spotify_client_id');
+
+            if (spotifyClientId) {
+                // Show connected state
+                document.getElementById('spotifyNotConnected').style.display = 'none';
+                document.getElementById('spotifyConnected').style.display = 'block';
+                document.getElementById('spotifyClientIdDisplay').textContent =
+                    spotifyClientId.substring(0, 8) + '...' + spotifyClientId.substring(spotifyClientId.length - 4);
+            } else {
+                // Show setup state
+                document.getElementById('spotifyNotConnected').style.display = 'block';
+                document.getElementById('spotifyConnected').style.display = 'none';
+                document.getElementById('spotifyClientId').value = '';
+            }
+
+            modal.classList.add('visible');
+        }
+
+        function closeSpotifyModal() {
+            document.getElementById('spotifyModal').classList.remove('visible');
+        }
+
+        // Close modal on outside click
+        document.getElementById('spotifyModal').addEventListener('click', (e) => {
+            if (e.target.id === 'spotifyModal') {
+                closeSpotifyModal();
+            }
+        });
+
+        function saveSpotifyConfig() {
+            const clientId = document.getElementById('spotifyClientId').value.trim();
+            const redirectUri = document.getElementById('spotifyRedirectUri').value.trim();
+
+            if (!clientId) {
+                document.getElementById('spotifyClientId').style.borderColor = '#f15e5e';
+                return;
+            }
+
+            localStorage.setItem('spotify_client_id', clientId);
+            if (redirectUri) {
+                localStorage.setItem('spotify_redirect_uri', redirectUri);
+            }
+
+            // Update button state
+            document.getElementById('spotifyBtn').classList.add('connected');
+
+            // Switch to connected view
+            document.getElementById('spotifyNotConnected').style.display = 'none';
+            document.getElementById('spotifyConnected').style.display = 'block';
+            document.getElementById('spotifyClientIdDisplay').textContent =
+                clientId.substring(0, 8) + '...' + clientId.substring(clientId.length - 4);
+        }
+
+        function disconnectSpotify() {
+            localStorage.removeItem('spotify_client_id');
+            localStorage.removeItem('spotify_redirect_uri');
+            localStorage.removeItem('spotify_access_token');
+
+            document.getElementById('spotifyBtn').classList.remove('connected');
+            closeSpotifyModal();
+        }
+
+        function launchSpotifyAuth() {
+            const clientId = localStorage.getItem('spotify_client_id');
+            const redirectUri = localStorage.getItem('spotify_redirect_uri') || window.location.origin + '/callback';
+
+            const scopes = [
+                'streaming',
+                'user-read-email',
+                'user-read-private',
+                'user-read-playback-state',
+                'user-modify-playback-state'
+            ].join(' ');
+
+            const authUrl = `https://accounts.spotify.com/authorize?` +
+                `client_id=${clientId}` +
+                `&response_type=token` +
+                `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+                `&scope=${encodeURIComponent(scopes)}`;
+
+            // Open Spotify auth in a popup
+            const popup = window.open(authUrl, 'Spotify Login', 'width=400,height=600');
+
+            // Note: Full implementation would need to handle the callback
+            // and extract the access token from the URL fragment
+            closeSpotifyModal();
+        }
+
+        function initSpotifyButton() {
+            const spotifyClientId = localStorage.getItem('spotify_client_id');
+            if (spotifyClientId) {
+                document.getElementById('spotifyBtn').classList.add('connected');
+            }
+        }
+
+        function renderPlaylist() {
+            const container = document.getElementById('playlist');
+            container.innerHTML = playerState.playlist.map((track, i) => `
+                <div class="winamp-playlist-item ${i === playerState.currentIndex ? 'active' : ''}"
+                     onclick="loadTrack(${i})">
+                    ${i + 1}. ${track.name}
+                </div>
+            `).join('');
+        }
+
+        function loadTrack(index) {
+            if (index < 0 || index >= playerState.playlist.length) return;
+
+            playerState.currentIndex = index;
+            const track = playerState.playlist[index];
+
+            // Handle file:// protocol for Electron
+            let src = track.path;
+            if (window.electronAPI && !src.startsWith('blob:')) {
+                src = 'file://' + src.replace(/\\/g, '/');
+            }
+
+            playerState.audio.src = src;
+            document.getElementById('trackName').textContent = track.name;
+            renderPlaylist();
+
+            if (playerState.isPlaying) {
+                playerState.audio.play();
+            }
+        }
+
+        function togglePlay() {
+            if (playerState.playlist.length === 0) {
+                openAudioFiles();
+                return;
+            }
+
+            if (playerState.isPlaying) {
+                playerState.audio.pause();
+                playerState.isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶';
+                cancelAnimationFrame(playerState.animationId);
+            } else {
+                playerState.audio.play();
+                playerState.isPlaying = true;
+                document.getElementById('playBtn').textContent = '⏸';
+                drawVisualizer();
+            }
+        }
+
+        function stopTrack() {
+            playerState.audio.pause();
+            playerState.audio.currentTime = 0;
+            playerState.isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶';
+            cancelAnimationFrame(playerState.animationId);
+        }
+
+        function prevTrack() {
+            let index = playerState.currentIndex - 1;
+            if (index < 0) index = playerState.playlist.length - 1;
+            loadTrack(index);
+            if (playerState.isPlaying) playerState.audio.play();
+        }
+
+        function nextTrack() {
+            let index;
+            if (playerState.shuffle) {
+                index = Math.floor(Math.random() * playerState.playlist.length);
+            } else {
+                index = playerState.currentIndex + 1;
+                if (index >= playerState.playlist.length) index = 0;
+            }
+            loadTrack(index);
+            if (playerState.isPlaying) playerState.audio.play();
+        }
+
+        function onTrackEnd() {
+            if (playerState.repeat) {
+                playerState.audio.currentTime = 0;
+                playerState.audio.play();
+            } else {
+                nextTrack();
+            }
+        }
+
+        function toggleShuffle() {
+            playerState.shuffle = !playerState.shuffle;
+            document.getElementById('shuffleBtn').style.opacity = playerState.shuffle ? '1' : '0.5';
+        }
+
+        function toggleRepeat() {
+            playerState.repeat = !playerState.repeat;
+            document.getElementById('repeatBtn').style.opacity = playerState.repeat ? '1' : '0.5';
+        }
+
+        function updateProgress() {
+            const audio = playerState.audio;
+            const seekBar = document.getElementById('seekBar');
+            const currentTimeEl = document.getElementById('currentTime');
+
+            if (audio.duration) {
+                seekBar.value = (audio.currentTime / audio.duration) * 100;
+                const mins = Math.floor(audio.currentTime / 60);
+                const secs = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+                currentTimeEl.textContent = `${mins}:${secs}`;
+            }
+        }
+
+        function updateTrackInfo() {
+            // Could fetch bitrate/sample rate from audio metadata if needed
+        }
+
+        // Visualizer
+        function setupVisualizer() {
+            try {
+                playerState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                playerState.analyser = playerState.audioContext.createAnalyser();
+                const source = playerState.audioContext.createMediaElementSource(playerState.audio);
+                source.connect(playerState.analyser);
+                playerState.analyser.connect(playerState.audioContext.destination);
+                playerState.analyser.fftSize = 64;
+                playerState.dataArray = new Uint8Array(playerState.analyser.frequencyBinCount);
+            } catch (e) {
+                console.log('Visualizer setup error:', e);
+            }
+        }
+
+        function cycleVisualizerMode() {
+            playerState.vizMode = (playerState.vizMode + 1) % playerState.vizModes.length;
+            document.getElementById('vizModeLabel').textContent = playerState.vizModes[playerState.vizMode];
+
+            // Initialize stars/fish for new modes
+            if (playerState.vizModes[playerState.vizMode] === 'starfield') {
+                initStarfield();
+            } else if (playerState.vizModes[playerState.vizMode] === 'aquarium') {
+                initAquarium();
+            }
+        }
+
+        function initStarfield() {
+            const canvas = document.getElementById('visualizerCanvas');
+            playerState.stars = [];
+            for (let i = 0; i < 100; i++) {
+                playerState.stars.push({
+                    x: Math.random() * canvas.offsetWidth - canvas.offsetWidth/2,
+                    y: Math.random() * canvas.offsetHeight - canvas.offsetHeight/2,
+                    z: Math.random() * 1000,
+                    color: `hsl(${Math.random() * 60 + 180}, 80%, 70%)`
+                });
+            }
+        }
+
+        function initAquarium() {
+            playerState.fish = [];
+            const fishColors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+            for (let i = 0; i < 8; i++) {
+                playerState.fish.push({
+                    x: Math.random() * 300,
+                    y: Math.random() * 100,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: 10 + Math.random() * 15,
+                    color: fishColors[i % fishColors.length],
+                    tailPhase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        function drawVisualizer() {
+            const canvas = document.getElementById('visualizerCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+
+            // Get audio data if available
+            let avgLevel = 50;
+            if (playerState.analyser && playerState.dataArray) {
+                playerState.analyser.getByteFrequencyData(playerState.dataArray);
+                avgLevel = playerState.dataArray.reduce((a, b) => a + b, 0) / playerState.dataArray.length;
+            }
+
+            const mode = playerState.vizModes[playerState.vizMode];
+            const player = document.getElementById('winampPlayer');
+
+            switch(mode) {
+                case 'bars':
+                    drawBars(ctx, width, height, player);
+                    break;
+                case 'starfield':
+                    drawStarfield(ctx, width, height, avgLevel);
+                    break;
+                case 'psychedelic':
+                    drawPsychedelic(ctx, width, height, avgLevel);
+                    break;
+                case 'aquarium':
+                    drawAquarium(ctx, width, height, avgLevel);
+                    break;
+            }
+
+            if (playerState.isPlaying) {
+                playerState.animationId = requestAnimationFrame(drawVisualizer);
+            }
+        }
+
+        function drawBars(ctx, width, height, player) {
+            ctx.clearRect(0, 0, width, height);
+            if (!playerState.dataArray) return;
+
+            const barCount = playerState.dataArray.length;
+            const barWidth = width / barCount;
+
+            let barColor = '#00ff00';
+            if (player.classList.contains('skin-samurai')) barColor = '#ff4a3a';
+            else if (player.classList.contains('skin-fire')) barColor = '#ff6600';
+
+            for (let i = 0; i < barCount; i++) {
+                const barHeight = (playerState.dataArray[i] / 255) * height;
+                ctx.fillStyle = barColor;
+                ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+            }
+        }
+
+        function drawStarfield(ctx, width, height, avgLevel) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, width, height);
+
+            if (playerState.stars.length === 0) initStarfield();
+
+            const speed = 2 + (avgLevel / 25);
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            playerState.stars.forEach(star => {
+                star.z -= speed;
+                if (star.z <= 0) {
+                    star.x = Math.random() * width - centerX;
+                    star.y = Math.random() * height - centerY;
+                    star.z = 1000;
+                }
+
+                const sx = (star.x / star.z) * 300 + centerX;
+                const sy = (star.y / star.z) * 300 + centerY;
+                const size = (1 - star.z / 1000) * 3;
+
+                if (sx >= 0 && sx <= width && sy >= 0 && sy <= height) {
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, size, 0, Math.PI * 2);
+                    ctx.fillStyle = star.color;
+                    ctx.fill();
+
+                    // Draw trail
+                    const trailLength = 20 * (1 - star.z / 1000);
+                    ctx.strokeStyle = star.color;
+                    ctx.lineWidth = size * 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(sx, sy);
+                    const prevSx = (star.x / (star.z + trailLength)) * 300 + centerX;
+                    const prevSy = (star.y / (star.z + trailLength)) * 300 + centerY;
+                    ctx.lineTo(prevSx, prevSy);
+                    ctx.stroke();
+                }
+            });
+        }
+
+        function drawPsychedelic(ctx, width, height, avgLevel) {
+            playerState.psychedelicHue = (playerState.psychedelicHue + 1 + avgLevel/50) % 360;
+
+            const time = Date.now() / 1000;
+            const rings = 8;
+
+            for (let i = rings; i >= 0; i--) {
+                const hue = (playerState.psychedelicHue + i * 30) % 360;
+                const radius = ((i / rings) * Math.max(width, height)) + avgLevel * 0.5;
+                const wobble = Math.sin(time * 2 + i) * 10;
+
+                ctx.beginPath();
+                ctx.arc(width/2 + wobble, height/2 + Math.cos(time + i) * 5, radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.3)`;
+                ctx.fill();
+            }
+
+            // Spiral patterns
+            ctx.strokeStyle = `hsl(${(playerState.psychedelicHue + 180) % 360}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let angle = 0; angle < Math.PI * 6; angle += 0.1) {
+                const r = angle * 5 + avgLevel * 0.3;
+                const x = width/2 + Math.cos(angle + time) * r;
+                const y = height/2 + Math.sin(angle + time) * r;
+                if (angle === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Grateful Dead dancing bear silhouettes (simplified)
+            const bearCount = 3;
+            for (let i = 0; i < bearCount; i++) {
+                const bx = width * (i + 1) / (bearCount + 1);
+                const by = height * 0.6 + Math.sin(time * 3 + i) * 10;
+                const bearHue = (playerState.psychedelicHue + i * 120) % 360;
+                ctx.fillStyle = `hsl(${bearHue}, 80%, 60%)`;
+                // Simple bear shape
+                ctx.beginPath();
+                ctx.ellipse(bx, by, 8, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(bx, by - 12, 6, 0, Math.PI * 2);
+                ctx.fill();
+                // Ears
+                ctx.beginPath();
+                ctx.arc(bx - 5, by - 16, 3, 0, Math.PI * 2);
+                ctx.arc(bx + 5, by - 16, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawAquarium(ctx, width, height, avgLevel) {
+            // Water background with gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, '#001428');
+            gradient.addColorStop(1, '#003366');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Bubbles
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 10; i++) {
+                const bx = (Date.now() / 50 + i * 30) % width;
+                const by = height - ((Date.now() / 20 + i * 40) % height);
+                const size = 2 + (avgLevel / 50);
+                ctx.beginPath();
+                ctx.arc(bx, by, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (playerState.fish.length === 0) initAquarium();
+
+            // Draw seaweed
+            ctx.strokeStyle = '#2d5a27';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 5; i++) {
+                const baseX = width * (i + 1) / 6;
+                ctx.beginPath();
+                ctx.moveTo(baseX, height);
+                for (let j = 0; j < 4; j++) {
+                    const waveOffset = Math.sin(Date.now() / 500 + i + j * 0.5) * 5;
+                    ctx.lineTo(baseX + waveOffset, height - 20 - j * 15);
+                }
+                ctx.stroke();
+            }
+
+            // Draw fish
+            playerState.fish.forEach(fish => {
+                fish.tailPhase += 0.2;
+                fish.x += fish.vx * (1 + avgLevel / 100);
+                fish.y += fish.vy + Math.sin(Date.now() / 500 + fish.x) * 0.3;
+
+                // Bounce off walls
+                if (fish.x < 0 || fish.x > width) fish.vx *= -1;
+                if (fish.y < 10 || fish.y > height - 10) fish.vy *= -1;
+                fish.x = Math.max(0, Math.min(width, fish.x));
+                fish.y = Math.max(10, Math.min(height - 10, fish.y));
+
+                const dir = fish.vx > 0 ? 1 : -1;
+
+                // Fish body
+                ctx.fillStyle = fish.color;
+                ctx.beginPath();
+                ctx.ellipse(fish.x, fish.y, fish.size, fish.size * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Tail
+                const tailWag = Math.sin(fish.tailPhase) * 5;
+                ctx.beginPath();
+                ctx.moveTo(fish.x - dir * fish.size, fish.y);
+                ctx.lineTo(fish.x - dir * (fish.size + 10), fish.y - 8 + tailWag);
+                ctx.lineTo(fish.x - dir * (fish.size + 10), fish.y + 8 + tailWag);
+                ctx.closePath();
+                ctx.fill();
+
+                // Eye
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(fish.x + dir * fish.size * 0.5, fish.y - 2, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(fish.x + dir * fish.size * 0.5 + dir, fish.y - 2, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // Draggable player
+        function makeDraggable() {
+            const player = document.getElementById('winampPlayer');
+            const dragHandle = document.getElementById('winampDragHandle');
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            dragHandle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                isDragging = true;
+                offsetX = e.clientX - player.offsetLeft;
+                offsetY = e.clientY - player.offsetTop;
+                player.style.right = 'auto';
+                player.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                let x = e.clientX - offsetX;
+                let y = e.clientY - offsetY;
+
+                // Keep in bounds
+                x = Math.max(0, Math.min(x, window.innerWidth - player.offsetWidth));
+                y = Math.max(0, Math.min(y, window.innerHeight - player.offsetHeight));
+
+                player.style.left = x + 'px';
+                player.style.top = y + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    // Save position
+                    localStorage.setItem('winamp_position', JSON.stringify({
+                        left: player.offsetLeft,
+                        top: player.offsetTop
+                    }));
+                }
+            });
+        }
+
+        // ========================================
+        // DRAGGABLE NAV BUTTONS
+        // ========================================
+        function initDraggableNavButtons() {
+            const container = document.getElementById('navButtonContainer');
+            const buttons = container.querySelectorAll('.nav-btn[draggable="true"]');
+            let draggedBtn = null;
+
+            // Load saved order
+            const savedOrder = localStorage.getItem('nav_button_order');
+            if (savedOrder) {
+                try {
+                    const order = JSON.parse(savedOrder);
+                    const brand = container.querySelector('.nav-brand');
+                    order.forEach(btnId => {
+                        const btn = container.querySelector(`[data-btn-id="${btnId}"]`);
+                        if (btn) {
+                            container.appendChild(btn);
+                        }
+                    });
+                } catch (e) {}
+            }
+
+            buttons.forEach(btn => {
+                btn.addEventListener('dragstart', (e) => {
+                    draggedBtn = btn;
+                    btn.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', btn.dataset.btnId);
+                });
+
+                btn.addEventListener('dragend', () => {
+                    btn.classList.remove('dragging');
+                    draggedBtn = null;
+                    buttons.forEach(b => b.classList.remove('drag-over'));
+                    saveNavButtonOrder();
+                });
+
+                btn.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (draggedBtn && draggedBtn !== btn) {
+                        btn.classList.add('drag-over');
+                    }
+                });
+
+                btn.addEventListener('dragleave', () => {
+                    btn.classList.remove('drag-over');
+                });
+
+                btn.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('drag-over');
+                    if (draggedBtn && draggedBtn !== btn) {
+                        const allBtns = [...container.querySelectorAll('.nav-btn[draggable="true"]')];
+                        const draggedIndex = allBtns.indexOf(draggedBtn);
+                        const dropIndex = allBtns.indexOf(btn);
+
+                        if (draggedIndex < dropIndex) {
+                            btn.parentNode.insertBefore(draggedBtn, btn.nextSibling);
+                        } else {
+                            btn.parentNode.insertBefore(draggedBtn, btn);
+                        }
+                    }
+                });
+            });
+        }
+
+        function saveNavButtonOrder() {
+            const container = document.getElementById('navButtonContainer');
+            const buttons = container.querySelectorAll('.nav-btn[draggable="true"]');
+            const order = [...buttons].map(btn => btn.dataset.btnId);
+            localStorage.setItem('nav_button_order', JSON.stringify(order));
+        }
+
+        // ========================================
+        // TERMINAL FIRE EFFECT
+        // ========================================
+        function initTerminalFireEffect() {
+            const terminalBtn = document.querySelector('.nav-btn.terminal-btn');
+            if (!terminalBtn) return;
+
+            function ignite() {
+                terminalBtn.classList.add('on-fire');
+                setTimeout(() => {
+                    terminalBtn.classList.remove('on-fire');
+                }, 3000); // Fire lasts 3 seconds
+            }
+
+            // Fire every 30 seconds
+            setInterval(ignite, 30000);
+
+            // Also fire once after a short delay on load
+            setTimeout(ignite, 2000);
+        }
+
+        // Initialize player on load
+        initPlayer();
+        initDraggableNavButtons();
+        initTerminalFireEffect();
+        initSpotifyButton();
     </script>
 </body>
 </html>

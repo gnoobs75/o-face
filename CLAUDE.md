@@ -5,7 +5,7 @@ The Unofficial Homepage of Ronin - A retro-styled personal dashboard combining m
 ## Project Structure
 
 ```
-memeBoss/
+o-face/
 ├── main.js           # Electron main process - window management, PTY handling
 ├── preload.js        # Secure IPC bridge between renderer and Node.js
 ├── meme.html         # Original meme/GIF page (browser-compatible)

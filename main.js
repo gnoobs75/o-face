@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, dialog } = require('electron');
 const path = require('path');
 const os = require('os');
 
@@ -213,4 +213,15 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createMainWindow();
     }
+});
+
+// File dialog for audio player
+ipcMain.handle('dialog:openAudioFiles', async () => {
+    const result = await dialog.showOpenDialog({
+        properties: ['openFile', 'multiSelections'],
+        filters: [
+            { name: 'Audio Files', extensions: ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'] }
+        ]
+    });
+    return result.canceled ? [] : result.filePaths;
 });
