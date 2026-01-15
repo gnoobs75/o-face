@@ -19,10 +19,29 @@ contextBridge.exposeInMainWorld('electronAPI', {
         minimize: () => ipcRenderer.invoke('window:minimize'),
         maximize: () => ipcRenderer.invoke('window:maximize'),
         close: () => ipcRenderer.invoke('window:close'),
-        openTerminal: () => ipcRenderer.invoke('window:openTerminal')
+        openTerminal: () => ipcRenderer.invoke('window:openTerminal'),
+        openDevTools: () => ipcRenderer.invoke('window:openDevTools')
     },
     dialog: {
         openAudioFiles: () => ipcRenderer.invoke('dialog:openAudioFiles')
+    },
+    sound: {
+        onPlayDone: (callback) => {
+            console.log('[Preload] Registering sound:playDone listener');
+            ipcRenderer.on('sound:playDone', () => {
+                console.log('[Preload] Received sound:playDone IPC message');
+                callback();
+            });
+        }
+    },
+    log: {
+        write: (level, source, message, data) => ipcRenderer.invoke('log:write', level, source, message, data),
+        error: (source, message, data) => ipcRenderer.invoke('log:write', 'ERROR', source, message, data),
+        warn: (source, message, data) => ipcRenderer.invoke('log:write', 'WARN', source, message, data),
+        info: (source, message, data) => ipcRenderer.invoke('log:write', 'INFO', source, message, data),
+        debug: (source, message, data) => ipcRenderer.invoke('log:write', 'DEBUG', source, message, data),
+        clear: () => ipcRenderer.invoke('log:clear'),
+        read: () => ipcRenderer.invoke('log:read')
     },
     platform: process.platform,
     isElectron: true

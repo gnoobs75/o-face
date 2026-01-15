@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>o-face Arcade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-card: #1a1a1e;
+            --bg-input: #2a2a30;
+            --border: #3F465B;
+            --accent: #C52638;
+            --accent-hover: #d63344;
+            --nes-red: #e60012;
+            --nes-gray: #bcbcbc;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a8;
+            --text-muted: #6b6b73;
+            --neon-blue: #00d4ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Main Layout */
+        .arcade-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .arcade-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(180deg, #1a1a1e 0%, var(--bg-dark) 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .arcade-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 32px;
+            color: var(--neon-blue);
+            text-shadow:
+                0 0 10px var(--neon-blue),
+                0 0 20px var(--neon-blue),
+                0 0 40px var(--neon-blue),
+                3px 3px 0 #000;
+            margin-bottom: 8px;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            97% { opacity: 1; }
+        }
+
+        .arcade-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Game View */
+        .game-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, var(--bg-dark) 100%);
+            min-height: calc(100vh - 140px);
+        }
+
+        .game-view.active {
+            display: flex;
+        }
+
+        .game-cabinet {
+            background: linear-gradient(180deg, #2a2a30 0%, #1a1a1e 100%);
+            border: 4px solid #333;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow:
+                0 0 30px rgba(0, 212, 255, 0.2),
+                inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-screen {
+            background: #000;
+            border: 8px solid #1a1a1e;
+            border-radius: 8px;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.8),
+                0 0 10px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-screen canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            /* Scale 3x by default for a large embedded display */
+            width: 768px;
+            height: 720px;
+        }
+
+        .game-screen.scaled-2x canvas {
+            width: 512px;
+            height: 480px;
+        }
+
+        .game-screen.scaled-4x canvas {
+            width: 1024px;
+            height: 960px;
+        }
+
+        .game-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #111;
+            border-radius: 8px;
+        }
+
+        .game-title-display {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: var(--neon-green);
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        .game-controls-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: #222;
+            border: 2px solid #444;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .control-btn:hover {
+            background: var(--nes-red);
+            border-color: var(--nes-red);
+            color: white;
+        }
+
+        .control-btn.active {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            color: #000;
+        }
+
+        /* Controls Guide */
+        .controls-guide {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 600px;
+        }
+
+        .controls-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--neon-pink);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .control-group h4 {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .control-key {
+            background: #333;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--neon-blue);
+            border: 1px solid #444;
+        }
+
+        /* Library View */
+        .library-view {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .library-view.hidden {
+            display: none;
+        }
+
+        .library-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .library-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .library-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background: linear-gradient(180deg, var(--nes-red) 0%, #a00 100%);
+            border: 2px solid #f00;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(230, 0, 18, 0.4);
+        }
+
+        /* Game Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: linear-gradient(180deg, #1a1a1e 0%, #0f0f12 100%);
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .game-card-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a15 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-card-placeholder {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .game-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 212, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .game-card:hover .game-card-overlay {
+            opacity: 1;
+        }
+
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--nes-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(230, 0, 18, 0.5);
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 5px;
+        }
+
+        .game-card-info {
+            padding: 15px;
+        }
+
+        .game-card-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .game-card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .game-card-genre {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #222;
+            border-radius: 4px;
+            font-size: 9px;
+            color: var(--neon-pink);
+            margin-top: 8px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 2px solid var(--nes-red);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 10001;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .loading-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: var(--neon-blue);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Volume control */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Hidden file input */
+        .hidden-input {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .arcade-title { font-size: 20px; }
+            .game-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .controls-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Ribbon -->
+    <nav class="nav-ribbon">
+        <div class="nav-left" id="navButtonContainer">
+            <span class="nav-brand"><span>o</span>-face</span>
+            <button class="nav-btn home-btn" onclick="navGoTo('splash.html')">&#x2302; Home</button>
+            <button class="nav-btn meme-btn" data-btn-id="memes" draggable="true" onclick="navGoTo('meme.html')">Memes</button>
+            <button class="nav-btn whiteboard-btn" data-btn-id="whiteboard" draggable="true" onclick="navGoTo('whiteboard.html')">Whiteboard</button>
+            <button class="nav-btn kabuki-btn" data-btn-id="kabuki" draggable="true" onclick="navGoTo('kabuki.html')">Kabuki</button>
+            <button class="nav-btn arcade-btn active" data-btn-id="arcade" draggable="true">Arcade</button>
+            <button class="nav-btn soundboard-btn" data-btn-id="soundboard" draggable="true" onclick="navGoTo('soundboard.html')">Soundboard</button>
+            <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
+        </div>
+        <div class="nav-right">
+            <button class="window-btn" onclick="navMinimize()">&#x2212;</button>
+            <button class="window-btn" onclick="navMaximize()">&#x25A1;</button>
+            <button class="window-btn close" onclick="navClose()">&#x2715;</button>
+        </div>
+    </nav>
+
+    <div class="arcade-container">
+        <div class="arcade-header">
+            <h1 class="arcade-title">ARCADE</h1>
+            <p class="arcade-subtitle">Insert ROM to Continue</p>
+        </div>
+
+        <!-- Library View -->
+        <div class="library-view" id="libraryView">
+            <div class="library-header">
+                <h2 class="library-title">GAME LIBRARY</h2>
+                <div class="library-actions">
+                    <button class="upload-btn" onclick="document.getElementById('romInput').click()">
+                        + ADD ROM
+                    </button>
+                </div>
+            </div>
+            <div class="game-grid" id="gameGrid">
+                <!-- Games will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Game View -->
+        <div class="game-view" id="gameView">
+            <div class="game-cabinet">
+                <div class="game-screen" id="gameScreen">
+                    <canvas id="nesCanvas" width="256" height="240"></canvas>
+                    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                        <div class="loading-text">LOADING...</div>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <div class="game-title-display" id="currentGameTitle">No Game Loaded</div>
+                    <div class="game-controls-bar">
+                        <div class="volume-control">
+                            <span style="font-size: 12px;">&#x1F50A;</span>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+                        </div>
+                        <button class="control-btn" onclick="togglePause()" id="pauseBtn">PAUSE</button>
+                        <button class="control-btn" onclick="resetGame()">RESET</button>
+                        <button class="control-btn" onclick="cycleScale()" id="scaleBtn">3X</button>
+                        <button class="control-btn" onclick="backToLibrary()">EXIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-guide">
+                <div class="controls-title">CONTROLS</div>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <h4>Movement</h4>
+                        <div class="control-row">
+                            <span>D-Pad</span>
+                            <span><span class="control-key">Arrow Keys</span></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h4>Buttons</h4>
+                        <div class="control-row">
+                            <span>A Button</span>
+                            <span class="control-key">Z</span>
+                        </div>
+                        <div class="control-row">
+                            <span>B Button</span>
+                            <span class="control-key">X</span>
+                        </div>
+                        <div class="control-row">
+                            <span>Start</span>
+                            <span class="control-key">Enter</span>
+                        </div>
+                        <div class="control-row">
+                            <span>Select</span>
+                            <span class="control-key">Shift</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="romInput" class="hidden-input" accept=".nes,.rom" multiple onchange="handleRomUpload(event)">
+    <div class="toast" id="toast"></div>
+
+    <!-- JSNES Emulator -->
+    <script src="https://cdn.jsdelivr.net/npm/jsnes@1.2.1/dist/jsnes.min.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // ============================================
+        // LOGGING
+        // ============================================
+        const isElectron = typeof window.electronAPI !== 'undefined';
+
+        function log(level, message, data) {
+            const logMsg = data ? `${message} ${JSON.stringify(data)}` : message;
+            console.log(`[${level}] ${logMsg}`);
+            if (isElectron && window.electronAPI.log) {
+                window.electronAPI.log.write(level, 'Arcade', message, data);
+            }
+        }
+
+        // Capture all unhandled errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorData = {
+                message,
+                source,
+                line: lineno,
+                col: colno,
+                stack: error?.stack
+            };
+            log('ERROR', 'Unhandled error', errorData);
+            return false;
+        };
+
+        window.onunhandledrejection = function(event) {
+            log('ERROR', 'Unhandled promise rejection', {
+                reason: event.reason?.message || String(event.reason),
+                stack: event.reason?.stack
+            });
+        };
+
+        // ============================================
+        // STATE
+        // ============================================
+        let nes = null;
+        let animationFrameId = null;
+        let isPaused = false;
+        let currentGame = null;
+        let audioCtx = null;
+
+        // Game library stored in localStorage
+        let gameLibrary = JSON.parse(localStorage.getItem('arcadeLibrary') || '[]');
+
+        // Sample games metadata (actual ROMs need to be loaded by user)
+        const sampleGames = [
+            { id: 'demo1', title: 'Llan-D-Scape', genre: 'Demo', year: '2020', description: 'NES Homebrew Demo' },
+            { id: 'demo2', title: 'NESnake', genre: 'Arcade', year: '2019', description: 'Classic Snake Game' },
+            { id: 'demo3', title: 'Pong', genre: 'Sports', year: '2018', description: 'Table Tennis Classic' },
+        ];
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        // Override nav functions to stop game before navigating
+        function navGoTo(href) {
+            stopGame();
+            window.location.href = href;
+        }
+
+        function navMinimize() {
+            if (isElectron) window.electronAPI.window.minimize();
+        }
+
+        function navMaximize() {
+            if (isElectron) window.electronAPI.window.maximize();
+        }
+
+        function navClose() {
+            stopGame();
+            if (isElectron) window.electronAPI.window.close();
+        }
+
+        function openTerminal() {
+            if (isElectron) window.electronAPI.window.openTerminal();
+        }
+
+        function togglePlayer() {
+            // Music player not available on arcade page
+            log('INFO', 'Music player not available on arcade page');
+        }
+
+        // ============================================
+        // GAME LIBRARY
+        // ============================================
+        function renderGameLibrary() {
+            const grid = document.getElementById('gameGrid');
+
+            if (gameLibrary.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">&#x1F3AE;</div>
+                        <div class="empty-title">NO GAMES YET</div>
+                        <div class="empty-text">Click "ADD ROM" to upload your .nes files</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = gameLibrary.map((game, index) => `
+                <div class="game-card" onclick="launchGame(${index})">
+                    <div class="game-card-image">
+                        ${game.coverUrl
+                            ? `<img src="${game.coverUrl}" alt="${game.title}">`
+                            : `<div class="game-card-placeholder">&#x1F3AE;</div>`
+                        }
+                        <div class="game-card-overlay">
+                            <div class="play-icon"></div>
+                        </div>
+                    </div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">${escapeHtml(game.title)}</div>
+                        <div class="game-card-meta">${game.size || 'Unknown size'}</div>
+                        <span class="game-card-genre">${game.genre || 'NES'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleRomUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            Array.from(files).forEach(file => {
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith('.nes') && !fileName.endsWith('.rom')) {
+                    showToast('Only .nes and .rom files are supported');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const romData = e.target.result;
+                    const title = file.name.replace(/\.(nes|rom)$/i, '').replace(/[_-]/g, ' ');
+
+                    // Store ROM in library
+                    const game = {
+                        id: Date.now(),
+                        title: title,
+                        filename: file.name,
+                        size: formatFileSize(file.size),
+                        genre: 'NES',
+                        romData: arrayBufferToBase64(romData),
+                        addedAt: Date.now()
+                    };
+
+                    gameLibrary.push(game);
+                    saveLibrary();
+                    renderGameLibrary();
+                    showToast(`${title} added!`);
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
+            // Reset input
+            event.target.value = '';
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function saveLibrary() {
+            localStorage.setItem('arcadeLibrary', JSON.stringify(gameLibrary));
+        }
+
+        // ============================================
+        // EMULATOR
+        // ============================================
+        function initEmulator() {
+            try {
+                log('INFO', 'initEmulator: getting canvas');
+                const canvas = document.getElementById('nesCanvas');
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.createImageData(256, 240);
+
+                log('INFO', 'initEmulator: creating NES instance');
+                nes = new jsnes.NES({
+                    onFrame: function(frameBuffer) {
+                        try {
+                            for (let i = 0; i < frameBuffer.length; i++) {
+                                const pixel = frameBuffer[i];
+                                const j = i * 4;
+                                imageData.data[j] = pixel & 0xFF;
+                                imageData.data[j + 1] = (pixel >> 8) & 0xFF;
+                                imageData.data[j + 2] = (pixel >> 16) & 0xFF;
+                                imageData.data[j + 3] = 0xFF;
+                            }
+                            ctx.putImageData(imageData, 0, 0);
+                        } catch (err) {
+                            log('ERROR', 'onFrame callback error', { message: err.message });
+                        }
+                    },
+                    onAudioSample: function(left, right) {
+                        if (window.nesAudioSamples && window.nesAudioSamples.length < 16384) {
+                            window.nesAudioSamples.push(left, right);
+                        }
+                    }
+                });
+                log('INFO', 'initEmulator: NES instance created');
+            } catch (err) {
+                log('ERROR', 'initEmulator failed', { message: err.message, stack: err.stack });
+                throw err;
+            }
+        }
+
+        let nextAudioTime = 0;
+
+        async function initAudio() {
+            try {
+                if (audioCtx) {
+                    log('INFO', 'initAudio: already initialized');
+                    return;
+                }
+
+                log('INFO', 'initAudio: creating AudioContext');
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)({
+                    sampleRate: 44100
+                });
+
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.value = 0.5;
+                gainNode.connect(audioCtx.destination);
+                window.audioGainNode = gainNode;
+
+                // Collect samples
+                window.nesAudioSamples = [];
+
+                // Schedule audio buffers with precise timing
+                const BUFFER_SIZE = 2048; // samples per channel
+                const SAMPLE_RATE = 44100;
+
+                setInterval(() => {
+                    // Need BUFFER_SIZE * 2 samples (left + right interleaved)
+                    while (window.nesAudioSamples.length >= BUFFER_SIZE * 2) {
+                        const chunk = window.nesAudioSamples.splice(0, BUFFER_SIZE * 2);
+
+                        const buffer = audioCtx.createBuffer(2, BUFFER_SIZE, SAMPLE_RATE);
+                        const leftChannel = buffer.getChannelData(0);
+                        const rightChannel = buffer.getChannelData(1);
+
+                        for (let i = 0, j = 0; i < chunk.length; i += 2, j++) {
+                            leftChannel[j] = chunk[i];
+                            rightChannel[j] = chunk[i + 1];
+                        }
+
+                        const source = audioCtx.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(window.audioGainNode);
+
+                        // Schedule precisely to avoid gaps
+                        const startTime = Math.max(nextAudioTime, audioCtx.currentTime + 0.01);
+                        source.start(startTime);
+                        nextAudioTime = startTime + buffer.duration;
+                    }
+
+                    // Prevent buffer from growing too large (causes latency)
+                    if (window.nesAudioSamples.length > BUFFER_SIZE * 8) {
+                        window.nesAudioSamples = window.nesAudioSamples.slice(-BUFFER_SIZE * 4);
+                        nextAudioTime = 0; // Reset timing
+                    }
+                }, 16);
+
+                log('INFO', 'initAudio: complete');
+            } catch (err) {
+                log('WARN', 'initAudio failed, running without sound', { message: err.message });
+                audioCtx = null;
+            }
+        }
+
+        function launchGame(index) {
+            try {
+                const game = gameLibrary[index];
+                if (!game || !game.romData) {
+                    log('ERROR', 'Game data not found', { index });
+                    showToast('Game data not found');
+                    return;
+                }
+
+                log('INFO', 'Launching game', { title: game.title, romDataLen: game.romData.length });
+
+                currentGame = game;
+                showGameView();
+
+                const romBuffer = base64ToArrayBuffer(game.romData);
+                log('INFO', 'Decoded ROM buffer', { byteLength: romBuffer.byteLength });
+
+                loadGame(romBuffer, game.title);
+            } catch (err) {
+                log('ERROR', 'Launch failed', { message: err.message, stack: err.stack });
+                showToast('Launch error: ' + err.message);
+            }
+        }
+
+        function uint8ArrayToString(arr) {
+            // Convert byte by byte to avoid stack overflow and typed array issues
+            let result = '';
+            for (let i = 0; i < arr.length; i++) {
+                result += String.fromCharCode(arr[i]);
+            }
+            return result;
+        }
+
+        async function loadGame(romBuffer, title) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('currentGameTitle').textContent = title || 'Unknown Game';
+
+            setTimeout(async () => {
+                try {
+                    log('INFO', 'loadGame starting', { title });
+
+                    // Check if JSNES loaded
+                    if (typeof jsnes === 'undefined') {
+                        throw new Error('JSNES library not loaded - check network/CSP');
+                    }
+                    log('INFO', 'JSNES library available');
+
+                    if (!nes) {
+                        log('INFO', 'Initializing emulator');
+                        initEmulator();
+                    }
+                    log('INFO', 'Initializing audio');
+                    await initAudio();
+
+                    // Resume AudioContext (required after user interaction)
+                    if (audioCtx) {
+                        log('INFO', 'AudioContext state', { state: audioCtx.state });
+                        if (audioCtx.state !== 'running') {
+                            log('INFO', 'Resuming AudioContext');
+                            await audioCtx.resume();
+                            log('INFO', 'AudioContext resumed', { state: audioCtx.state });
+                        }
+                    } else {
+                        log('WARN', 'No AudioContext available');
+                    }
+
+                    // Load ROM
+                    const romData = new Uint8Array(romBuffer);
+                    log('INFO', 'ROM data created', { size: romData.length });
+
+                    if (romData.length < 16) {
+                        throw new Error('ROM file too small - invalid file');
+                    }
+
+                    log('INFO', 'Converting ROM to string');
+                    const romString = uint8ArrayToString(romData);
+                    log('INFO', 'ROM string ready', { length: romString.length });
+
+                    log('INFO', 'Calling nes.loadROM()');
+                    nes.loadROM(romString);
+                    log('INFO', 'ROM loaded successfully');
+
+                    // Start game loop
+                    isPaused = false;
+                    updatePauseButton();
+                    runFrame();
+
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    showToast('GAME START!');
+                    log('INFO', 'Game started successfully');
+                } catch (err) {
+                    log('ERROR', 'Failed to load ROM', { message: err.message, stack: err.stack });
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    showToast('Error: ' + err.message);
+                    backToLibrary();
+                }
+            }, 500);
+        }
+
+        let frameCount = 0;
+        let lastFrameLog = 0;
+
+        function runFrame() {
+            try {
+                if (!isPaused && nes) {
+                    nes.frame();
+                    frameCount++;
+                    // Log every 60 frames (roughly 1 second)
+                    if (frameCount - lastFrameLog >= 60) {
+                        log('DEBUG', 'Frames running', { frameCount });
+                        lastFrameLog = frameCount;
+                    }
+                }
+                animationFrameId = requestAnimationFrame(runFrame);
+            } catch (err) {
+                log('ERROR', 'runFrame crashed', {
+                    message: err.message,
+                    stack: err.stack,
+                    frameCount
+                });
+                showToast('Emulator error: ' + err.message);
+                stopGame();
+            }
+        }
+
+        function stopGame() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (audioCtx) {
+                audioCtx.close();
+                audioCtx = null;
+            }
+            nextAudioTime = 0;
+            if (window.nesAudioSamples) {
+                window.nesAudioSamples = [];
+            }
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            updatePauseButton();
+            showToast(isPaused ? 'PAUSED' : 'RESUMED');
+        }
+
+        function updatePauseButton() {
+            const btn = document.getElementById('pauseBtn');
+            btn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+            btn.classList.toggle('active', isPaused);
+        }
+
+        function resetGame() {
+            if (nes && currentGame) {
+                try {
+                    const romData = new Uint8Array(base64ToArrayBuffer(currentGame.romData));
+                    const romString = uint8ArrayToString(romData);
+                    nes.loadROM(romString);
+                    isPaused = false;
+                    updatePauseButton();
+                    showToast('GAME RESET');
+                } catch (err) {
+                    console.error('Reset failed:', err);
+                }
+            }
+        }
+
+        let currentScale = 3; // Default 3x scale
+
+        function cycleScale() {
+            const screen = document.getElementById('gameScreen');
+            const btn = document.getElementById('scaleBtn');
+
+            // Remove current scale class
+            screen.classList.remove('scaled-2x', 'scaled-4x');
+
+            // Cycle: 3x -> 4x -> 2x -> 3x
+            if (currentScale === 3) {
+                currentScale = 4;
+                screen.classList.add('scaled-4x');
+            } else if (currentScale === 4) {
+                currentScale = 2;
+                screen.classList.add('scaled-2x');
+            } else {
+                currentScale = 3;
+                // 3x is default, no class needed
+            }
+
+            btn.textContent = currentScale + 'X';
+        }
+
+        function showGameView() {
+            document.getElementById('libraryView').classList.add('hidden');
+            document.getElementById('gameView').classList.add('active');
+        }
+
+        function backToLibrary() {
+            stopGame();
+            currentGame = null;
+            document.getElementById('gameView').classList.remove('active');
+            document.getElementById('libraryView').classList.remove('hidden');
+            // Reset scale to default
+            document.getElementById('gameScreen').classList.remove('scaled-2x', 'scaled-4x');
+            currentScale = 3;
+            document.getElementById('scaleBtn').textContent = '3X';
+        }
+
+        // ============================================
+        // CONTROLS
+        // ============================================
+        const keyMap = {
+            // Player 1
+            'ArrowUp': [1, jsnes.Controller.BUTTON_UP],
+            'ArrowDown': [1, jsnes.Controller.BUTTON_DOWN],
+            'ArrowLeft': [1, jsnes.Controller.BUTTON_LEFT],
+            'ArrowRight': [1, jsnes.Controller.BUTTON_RIGHT],
+            'z': [1, jsnes.Controller.BUTTON_A],
+            'Z': [1, jsnes.Controller.BUTTON_A],
+            'x': [1, jsnes.Controller.BUTTON_B],
+            'X': [1, jsnes.Controller.BUTTON_B],
+            'Enter': [1, jsnes.Controller.BUTTON_START],
+            'Shift': [1, jsnes.Controller.BUTTON_SELECT],
+        };
+
+        function handleKeyDown(e) {
+            // Exit game on Escape
+            if (e.key === 'Escape' && currentGame) {
+                backToLibrary();
+                return;
+            }
+
+            const mapping = keyMap[e.key];
+            if (mapping && nes) {
+                nes.buttonDown(mapping[0], mapping[1]);
+                e.preventDefault();
+            }
+        }
+
+        function handleKeyUp(e) {
+            const mapping = keyMap[e.key];
+            if (mapping && nes) {
+                nes.buttonUp(mapping[0], mapping[1]);
+                e.preventDefault();
+            }
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // VOLUME CONTROL
+        // ============================================
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            if (window.audioGainNode) {
+                window.audioGainNode.gain.value = volume;
+            }
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear log on page load and log startup
+            if (isElectron && window.electronAPI.log) {
+                window.electronAPI.log.clear().then(() => {
+                    log('INFO', 'Arcade page loaded', {
+                        jsnesLoaded: typeof jsnes !== 'undefined',
+                        librarySize: gameLibrary.length
+                    });
+                });
+            }
+
+            renderGameLibrary();
+
+            // Keyboard controls
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', stopGame);
+    </script>
+</body>
+</html>

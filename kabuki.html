@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>o-face Kabuki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        :root {
+            --bg-dark: #18181C;
+            --bg-card: #1f1f24;
+            --bg-input: #2a2a30;
+            --border: #3F465B;
+            --accent: #C52638;
+            --accent-hover: #d63344;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a8;
+            --text-muted: #6b6b73;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: 4px;
+        }
+
+        .page-title span {
+            color: var(--accent);
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* Portrait Card */
+        .portrait-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .portrait-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
+                        0 0 30px rgba(197, 38, 56, 0.15);
+        }
+
+        .portrait-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--bg-input) 0%, var(--bg-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portrait-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .portrait-card:hover .portrait-image img {
+            transform: scale(1.05);
+        }
+
+        .portrait-placeholder {
+            font-size: 80px;
+            color: var(--border);
+            user-select: none;
+        }
+
+        .portrait-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .portrait-card:hover .portrait-overlay {
+            opacity: 1;
+        }
+
+        .portrait-overlay-text {
+            color: white;
+            font-size: 13px;
+        }
+
+        .portrait-info {
+            padding: 20px;
+        }
+
+        .portrait-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .portrait-role {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .portrait-tagline {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            position: relative;
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--bg-input) 0%, var(--bg-card) 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .modal-portrait {
+            width: 180px;
+            height: 180px;
+            border-radius: 16px;
+            background: var(--bg-dark);
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 3px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(197, 38, 56, 0.3);
+        }
+
+        .modal-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-portrait-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: var(--border);
+        }
+
+        .modal-header-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .modal-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-role {
+            font-size: 18px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .modal-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .modal-stat {
+            text-align: center;
+        }
+
+        .modal-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .modal-bio {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .modal-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .modal-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-link {
+            padding: 10px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-link:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Add Member Card */
+        .add-member-card {
+            background: transparent;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-member-card:hover {
+            border-color: var(--accent);
+            background: rgba(197, 38, 56, 0.05);
+        }
+
+        .add-member-icon {
+            font-size: 48px;
+            color: var(--border);
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+
+        .add-member-card:hover .add-member-icon {
+            color: var(--accent);
+        }
+
+        .add-member-text {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1100;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 20px;
+            }
+
+            .modal-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .modal-stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Ribbon -->
+    <nav class="nav-ribbon">
+        <div class="nav-left" id="navButtonContainer">
+            <span class="nav-brand"><span>o</span>-face</span>
+            <button class="nav-btn home-btn" onclick="navGoTo('splash.html')">&#x2302; Home</button>
+            <button class="nav-btn meme-btn" data-btn-id="memes" draggable="true" onclick="navGoTo('meme.html')">Memes</button>
+            <button class="nav-btn whiteboard-btn" data-btn-id="whiteboard" draggable="true" onclick="navGoTo('whiteboard.html')">Whiteboard</button>
+            <button class="nav-btn kabuki-btn active" data-btn-id="kabuki" draggable="true">Kabuki</button>
+            <button class="nav-btn arcade-btn" data-btn-id="arcade" draggable="true" onclick="navGoTo('arcade.html')">Arcade</button>
+            <button class="nav-btn soundboard-btn" data-btn-id="soundboard" draggable="true" onclick="navGoTo('soundboard.html')">Soundboard</button>
+            <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
+        </div>
+        <div class="nav-right">
+            <button class="window-btn" onclick="navMinimize()">&#x2212;</button>
+            <button class="window-btn" onclick="navMaximize()">&#x25A1;</button>
+            <button class="window-btn close" onclick="navClose()">&#x2715;</button>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title"><span>K</span>ABUKI</h1>
+            <p class="page-subtitle">Meet the talented individuals behind o-face. Each brings unique skills and perspectives to create something extraordinary.</p>
+        </div>
+
+        <div class="team-grid" id="teamGrid">
+            <!-- Team members will be rendered here -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div class="modal-portrait" id="modalPortrait"></div>
+                <div class="modal-header-info">
+                    <h2 class="modal-name" id="modalName"></h2>
+                    <div class="modal-role" id="modalRole"></div>
+                    <div class="modal-stats" id="modalStats"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <div class="modal-section-title">About</div>
+                    <p class="modal-bio" id="modalBio"></p>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-section-title">Skills</div>
+                    <div class="modal-skills" id="modalSkills"></div>
+                </div>
+                <div class="modal-section" id="modalLinksSection">
+                    <div class="modal-section-title">Connect</div>
+                    <div class="modal-links" id="modalLinks"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================
+        // STATE
+        // ============================================
+        const isElectron = typeof window.electronAPI !== 'undefined';
+
+        // Team members data - stored in localStorage for persistence
+        let teamMembers = JSON.parse(localStorage.getItem('kabukiTeam') || 'null') || [
+            {
+                id: 1,
+                name: "Ronin",
+                role: "Founder & Lead Developer",
+                tagline: "Building the future, one line of code at a time.",
+                image: null,
+                bio: "Ronin is the visionary behind o-face, bringing together a passion for retro aesthetics with modern development practices. With over a decade of experience in software engineering, Ronin has worked on everything from embedded systems to large-scale web applications.",
+                skills: ["JavaScript", "Electron", "Node.js", "Python", "System Design", "UI/UX"],
+                stats: { projects: 42, commits: "2.4k", coffee: 999 },
+                links: { github: "#", twitter: "#", email: "ronin@o-face.dev" }
+            },
+            {
+                id: 2,
+                name: "Ghost",
+                role: "Creative Director",
+                tagline: "Where art meets algorithm.",
+                image: null,
+                bio: "Ghost brings the visual magic to o-face, crafting interfaces that feel both nostalgic and cutting-edge. Their background in digital art and motion graphics has shaped the distinctive look and feel of everything we create.",
+                skills: ["UI Design", "Animation", "Figma", "After Effects", "CSS Art", "Branding"],
+                stats: { designs: 156, animations: 89, pixels: "1M+" },
+                links: { dribbble: "#", behance: "#", email: "ghost@o-face.dev" }
+            },
+            {
+                id: 3,
+                name: "Cipher",
+                role: "Backend Architect",
+                tagline: "Making the impossible merely difficult.",
+                image: null,
+                bio: "Cipher is the backbone of o-face's infrastructure. Their expertise in distributed systems and database optimization ensures everything runs smoothly behind the scenes. When not optimizing queries, they're probably exploring new programming languages.",
+                skills: ["Go", "Rust", "PostgreSQL", "Redis", "Docker", "Kubernetes"],
+                stats: { apis: 34, uptime: "99.9%", bugs: 0 },
+                links: { github: "#", linkedin: "#", email: "cipher@o-face.dev" }
+            },
+            {
+                id: 4,
+                name: "Neon",
+                role: "Community Manager",
+                tagline: "Connecting people, one conversation at a time.",
+                image: null,
+                bio: "Neon is the heart of our community, fostering connections and ensuring everyone feels welcome. With a background in social media marketing and community building, they've helped grow o-face from a small project to a thriving ecosystem.",
+                skills: ["Community Building", "Content Strategy", "Discord", "Social Media", "Event Planning"],
+                stats: { members: "5k+", events: 28, vibes: "Good" },
+                links: { twitter: "#", discord: "#", email: "neon@o-face.dev" }
+            }
+        ];
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        // Navigation functions
+        function navGoTo(href) {
+            window.location.href = href;
+        }
+
+        function navMinimize() {
+            if (isElectron) window.electronAPI.window.minimize();
+        }
+
+        function navMaximize() {
+            if (isElectron) window.electronAPI.window.maximize();
+        }
+
+        function navClose() {
+            if (isElectron) window.electronAPI.window.close();
+        }
+
+        function openTerminal() {
+            if (isElectron) window.electronAPI.window.openTerminal();
+        }
+
+        function togglePlayer() {
+            // Music player not available on kabuki page
+        }
+
+        // ============================================
+        // TEAM GRID
+        // ============================================
+        function renderTeamGrid() {
+            const grid = document.getElementById('teamGrid');
+
+            let html = teamMembers.map(member => `
+                <div class="portrait-card" onclick="openModal(${member.id})">
+                    <div class="portrait-image">
+                        ${member.image
+                            ? `<img src="${member.image}" alt="${member.name}">`
+                            : `<div class="portrait-placeholder">${getInitials(member.name)}</div>`
+                        }
+                        <div class="portrait-overlay">
+                            <div class="portrait-overlay-text">Click to view profile</div>
+                        </div>
+                    </div>
+                    <div class="portrait-info">
+                        <div class="portrait-name">${member.name}</div>
+                        <div class="portrait-role">${member.role}</div>
+                        <div class="portrait-tagline">${member.tagline}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add "Add Member" card
+            html += `
+                <div class="add-member-card" onclick="addNewMember()">
+                    <div class="add-member-icon">+</div>
+                    <div class="add-member-text">Add Team Member</div>
+                </div>
+            `;
+
+            grid.innerHTML = html;
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        // ============================================
+        // MODAL
+        // ============================================
+        function openModal(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            if (!member) return;
+
+            // Set portrait
+            const portrait = document.getElementById('modalPortrait');
+            portrait.innerHTML = member.image
+                ? `<img src="${member.image}" alt="${member.name}">`
+                : `<div class="modal-portrait-placeholder">${getInitials(member.name)}</div>`;
+
+            // Set header info
+            document.getElementById('modalName').textContent = member.name;
+            document.getElementById('modalRole').textContent = member.role;
+
+            // Set stats
+            const statsHtml = Object.entries(member.stats || {}).map(([key, value]) => `
+                <div class="modal-stat">
+                    <div class="modal-stat-value">${value}</div>
+                    <div class="modal-stat-label">${key}</div>
+                </div>
+            `).join('');
+            document.getElementById('modalStats').innerHTML = statsHtml;
+
+            // Set bio
+            document.getElementById('modalBio').textContent = member.bio;
+
+            // Set skills
+            const skillsHtml = (member.skills || []).map(skill =>
+                `<span class="skill-tag">${skill}</span>`
+            ).join('');
+            document.getElementById('modalSkills').innerHTML = skillsHtml;
+
+            // Set links
+            const links = member.links || {};
+            const linksHtml = Object.entries(links).map(([platform, url]) => `
+                <a href="${url}" class="modal-link" target="_blank">
+                    ${getPlatformIcon(platform)} ${capitalize(platform)}
+                </a>
+            `).join('');
+            document.getElementById('modalLinks').innerHTML = linksHtml;
+            document.getElementById('modalLinksSection').style.display =
+                Object.keys(links).length > 0 ? 'block' : 'none';
+
+            // Show modal
+            document.getElementById('modalOverlay').classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalOverlay').classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        function getPlatformIcon(platform) {
+            const icons = {
+                github: '&#x2666;',
+                twitter: '&#x2767;',
+                linkedin: '&#x26AC;',
+                dribbble: '&#x25CF;',
+                behance: '&#x25A0;',
+                discord: '&#x2740;',
+                email: '&#x2709;'
+            };
+            return icons[platform] || '&#x2192;';
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // ============================================
+        // ADD MEMBER (Placeholder)
+        // ============================================
+        function addNewMember() {
+            const name = prompt('Enter team member name:');
+            if (!name) return;
+
+            const role = prompt('Enter role/title:');
+            if (!role) return;
+
+            const tagline = prompt('Enter a short tagline:') || '';
+            const bio = prompt('Enter bio:') || '';
+            const skillsInput = prompt('Enter skills (comma-separated):') || '';
+            const skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
+
+            const newMember = {
+                id: Date.now(),
+                name,
+                role,
+                tagline,
+                image: null,
+                bio,
+                skills,
+                stats: { joined: new Date().getFullYear() },
+                links: {}
+            };
+
+            teamMembers.push(newMember);
+            saveTeamMembers();
+            renderTeamGrid();
+            showToast(`${name} added to the team!`);
+        }
+
+        function saveTeamMembers() {
+            localStorage.setItem('kabukiTeam', JSON.stringify(teamMembers));
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTeamGrid();
+        });
+    </script>
+    <script src="nav.js"></script>
+</body>
+</html>

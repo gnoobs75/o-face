@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>o-face Soundboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        :root {
+            --bg-dark: #18181C;
+            --bg-card: #1f1f24;
+            --bg-input: #2a2a30;
+            --border: #3F465B;
+            --accent: #C52638;
+            --accent-hover: #d63344;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a8;
+            --text-muted: #6b6b73;
+            --sound-blue: #4dabf7;
+            --sound-green: #51cf66;
+            --sound-purple: #9775fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main Container */
+        .soundboard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--sound-blue), var(--sound-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--sound-blue);
+            color: var(--sound-blue);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Board Selector */
+        .board-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .board-selector label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .board-select {
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .board-select:focus {
+            outline: none;
+            border-color: var(--sound-blue);
+        }
+
+        /* Sound Grid */
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .sound-pad {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sound-pad:hover {
+            border-color: var(--sound-blue);
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(77, 171, 247, 0.2);
+        }
+
+        .sound-pad.playing {
+            border-color: var(--sound-green);
+            box-shadow: 0 0 20px rgba(81, 207, 102, 0.4);
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+
+        .sound-pad.empty {
+            border-style: dashed;
+            opacity: 0.6;
+        }
+
+        .sound-pad.empty:hover {
+            opacity: 1;
+            border-color: var(--sound-purple);
+        }
+
+        .sound-pad-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .sound-pad-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 0 8px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sound-pad-key {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--sound-blue);
+            font-family: monospace;
+        }
+
+        .sound-pad-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .sound-pad:hover .sound-pad-actions {
+            opacity: 1;
+        }
+
+        .pad-action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: none;
+            background: rgba(0,0,0,0.6);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pad-action-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .pad-action-btn.key-btn:hover {
+            background: var(--sound-blue);
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .volume-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .volume-slider {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--bg-input);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--sound-blue);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-value {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            width: 400px;
+            max-width: 90%;
+            border: 1px solid var(--border);
+        }
+
+        .modal-content h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--sound-blue);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .key-display {
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .key-display-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .key-display-key {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--sound-blue);
+            font-family: monospace;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 10001;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Empty state */
+        .empty-hint {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-hint-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Hidden input */
+        .hidden-input {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .sound-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar-left, .toolbar-right {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Ribbon -->
+    <nav class="nav-ribbon">
+        <div class="nav-left" id="navButtonContainer">
+            <span class="nav-brand"><span>o</span>-face</span>
+            <button class="nav-btn home-btn" onclick="navGoTo('splash.html')">&#x2302; Home</button>
+            <button class="nav-btn meme-btn" data-btn-id="memes" draggable="true" onclick="navGoTo('meme.html')">Memes</button>
+            <button class="nav-btn whiteboard-btn" data-btn-id="whiteboard" draggable="true" onclick="navGoTo('whiteboard.html')">Whiteboard</button>
+            <button class="nav-btn kabuki-btn" data-btn-id="kabuki" draggable="true" onclick="navGoTo('kabuki.html')">Kabuki</button>
+            <button class="nav-btn arcade-btn" data-btn-id="arcade" draggable="true" onclick="navGoTo('arcade.html')">Arcade</button>
+            <button class="nav-btn soundboard-btn active" data-btn-id="soundboard" draggable="true">Soundboard</button>
+            <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
+        </div>
+        <div class="nav-right">
+            <button class="window-btn" onclick="navMinimize()">&#x2212;</button>
+            <button class="window-btn" onclick="navMaximize()">&#x25A1;</button>
+            <button class="window-btn close" onclick="navClose()">&#x2715;</button>
+        </div>
+    </nav>
+
+    <div class="soundboard-container">
+        <div class="header">
+            <h1>SOUNDBOARD</h1>
+            <p>Your Sound Arsenal</p>
+        </div>
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <button class="btn btn-primary" onclick="addSound()">+ Add Sound</button>
+                <div class="board-selector">
+                    <label>Board:</label>
+                    <select class="board-select" id="boardSelect" onchange="switchBoard()"></select>
+                </div>
+                <button class="btn btn-secondary" onclick="openNewBoardModal()">New</button>
+                <button class="btn btn-danger" onclick="deleteCurrentBoard()">Delete</button>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-secondary" onclick="stopAllSounds()">Stop All</button>
+            </div>
+        </div>
+
+        <div class="sound-grid" id="soundGrid">
+            <!-- Sound pads will be rendered here -->
+        </div>
+
+        <div class="bottom-controls">
+            <div class="volume-control">
+                <span class="volume-label">&#x1F50A; Volume</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="updateVolume()">
+                <span class="volume-value" id="volumeValue">80%</span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 12px;">
+                Press assigned keys to trigger sounds
+            </div>
+        </div>
+    </div>
+
+    <!-- New Board Modal -->
+    <div class="modal" id="newBoardModal">
+        <div class="modal-content">
+            <h2>Create New Board</h2>
+            <input type="text" class="modal-input" id="newBoardName" placeholder="Board name..." maxlength="30">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeNewBoardModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createNewBoard()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Binding Modal -->
+    <div class="modal" id="keyBindModal">
+        <div class="modal-content">
+            <h2>Assign Key</h2>
+            <div class="key-display">
+                <div class="key-display-text">Press any key to assign</div>
+                <div class="key-display-key" id="keyDisplayKey">-</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeKeyBindModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="clearKeyBinding()">Clear</button>
+                <button class="btn btn-primary" onclick="saveKeyBinding()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="audioInput" class="hidden-input" accept="audio/*" multiple onchange="handleAudioUpload(event)">
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================
+        // STATE
+        // ============================================
+        const isElectron = typeof window.electronAPI !== 'undefined';
+        const GRID_SIZE = 16;
+
+        let boards = JSON.parse(localStorage.getItem('soundboards') || '{}');
+        let currentBoardName = localStorage.getItem('currentBoard') || 'Default';
+        let volume = parseFloat(localStorage.getItem('soundboardVolume') || '0.8');
+        let activeSounds = [];
+        let keyBindingPadIndex = null;
+        let pendingKey = null;
+
+        // Ensure default board exists
+        if (!boards['Default']) {
+            boards['Default'] = [];
+            saveBoards();
+        }
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        // Navigation functions
+        function navGoTo(href) { window.location.href = href; }
+        function navMinimize() { if (isElectron) window.electronAPI.window.minimize(); }
+        function navMaximize() { if (isElectron) window.electronAPI.window.maximize(); }
+        function navClose() { if (isElectron) window.electronAPI.window.close(); }
+        function openTerminal() { if (isElectron) window.electronAPI.window.openTerminal(); }
+        function togglePlayer() { /* Music player not available on soundboard page */ }
+
+        // ============================================
+        // BOARD MANAGEMENT
+        // ============================================
+        function renderBoardSelector() {
+            const select = document.getElementById('boardSelect');
+            select.innerHTML = Object.keys(boards).map(name =>
+                `<option value="${escapeHtml(name)}" ${name === currentBoardName ? 'selected' : ''}>${escapeHtml(name)}</option>`
+            ).join('');
+        }
+
+        function switchBoard() {
+            const select = document.getElementById('boardSelect');
+            currentBoardName = select.value;
+            localStorage.setItem('currentBoard', currentBoardName);
+            renderSoundGrid();
+        }
+
+        function openNewBoardModal() {
+            document.getElementById('newBoardName').value = '';
+            document.getElementById('newBoardModal').classList.add('visible');
+            document.getElementById('newBoardName').focus();
+        }
+
+        function closeNewBoardModal() {
+            document.getElementById('newBoardModal').classList.remove('visible');
+        }
+
+        function createNewBoard() {
+            const name = document.getElementById('newBoardName').value.trim();
+            if (!name) {
+                showToast('Please enter a board name');
+                return;
+            }
+            if (boards[name]) {
+                showToast('Board already exists');
+                return;
+            }
+            boards[name] = [];
+            currentBoardName = name;
+            saveBoards();
+            localStorage.setItem('currentBoard', currentBoardName);
+            renderBoardSelector();
+            renderSoundGrid();
+            closeNewBoardModal();
+            showToast(`Created board: ${name}`);
+        }
+
+        function deleteCurrentBoard() {
+            if (currentBoardName === 'Default') {
+                showToast('Cannot delete Default board');
+                return;
+            }
+            if (!confirm(`Delete board "${currentBoardName}"?`)) return;
+
+            delete boards[currentBoardName];
+            currentBoardName = 'Default';
+            saveBoards();
+            localStorage.setItem('currentBoard', currentBoardName);
+            renderBoardSelector();
+            renderSoundGrid();
+            showToast('Board deleted');
+        }
+
+        function saveBoards() {
+            localStorage.setItem('soundboards', JSON.stringify(boards));
+        }
+
+        // ============================================
+        // SOUND GRID
+        // ============================================
+        function getCurrentBoard() {
+            return boards[currentBoardName] || [];
+        }
+
+        function renderSoundGrid() {
+            const grid = document.getElementById('soundGrid');
+            const sounds = getCurrentBoard();
+
+            let html = '';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const sound = sounds[i];
+                if (sound) {
+                    html += `
+                        <div class="sound-pad" id="pad-${i}" onclick="playSound(${i})">
+                            ${sound.key ? `<div class="sound-pad-key">${escapeHtml(sound.key.toUpperCase())}</div>` : ''}
+                            <div class="sound-pad-actions">
+                                <button class="pad-action-btn key-btn" onclick="event.stopPropagation(); openKeyBindModal(${i})" title="Assign key">&#x2328;</button>
+                                <button class="pad-action-btn" onclick="event.stopPropagation(); deleteSound(${i})" title="Delete">&#x2715;</button>
+                            </div>
+                            <div class="sound-pad-icon">&#x1F50A;</div>
+                            <div class="sound-pad-name">${escapeHtml(sound.name)}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="sound-pad empty" onclick="addSoundToSlot(${i})">
+                            <div class="sound-pad-icon" style="opacity: 0.3;">+</div>
+                            <div class="sound-pad-name" style="color: var(--text-muted);">Add Sound</div>
+                        </div>
+                    `;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        // ============================================
+        // SOUND MANAGEMENT
+        // ============================================
+        let pendingSlot = null;
+
+        function addSound() {
+            pendingSlot = null;
+            triggerFileInput();
+        }
+
+        function addSoundToSlot(index) {
+            pendingSlot = index;
+            triggerFileInput();
+        }
+
+        function triggerFileInput() {
+            if (isElectron && window.electronAPI.dialog) {
+                window.electronAPI.dialog.openAudioFiles().then(files => {
+                    if (files && files.length > 0) {
+                        addSoundsFromPaths(files);
+                    }
+                });
+            } else {
+                document.getElementById('audioInput').click();
+            }
+        }
+
+        function handleAudioUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            const sounds = getCurrentBoard();
+
+            Array.from(files).forEach(file => {
+                const url = URL.createObjectURL(file);
+                const name = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+
+                const sound = {
+                    id: Date.now() + Math.random(),
+                    name: name,
+                    path: url,
+                    isBlob: true,
+                    key: null
+                };
+
+                if (pendingSlot !== null && !sounds[pendingSlot]) {
+                    sounds[pendingSlot] = sound;
+                    pendingSlot = null;
+                } else {
+                    // Find first empty slot
+                    const emptyIndex = sounds.findIndex((s, i) => !s && i < GRID_SIZE);
+                    if (emptyIndex !== -1) {
+                        sounds[emptyIndex] = sound;
+                    } else if (sounds.length < GRID_SIZE) {
+                        sounds.push(sound);
+                    } else {
+                        showToast('Board is full');
+                        return;
+                    }
+                }
+            });
+
+            boards[currentBoardName] = sounds;
+            saveBoards();
+            renderSoundGrid();
+            showToast('Sound(s) added');
+            event.target.value = '';
+        }
+
+        function addSoundsFromPaths(paths) {
+            const sounds = getCurrentBoard();
+
+            paths.forEach(path => {
+                const name = path.split(/[/\\]/).pop().replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+
+                const sound = {
+                    id: Date.now() + Math.random(),
+                    name: name,
+                    path: path,
+                    isBlob: false,
+                    key: null
+                };
+
+                if (pendingSlot !== null && !sounds[pendingSlot]) {
+                    sounds[pendingSlot] = sound;
+                    pendingSlot = null;
+                } else {
+                    const emptyIndex = sounds.findIndex((s, i) => !s && i < GRID_SIZE);
+                    if (emptyIndex !== -1) {
+                        sounds[emptyIndex] = sound;
+                    } else if (sounds.length < GRID_SIZE) {
+                        sounds.push(sound);
+                    } else {
+                        showToast('Board is full');
+                        return;
+                    }
+                }
+            });
+
+            boards[currentBoardName] = sounds;
+            saveBoards();
+            renderSoundGrid();
+            showToast('Sound(s) added');
+        }
+
+        function deleteSound(index) {
+            const sounds = getCurrentBoard();
+            if (sounds[index]) {
+                sounds[index] = null;
+                boards[currentBoardName] = sounds;
+                saveBoards();
+                renderSoundGrid();
+                showToast('Sound removed');
+            }
+        }
+
+        // ============================================
+        // AUDIO PLAYBACK
+        // ============================================
+        function playSound(index) {
+            const sounds = getCurrentBoard();
+            const sound = sounds[index];
+            if (!sound) return;
+
+            const pad = document.getElementById(`pad-${index}`);
+
+            try {
+                const audio = new Audio(sound.path);
+                audio.volume = volume;
+
+                audio.addEventListener('play', () => {
+                    pad?.classList.add('playing');
+                    activeSounds.push(audio);
+                });
+
+                audio.addEventListener('ended', () => {
+                    pad?.classList.remove('playing');
+                    activeSounds = activeSounds.filter(a => a !== audio);
+                });
+
+                audio.addEventListener('error', (e) => {
+                    console.error('Audio error:', e);
+                    pad?.classList.remove('playing');
+                    showToast('Failed to play sound');
+                });
+
+                audio.play().catch(err => {
+                    console.error('Play error:', err);
+                    showToast('Failed to play sound');
+                });
+            } catch (err) {
+                console.error('Audio error:', err);
+                showToast('Failed to play sound');
+            }
+        }
+
+        function stopAllSounds() {
+            activeSounds.forEach(audio => {
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) {}
+            });
+            activeSounds = [];
+
+            // Remove playing class from all pads
+            document.querySelectorAll('.sound-pad.playing').forEach(pad => {
+                pad.classList.remove('playing');
+            });
+
+            showToast('All sounds stopped');
+        }
+
+        function updateVolume() {
+            const slider = document.getElementById('volumeSlider');
+            volume = slider.value / 100;
+            document.getElementById('volumeValue').textContent = slider.value + '%';
+            localStorage.setItem('soundboardVolume', volume.toString());
+
+            // Update active sounds
+            activeSounds.forEach(audio => {
+                audio.volume = volume;
+            });
+        }
+
+        // ============================================
+        // KEY BINDING
+        // ============================================
+        function openKeyBindModal(index) {
+            keyBindingPadIndex = index;
+            pendingKey = null;
+
+            const sounds = getCurrentBoard();
+            const sound = sounds[index];
+            document.getElementById('keyDisplayKey').textContent = sound?.key?.toUpperCase() || '-';
+
+            document.getElementById('keyBindModal').classList.add('visible');
+        }
+
+        function closeKeyBindModal() {
+            document.getElementById('keyBindModal').classList.remove('visible');
+            keyBindingPadIndex = null;
+            pendingKey = null;
+        }
+
+        function handleKeyBindInput(e) {
+            if (!document.getElementById('keyBindModal').classList.contains('visible')) return;
+            if (e.key === 'Escape') {
+                closeKeyBindModal();
+                return;
+            }
+
+            // Ignore modifier keys alone
+            if (['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) return;
+
+            e.preventDefault();
+            pendingKey = e.key;
+            document.getElementById('keyDisplayKey').textContent = e.key.toUpperCase();
+        }
+
+        function saveKeyBinding() {
+            if (keyBindingPadIndex === null) return;
+
+            const sounds = getCurrentBoard();
+
+            // Check for duplicate key
+            if (pendingKey) {
+                const duplicate = sounds.findIndex((s, i) =>
+                    s && s.key && s.key.toLowerCase() === pendingKey.toLowerCase() && i !== keyBindingPadIndex
+                );
+                if (duplicate !== -1) {
+                    showToast(`Key already assigned to "${sounds[duplicate].name}"`);
+                    return;
+                }
+            }
+
+            if (sounds[keyBindingPadIndex]) {
+                sounds[keyBindingPadIndex].key = pendingKey;
+                boards[currentBoardName] = sounds;
+                saveBoards();
+                renderSoundGrid();
+                showToast(pendingKey ? `Key "${pendingKey.toUpperCase()}" assigned` : 'Key binding saved');
+            }
+
+            closeKeyBindModal();
+        }
+
+        function clearKeyBinding() {
+            pendingKey = null;
+            document.getElementById('keyDisplayKey').textContent = '-';
+        }
+
+        function handleKeyPress(e) {
+            // Ignore if modal is open or typing in input
+            if (document.getElementById('keyBindModal').classList.contains('visible')) return;
+            if (document.getElementById('newBoardModal').classList.contains('visible')) return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const sounds = getCurrentBoard();
+            const index = sounds.findIndex(s => s && s.key && s.key.toLowerCase() === e.key.toLowerCase());
+
+            if (index !== -1) {
+                e.preventDefault();
+                playSound(index);
+            }
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial volume
+            document.getElementById('volumeSlider').value = volume * 100;
+            document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
+
+            renderBoardSelector();
+            renderSoundGrid();
+
+            // Hide window controls if not in Electron
+            if (!isElectron) {
+                document.querySelector('.nav-right').style.display = 'none';
+            }
+        });
+
+        // Keyboard event listeners
+        document.addEventListener('keydown', handleKeyBindInput);
+        document.addEventListener('keydown', handleKeyPress);
+
+        // Enter key for modals
+        document.getElementById('newBoardName').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') createNewBoard();
+        });
+    </script>
+    <script src="nav.js"></script>
+</body>
+</html>

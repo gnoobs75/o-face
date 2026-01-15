@@ -1,6 +1,15 @@
 const { app, BrowserWindow, ipcMain, screen, dialog } = require('electron');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
+const http = require('http');
+
+// Log file path
+const LOG_FILE = path.join(__dirname, 'o-face.log');
+
+// HTTP server for external sound triggers (Claude Code hooks, etc.)
+const SOUND_SERVER_PORT = 9876;
+let soundServer = null;
 
 // Handle node-pty native module
 let pty;
@@ -200,10 +209,28 @@ ipcMain.handle('window:close', (event) => {
     if (win) win.close();
 });
 
+ipcMain.handle('window:openDevTools', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.webContents.toggleDevTools();
+});
+
 // App lifecycle
-app.whenReady().then(createMainWindow);
+app.whenReady().then(() => {
+    createMainWindow();
+    startSoundServer();
+
+    // Log renderer crashes
+    mainWindow.webContents.on('crashed', (event, killed) => {
+        writeLog('ERROR', 'Main', 'Renderer process crashed', { killed });
+    });
+
+    mainWindow.webContents.on('render-process-gone', (event, details) => {
+        writeLog('ERROR', 'Main', 'Render process gone', details);
+    });
+});
 
 app.on('window-all-closed', () => {
+    stopSoundServer();
     if (process.platform !== 'darwin') {
         app.quit();
     }
@@ -212,6 +239,47 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createMainWindow();
+    }
+});
+
+// Logging system
+function writeLog(level, source, message, data) {
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+        timestamp,
+        level,
+        source,
+        message,
+        data: data || null
+    };
+    const line = JSON.stringify(logEntry) + '\n';
+
+    fs.appendFile(LOG_FILE, line, (err) => {
+        if (err) console.error('Failed to write log:', err);
+    });
+
+    // Also log to console
+    console.log(`[${level}] [${source}] ${message}`, data || '');
+}
+
+ipcMain.handle('log:write', async (event, level, source, message, data) => {
+    writeLog(level, source, message, data);
+    return { success: true };
+});
+
+ipcMain.handle('log:clear', async () => {
+    fs.writeFile(LOG_FILE, '', (err) => {
+        if (err) console.error('Failed to clear log:', err);
+    });
+    return { success: true };
+});
+
+ipcMain.handle('log:read', async () => {
+    try {
+        const content = fs.readFileSync(LOG_FILE, 'utf8');
+        return { success: true, content };
+    } catch (err) {
+        return { success: false, error: err.message };
     }
 });
 
@@ -225,3 +293,65 @@ ipcMain.handle('dialog:openAudioFiles', async () => {
     });
     return result.canceled ? [] : result.filePaths;
 });
+
+// Start HTTP server for external sound triggers
+function startSoundServer() {
+    if (soundServer) {
+        console.log('[SoundServer] Server already running');
+        return;
+    }
+
+    console.log('[SoundServer] Starting HTTP server...');
+
+    soundServer = http.createServer((req, res) => {
+        const timestamp = new Date().toISOString();
+        console.log(`[SoundServer] ${timestamp} ${req.method} ${req.url}`);
+
+        // Enable CORS for local requests
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+
+        if (req.url === '/play-done' || req.url === '/play-done/') {
+            // Send play-done signal to all windows
+            const windows = BrowserWindow.getAllWindows();
+            console.log(`[SoundServer] Broadcasting sound:playDone to ${windows.length} window(s)`);
+
+            windows.forEach((win, i) => {
+                if (!win.isDestroyed()) {
+                    console.log(`[SoundServer] Sending to window ${i}`);
+                    win.webContents.send('sound:playDone');
+                }
+            });
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, message: 'Sound triggered' }));
+        } else if (req.url === '/health' || req.url === '/') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ status: 'ok', port: SOUND_SERVER_PORT }));
+        } else {
+            console.log(`[SoundServer] 404 - Unknown path: ${req.url}`);
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Not found' }));
+        }
+    });
+
+    soundServer.listen(SOUND_SERVER_PORT, '127.0.0.1', () => {
+        console.log(`[SoundServer] Listening on http://127.0.0.1:${SOUND_SERVER_PORT}`);
+        console.log('[SoundServer] Endpoints: /play-done, /health');
+    });
+
+    soundServer.on('error', (err) => {
+        console.error('[SoundServer] Error:', err.message);
+        if (err.code === 'EADDRINUSE') {
+            console.error(`[SoundServer] Port ${SOUND_SERVER_PORT} already in use`);
+        }
+    });
+}
+
+function stopSoundServer() {
+    if (soundServer) {
+        console.log('[SoundServer] Stopping server...');
+        soundServer.close();
+        soundServer = null;
+    }
+}

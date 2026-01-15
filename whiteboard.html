@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>o-face Whiteboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        :root {
+            --bg-dark: #18181C;
+            --bg-card: #1f1f24;
+            --bg-input: #2a2a30;
+            --border: #3F465B;
+            --accent: #C52638;
+            --accent-hover: #d63344;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a8;
+            --text-muted: #6b6b73;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            height: 100vh;
+            background: var(--bg-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Main Container */
+        .whiteboard-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Toolbar */
+        .toolbar {
+            width: 56px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 8px 4px;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .tool-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .tool-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .tool-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tool-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .tool-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 4px;
+        }
+
+        /* Canvas Wrapper */
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #1a1a1e;
+        }
+
+        #whiteboardCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .canvas-wrapper.panning { cursor: grabbing !important; }
+        .canvas-wrapper.tool-pen { cursor: crosshair; }
+        .canvas-wrapper.tool-rect { cursor: crosshair; }
+        .canvas-wrapper.tool-circle { cursor: crosshair; }
+        .canvas-wrapper.tool-line { cursor: crosshair; }
+        .canvas-wrapper.tool-arrow { cursor: crosshair; }
+        .canvas-wrapper.tool-text { cursor: text; }
+        .canvas-wrapper.tool-eraser { cursor: pointer; }
+
+        /* Properties Panel */
+        .properties-panel {
+            width: 200px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .property-group h4 {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-swatch.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .color-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .color-input-row input[type="color"] {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .color-input-row span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: var(--bg-input);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-row span {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 35px;
+            text-align: right;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .checkbox-row input {
+            accent-color: var(--accent);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 28px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoom-btn {
+            padding: 2px 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .zoom-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .status-hint kbd {
+            background: var(--bg-input);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: inherit;
+            margin: 0 4px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Text Input Overlay */
+        .text-input-overlay {
+            position: absolute;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            padding: 8px;
+            z-index: 100;
+            display: none;
+        }
+
+        .text-input-overlay input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            min-width: 200px;
+        }
+
+        /* Selection Box */
+        .selection-box {
+            position: absolute;
+            border: 1px dashed var(--accent);
+            background: rgba(197, 38, 56, 0.1);
+            pointer-events: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Ribbon -->
+    <nav class="nav-ribbon">
+        <div class="nav-left" id="navButtonContainer">
+            <span class="nav-brand"><span>o</span>-face</span>
+            <button class="nav-btn home-btn" onclick="navGoTo('splash.html')">&#x2302; Home</button>
+            <button class="nav-btn meme-btn" data-btn-id="memes" draggable="true" onclick="navGoTo('meme.html')">Memes</button>
+            <button class="nav-btn whiteboard-btn active" data-btn-id="whiteboard" draggable="true">Whiteboard</button>
+            <button class="nav-btn kabuki-btn" data-btn-id="kabuki" draggable="true" onclick="navGoTo('kabuki.html')">Kabuki</button>
+            <button class="nav-btn arcade-btn" data-btn-id="arcade" draggable="true" onclick="navGoTo('arcade.html')">Arcade</button>
+            <button class="nav-btn soundboard-btn" data-btn-id="soundboard" draggable="true" onclick="navGoTo('soundboard.html')">Soundboard</button>
+            <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
+            <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
+        </div>
+        <div class="nav-right">
+            <button class="window-btn" onclick="navMinimize()">&#x2212;</button>
+            <button class="window-btn" onclick="navMaximize()">&#x25A1;</button>
+            <button class="window-btn close" onclick="navClose()">&#x2715;</button>
+        </div>
+    </nav>
+
+    <div class="whiteboard-container">
+        <!-- Left Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn active" data-tool="select" title="Select (V)">
+                <svg viewBox="0 0 24 24"><path d="M4 4l7 19 3-8 8-3z"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="pen" title="Pen (P)">
+                <svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+            </button>
+            <div class="tool-separator"></div>
+            <button class="tool-btn" data-tool="rect" title="Rectangle (R)">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="circle" title="Circle (C)">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="line" title="Line (L)">
+                <svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="arrow" title="Arrow (A)">
+                <svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="10 5 19 5 19 14"/></svg>
+            </button>
+            <div class="tool-separator"></div>
+            <button class="tool-btn" data-tool="text" title="Text (T)">
+                <svg viewBox="0 0 24 24"><text x="6" y="18" font-size="16" font-weight="bold" fill="currentColor" stroke="none">T</text></svg>
+            </button>
+            <button class="tool-btn" data-tool="eraser" title="Eraser (E)">
+                <svg viewBox="0 0 24 24"><path d="M20 20H7L3 16c-1-1-1-2.5 0-3.5l10-10c1-1 2.5-1 3.5 0l7 7c1 1 1 2.5 0 3.5L15 22"/><line x1="6" y1="11" x2="13" y2="18"/></svg>
+            </button>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="canvas-wrapper" id="canvasWrapper">
+            <canvas id="whiteboardCanvas"></canvas>
+            <div class="text-input-overlay" id="textInputOverlay">
+                <input type="text" id="textInput" placeholder="Enter text...">
+            </div>
+            <div class="selection-box" id="selectionBox"></div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="properties-panel">
+            <div class="property-group">
+                <h4>Stroke Color</h4>
+                <div class="color-picker-row" id="strokeColors"></div>
+                <div class="color-input-row">
+                    <input type="color" id="customStrokeColor" value="#ffffff">
+                    <span>Custom</span>
+                </div>
+            </div>
+
+            <div class="property-group">
+                <h4>Fill</h4>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="enableFill">
+                    Enable Fill
+                </label>
+                <div class="color-picker-row" id="fillColors" style="margin-top: 10px;"></div>
+            </div>
+
+            <div class="property-group">
+                <h4>Stroke Width</h4>
+                <div class="slider-row">
+                    <input type="range" id="lineWidth" min="1" max="20" value="2">
+                    <span id="lineWidthValue">2px</span>
+                </div>
+            </div>
+
+            <div class="property-group">
+                <h4>Actions</h4>
+                <button class="nav-btn" onclick="clearCanvas()" style="width: 100%; margin-bottom: 8px;">Clear All</button>
+                <button class="nav-btn" onclick="exportCanvas()" style="width: 100%;">Export PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomOut()">-</button>
+            <span id="zoomLevel">100%</span>
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+            <button class="zoom-btn" onclick="resetView()">Reset</button>
+        </div>
+        <span id="objectCount">0 objects</span>
+        <div class="status-hint">
+            <kbd>Space</kbd>+Drag Pan
+            <kbd>Scroll</kbd> Zoom
+            <kbd>Ctrl+Z</kbd> Undo
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================
+        // INITIALIZATION & STATE
+        // ============================================
+        const isElectron = typeof window.electronAPI !== 'undefined';
+
+        const COLORS = [
+            '#ffffff', '#ff6b6b', '#ffa94d', '#ffd43b',
+            '#69db7c', '#4dabf7', '#9775fa', '#f783ac',
+            '#868e96', '#C52638'
+        ];
+
+        // Whiteboard state
+        const state = {
+            objects: [],
+            viewport: { x: 0, y: 0, zoom: 1 },
+            selection: [],
+            undoStack: [],
+            redoStack: []
+        };
+
+        // Tool state
+        let currentTool = 'select';
+        let toolSettings = {
+            strokeColor: '#ffffff',
+            fillColor: '#4dabf7',
+            lineWidth: 2,
+            fontSize: 24,
+            filled: false
+        };
+
+        // Drawing state
+        let isDrawing = false;
+        let isPanning = false;
+        let spacePressed = false;
+        let drawingObject = null;
+        let drawStart = { x: 0, y: 0 };
+        let lastPanPos = { x: 0, y: 0 };
+        let selectionBoxStart = null;
+
+        // Moving state
+        let isMoving = false;
+        let moveStart = { x: 0, y: 0 };
+        let moveOffsets = [];
+
+        // Canvas and context
+        let canvas, ctx;
+
+        // ============================================
+        // COORDINATE TRANSFORMS
+        // ============================================
+        function screenToWorld(screenX, screenY) {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = (screenX - rect.left) * (canvas.width / rect.width);
+            const canvasY = (screenY - rect.top) * (canvas.height / rect.height);
+            return {
+                x: (canvasX / state.viewport.zoom) + state.viewport.x,
+                y: (canvasY / state.viewport.zoom) + state.viewport.y
+            };
+        }
+
+        function worldToScreen(worldX, worldY) {
+            return {
+                x: (worldX - state.viewport.x) * state.viewport.zoom,
+                y: (worldY - state.viewport.y) * state.viewport.zoom
+            };
+        }
+
+        // ============================================
+        // RENDERING
+        // ============================================
+        function render() {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            drawGrid();
+
+            // Apply viewport transform
+            ctx.setTransform(
+                state.viewport.zoom, 0,
+                0, state.viewport.zoom,
+                -state.viewport.x * state.viewport.zoom,
+                -state.viewport.y * state.viewport.zoom
+            );
+
+            // Draw all objects
+            state.objects.forEach(obj => drawObject(obj));
+
+            // Draw current drawing object
+            if (drawingObject) {
+                drawObject(drawingObject);
+            }
+
+            // Draw selection highlights
+            state.selection.forEach(id => {
+                const obj = state.objects.find(o => o.id === id);
+                if (obj) drawSelectionHighlight(obj);
+            });
+
+            // Update status
+            document.getElementById('objectCount').textContent = `${state.objects.length} objects`;
+        }
+
+        function drawGrid() {
+            const gridSize = 50;
+            const zoom = state.viewport.zoom;
+            const offsetX = (state.viewport.x % gridSize) * zoom;
+            const offsetY = (state.viewport.y % gridSize) * zoom;
+
+            ctx.strokeStyle = '#2a2a30';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+
+            for (let x = -offsetX; x < canvas.width; x += gridSize * zoom) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+            for (let y = -offsetY; y < canvas.height; y += gridSize * zoom) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+        }
+
+        function drawObject(obj) {
+            ctx.strokeStyle = obj.color || '#ffffff';
+            ctx.fillStyle = obj.fillColor || 'transparent';
+            ctx.lineWidth = obj.lineWidth || 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            switch (obj.type) {
+                case 'path':
+                    if (obj.points && obj.points.length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(obj.points[0].x, obj.points[0].y);
+                        for (let i = 1; i < obj.points.length; i++) {
+                            ctx.lineTo(obj.points[i].x, obj.points[i].y);
+                        }
+                        ctx.stroke();
+                    }
+                    break;
+
+                case 'rect':
+                    ctx.beginPath();
+                    ctx.rect(obj.x, obj.y, obj.width, obj.height);
+                    if (obj.filled) ctx.fill();
+                    ctx.stroke();
+                    break;
+
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.ellipse(obj.x + obj.radiusX, obj.y + obj.radiusY,
+                               Math.abs(obj.radiusX), Math.abs(obj.radiusY), 0, 0, Math.PI * 2);
+                    if (obj.filled) ctx.fill();
+                    ctx.stroke();
+                    break;
+
+                case 'line':
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x, obj.y);
+                    ctx.lineTo(obj.x2, obj.y2);
+                    ctx.stroke();
+                    break;
+
+                case 'arrow':
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x, obj.y);
+                    ctx.lineTo(obj.x2, obj.y2);
+                    ctx.stroke();
+                    // Draw arrowhead
+                    const angle = Math.atan2(obj.y2 - obj.y, obj.x2 - obj.x);
+                    const headLen = 15;
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x2, obj.y2);
+                    ctx.lineTo(obj.x2 - headLen * Math.cos(angle - Math.PI / 6),
+                              obj.y2 - headLen * Math.sin(angle - Math.PI / 6));
+                    ctx.moveTo(obj.x2, obj.y2);
+                    ctx.lineTo(obj.x2 - headLen * Math.cos(angle + Math.PI / 6),
+                              obj.y2 - headLen * Math.sin(angle + Math.PI / 6));
+                    ctx.stroke();
+                    break;
+
+                case 'text':
+                    ctx.font = `${obj.fontSize || 24}px Inter, sans-serif`;
+                    ctx.fillStyle = obj.color;
+                    ctx.fillText(obj.text, obj.x, obj.y);
+                    break;
+            }
+        }
+
+        function drawSelectionHighlight(obj) {
+            const bounds = getObjectBounds(obj);
+            if (!bounds) return;
+
+            ctx.strokeStyle = '#4dabf7';
+            ctx.lineWidth = 2 / state.viewport.zoom;
+            ctx.setLineDash([5 / state.viewport.zoom, 5 / state.viewport.zoom]);
+            ctx.strokeRect(bounds.x - 5, bounds.y - 5, bounds.width + 10, bounds.height + 10);
+            ctx.setLineDash([]);
+        }
+
+        function getObjectBounds(obj) {
+            switch (obj.type) {
+                case 'path':
+                    if (!obj.points || obj.points.length === 0) return null;
+                    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                    obj.points.forEach(p => {
+                        minX = Math.min(minX, p.x);
+                        minY = Math.min(minY, p.y);
+                        maxX = Math.max(maxX, p.x);
+                        maxY = Math.max(maxY, p.y);
+                    });
+                    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+
+                case 'rect':
+                    return { x: obj.x, y: obj.y, width: obj.width, height: obj.height };
+
+                case 'circle':
+                    return {
+                        x: obj.x, y: obj.y,
+                        width: obj.radiusX * 2, height: obj.radiusY * 2
+                    };
+
+                case 'line':
+                case 'arrow':
+                    return {
+                        x: Math.min(obj.x, obj.x2),
+                        y: Math.min(obj.y, obj.y2),
+                        width: Math.abs(obj.x2 - obj.x),
+                        height: Math.abs(obj.y2 - obj.y)
+                    };
+
+                case 'text':
+                    return { x: obj.x, y: obj.y - (obj.fontSize || 24), width: 200, height: obj.fontSize || 24 };
+
+                default:
+                    return null;
+            }
+        }
+
+        // ============================================
+        // HIT TESTING
+        // ============================================
+        function hitTest(worldPos) {
+            // Test in reverse order (top objects first)
+            for (let i = state.objects.length - 1; i >= 0; i--) {
+                const obj = state.objects[i];
+                if (hitTestObject(obj, worldPos)) {
+                    return obj;
+                }
+            }
+            return null;
+        }
+
+        function hitTestObject(obj, pos) {
+            const hitPadding = 10;
+            const bounds = getObjectBounds(obj);
+            if (!bounds) return false;
+
+            // Expanded bounds for easier selection
+            return pos.x >= bounds.x - hitPadding &&
+                   pos.x <= bounds.x + bounds.width + hitPadding &&
+                   pos.y >= bounds.y - hitPadding &&
+                   pos.y <= bounds.y + bounds.height + hitPadding;
+        }
+
+        // ============================================
+        // TOOL HANDLERS
+        // ============================================
+        function handleMouseDown(e) {
+            const worldPos = screenToWorld(e.clientX, e.clientY);
+
+            // Pan with middle mouse or space+left
+            if (e.button === 1 || (e.button === 0 && spacePressed)) {
+                isPanning = true;
+                lastPanPos = { x: e.clientX, y: e.clientY };
+                document.getElementById('canvasWrapper').classList.add('panning');
+                e.preventDefault();
+                return;
+            }
+
+            if (e.button !== 0) return;
+
+            switch (currentTool) {
+                case 'select':
+                    const hit = hitTest(worldPos);
+                    if (hit) {
+                        if (!state.selection.includes(hit.id)) {
+                            state.selection = [hit.id];
+                        }
+                        // Start moving
+                        isMoving = true;
+                        moveStart = worldPos;
+                        moveOffsets = state.selection.map(id => {
+                            const obj = state.objects.find(o => o.id === id);
+                            return { id, dx: obj.x - worldPos.x, dy: obj.y - worldPos.y };
+                        });
+                    } else {
+                        state.selection = [];
+                        // Start selection box
+                        selectionBoxStart = worldPos;
+                    }
+                    break;
+
+                case 'pen':
+                    isDrawing = true;
+                    drawingObject = {
+                        id: generateId(),
+                        type: 'path',
+                        points: [{ x: worldPos.x, y: worldPos.y }],
+                        color: toolSettings.strokeColor,
+                        lineWidth: toolSettings.lineWidth
+                    };
+                    break;
+
+                case 'rect':
+                    isDrawing = true;
+                    drawStart = worldPos;
+                    drawingObject = {
+                        id: generateId(),
+                        type: 'rect',
+                        x: worldPos.x,
+                        y: worldPos.y,
+                        width: 0,
+                        height: 0,
+                        color: toolSettings.strokeColor,
+                        fillColor: toolSettings.fillColor,
+                        filled: toolSettings.filled,
+                        lineWidth: toolSettings.lineWidth
+                    };
+                    break;
+
+                case 'circle':
+                    isDrawing = true;
+                    drawStart = worldPos;
+                    drawingObject = {
+                        id: generateId(),
+                        type: 'circle',
+                        x: worldPos.x,
+                        y: worldPos.y,
+                        radiusX: 0,
+                        radiusY: 0,
+                        color: toolSettings.strokeColor,
+                        fillColor: toolSettings.fillColor,
+                        filled: toolSettings.filled,
+                        lineWidth: toolSettings.lineWidth
+                    };
+                    break;
+
+                case 'line':
+                    isDrawing = true;
+                    drawingObject = {
+                        id: generateId(),
+                        type: 'line',
+                        x: worldPos.x,
+                        y: worldPos.y,
+                        x2: worldPos.x,
+                        y2: worldPos.y,
+                        color: toolSettings.strokeColor,
+                        lineWidth: toolSettings.lineWidth
+                    };
+                    break;
+
+                case 'arrow':
+                    isDrawing = true;
+                    drawingObject = {
+                        id: generateId(),
+                        type: 'arrow',
+                        x: worldPos.x,
+                        y: worldPos.y,
+                        x2: worldPos.x,
+                        y2: worldPos.y,
+                        color: toolSettings.strokeColor,
+                        lineWidth: toolSettings.lineWidth
+                    };
+                    break;
+
+                case 'text':
+                    showTextInput(e.clientX, e.clientY, worldPos);
+                    break;
+
+                case 'eraser':
+                    const toErase = hitTest(worldPos);
+                    if (toErase) {
+                        saveUndoState();
+                        state.objects = state.objects.filter(o => o.id !== toErase.id);
+                        state.selection = state.selection.filter(id => id !== toErase.id);
+                        saveToLocalStorage();
+                    }
+                    break;
+            }
+
+            render();
+        }
+
+        function handleMouseMove(e) {
+            const worldPos = screenToWorld(e.clientX, e.clientY);
+
+            // Update cursor position display
+            document.getElementById('objectCount').textContent =
+                `${state.objects.length} objects | ${Math.round(worldPos.x)}, ${Math.round(worldPos.y)}`;
+
+            if (isPanning) {
+                const dx = (e.clientX - lastPanPos.x) / state.viewport.zoom;
+                const dy = (e.clientY - lastPanPos.y) / state.viewport.zoom;
+                state.viewport.x -= dx;
+                state.viewport.y -= dy;
+                lastPanPos = { x: e.clientX, y: e.clientY };
+                render();
+                return;
+            }
+
+            if (isMoving && state.selection.length > 0) {
+                moveOffsets.forEach(({ id, dx, dy }) => {
+                    const obj = state.objects.find(o => o.id === id);
+                    if (obj) {
+                        const newX = worldPos.x + dx;
+                        const newY = worldPos.y + dy;
+                        moveObject(obj, newX, newY);
+                    }
+                });
+                render();
+                return;
+            }
+
+            if (selectionBoxStart) {
+                const box = document.getElementById('selectionBox');
+                const start = worldToScreen(selectionBoxStart.x, selectionBoxStart.y);
+                const end = { x: e.clientX - canvas.getBoundingClientRect().left,
+                             y: e.clientY - canvas.getBoundingClientRect().top };
+                box.style.display = 'block';
+                box.style.left = Math.min(start.x, end.x) + 'px';
+                box.style.top = Math.min(start.y, end.y) + 'px';
+                box.style.width = Math.abs(end.x - start.x) + 'px';
+                box.style.height = Math.abs(end.y - start.y) + 'px';
+                return;
+            }
+
+            if (!isDrawing || !drawingObject) return;
+
+            switch (drawingObject.type) {
+                case 'path':
+                    drawingObject.points.push({ x: worldPos.x, y: worldPos.y });
+                    break;
+
+                case 'rect':
+                    drawingObject.width = worldPos.x - drawStart.x;
+                    drawingObject.height = worldPos.y - drawStart.y;
+                    break;
+
+                case 'circle':
+                    drawingObject.radiusX = worldPos.x - drawStart.x;
+                    drawingObject.radiusY = worldPos.y - drawStart.y;
+                    break;
+
+                case 'line':
+                case 'arrow':
+                    drawingObject.x2 = worldPos.x;
+                    drawingObject.y2 = worldPos.y;
+                    break;
+            }
+
+            render();
+        }
+
+        function handleMouseUp(e) {
+            if (isPanning) {
+                isPanning = false;
+                document.getElementById('canvasWrapper').classList.remove('panning');
+                return;
+            }
+
+            if (isMoving) {
+                isMoving = false;
+                saveUndoState();
+                saveToLocalStorage();
+                return;
+            }
+
+            if (selectionBoxStart) {
+                const worldPos = screenToWorld(e.clientX, e.clientY);
+                const boxBounds = {
+                    x: Math.min(selectionBoxStart.x, worldPos.x),
+                    y: Math.min(selectionBoxStart.y, worldPos.y),
+                    width: Math.abs(worldPos.x - selectionBoxStart.x),
+                    height: Math.abs(worldPos.y - selectionBoxStart.y)
+                };
+
+                state.selection = state.objects
+                    .filter(obj => {
+                        const bounds = getObjectBounds(obj);
+                        if (!bounds) return false;
+                        return bounds.x >= boxBounds.x &&
+                               bounds.y >= boxBounds.y &&
+                               bounds.x + bounds.width <= boxBounds.x + boxBounds.width &&
+                               bounds.y + bounds.height <= boxBounds.y + boxBounds.height;
+                    })
+                    .map(obj => obj.id);
+
+                selectionBoxStart = null;
+                document.getElementById('selectionBox').style.display = 'none';
+                render();
+                return;
+            }
+
+            if (isDrawing && drawingObject) {
+                // Validate object before committing
+                let valid = false;
+                switch (drawingObject.type) {
+                    case 'path':
+                        valid = drawingObject.points.length > 2;
+                        if (valid) drawingObject.points = simplifyPath(drawingObject.points);
+                        break;
+                    case 'rect':
+                        normalizeRect(drawingObject);
+                        valid = drawingObject.width > 5 || drawingObject.height > 5;
+                        break;
+                    case 'circle':
+                        valid = Math.abs(drawingObject.radiusX) > 5 || Math.abs(drawingObject.radiusY) > 5;
+                        break;
+                    case 'line':
+                    case 'arrow':
+                        const dist = Math.hypot(drawingObject.x2 - drawingObject.x, drawingObject.y2 - drawingObject.y);
+                        valid = dist > 5;
+                        break;
+                }
+
+                if (valid) {
+                    saveUndoState();
+                    state.objects.push(drawingObject);
+                    saveToLocalStorage();
+                }
+
+                isDrawing = false;
+                drawingObject = null;
+                render();
+            }
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const worldPos = screenToWorld(e.clientX, e.clientY);
+
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newZoom = Math.max(0.1, Math.min(10, state.viewport.zoom * zoomFactor));
+
+            // Zoom toward cursor
+            state.viewport.x = worldPos.x - (worldPos.x - state.viewport.x) * (newZoom / state.viewport.zoom);
+            state.viewport.y = worldPos.y - (worldPos.y - state.viewport.y) * (newZoom / state.viewport.zoom);
+            state.viewport.zoom = newZoom;
+
+            updateZoomDisplay();
+            render();
+        }
+
+        // ============================================
+        // OBJECT MANIPULATION
+        // ============================================
+        function moveObject(obj, newX, newY) {
+            const dx = newX - obj.x;
+            const dy = newY - obj.y;
+
+            switch (obj.type) {
+                case 'path':
+                    obj.points.forEach(p => {
+                        p.x += dx;
+                        p.y += dy;
+                    });
+                    obj.x = newX;
+                    obj.y = newY;
+                    break;
+
+                case 'line':
+                case 'arrow':
+                    obj.x2 += dx;
+                    obj.y2 += dy;
+                    obj.x = newX;
+                    obj.y = newY;
+                    break;
+
+                default:
+                    obj.x = newX;
+                    obj.y = newY;
+            }
+        }
+
+        function normalizeRect(rect) {
+            if (rect.width < 0) {
+                rect.x += rect.width;
+                rect.width = Math.abs(rect.width);
+            }
+            if (rect.height < 0) {
+                rect.y += rect.height;
+                rect.height = Math.abs(rect.height);
+            }
+        }
+
+        function simplifyPath(points, tolerance = 2) {
+            if (points.length < 3) return points;
+
+            // Simple distance-based simplification
+            const result = [points[0]];
+            let lastPoint = points[0];
+
+            for (let i = 1; i < points.length - 1; i++) {
+                const dist = Math.hypot(points[i].x - lastPoint.x, points[i].y - lastPoint.y);
+                if (dist >= tolerance) {
+                    result.push(points[i]);
+                    lastPoint = points[i];
+                }
+            }
+
+            result.push(points[points.length - 1]);
+            return result;
+        }
+
+        // ============================================
+        // TEXT INPUT
+        // ============================================
+        function showTextInput(screenX, screenY, worldPos) {
+            const overlay = document.getElementById('textInputOverlay');
+            const input = document.getElementById('textInput');
+            const rect = canvas.getBoundingClientRect();
+
+            overlay.style.display = 'block';
+            overlay.style.left = (screenX - rect.left) + 'px';
+            overlay.style.top = (screenY - rect.top) + 'px';
+            input.value = '';
+            input.focus();
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter' && input.value.trim()) {
+                    saveUndoState();
+                    state.objects.push({
+                        id: generateId(),
+                        type: 'text',
+                        x: worldPos.x,
+                        y: worldPos.y,
+                        text: input.value.trim(),
+                        color: toolSettings.strokeColor,
+                        fontSize: toolSettings.fontSize || 24
+                    });
+                    saveToLocalStorage();
+                    overlay.style.display = 'none';
+                    render();
+                } else if (e.key === 'Escape') {
+                    overlay.style.display = 'none';
+                }
+            };
+        }
+
+        // ============================================
+        // UNDO / REDO
+        // ============================================
+        function saveUndoState() {
+            const snapshot = JSON.parse(JSON.stringify(state.objects));
+            state.undoStack.push(snapshot);
+            if (state.undoStack.length > 50) state.undoStack.shift();
+            state.redoStack = [];
+        }
+
+        function undo() {
+            if (state.undoStack.length === 0) {
+                showToast('Nothing to undo');
+                return;
+            }
+            const current = JSON.parse(JSON.stringify(state.objects));
+            state.redoStack.push(current);
+            state.objects = state.undoStack.pop();
+            state.selection = [];
+            saveToLocalStorage();
+            render();
+            showToast('Undo');
+        }
+
+        function redo() {
+            if (state.redoStack.length === 0) {
+                showToast('Nothing to redo');
+                return;
+            }
+            const current = JSON.parse(JSON.stringify(state.objects));
+            state.undoStack.push(current);
+            state.objects = state.redoStack.pop();
+            state.selection = [];
+            saveToLocalStorage();
+            render();
+            showToast('Redo');
+        }
+
+        // ============================================
+        // PERSISTENCE
+        // ============================================
+        function saveToLocalStorage() {
+            const data = {
+                version: 1,
+                objects: state.objects,
+                viewport: state.viewport,
+                settings: toolSettings,
+                lastModified: Date.now()
+            };
+            localStorage.setItem('whiteboard', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('whiteboard');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    state.objects = data.objects || [];
+                    state.viewport = data.viewport || { x: 0, y: 0, zoom: 1 };
+                    Object.assign(toolSettings, data.settings || {});
+                    updateZoomDisplay();
+                } catch (e) {
+                    console.error('Failed to load whiteboard:', e);
+                }
+            }
+        }
+
+        // ============================================
+        // UI HELPERS
+        // ============================================
+        function generateId() {
+            return 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoomLevel').textContent = Math.round(state.viewport.zoom * 100) + '%';
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === tool);
+            });
+            const wrapper = document.getElementById('canvasWrapper');
+            wrapper.className = 'canvas-wrapper tool-' + tool;
+        }
+
+        function zoomIn() {
+            state.viewport.zoom = Math.min(10, state.viewport.zoom * 1.2);
+            updateZoomDisplay();
+            render();
+        }
+
+        function zoomOut() {
+            state.viewport.zoom = Math.max(0.1, state.viewport.zoom / 1.2);
+            updateZoomDisplay();
+            render();
+        }
+
+        function resetView() {
+            state.viewport = { x: 0, y: 0, zoom: 1 };
+            updateZoomDisplay();
+            render();
+        }
+
+        function clearCanvas() {
+            if (state.objects.length === 0) return;
+            if (confirm('Clear all objects?')) {
+                saveUndoState();
+                state.objects = [];
+                state.selection = [];
+                saveToLocalStorage();
+                render();
+                showToast('Canvas cleared');
+            }
+        }
+
+        function exportCanvas() {
+            // Create a new canvas with white background for export
+            const exportCanvas = document.createElement('canvas');
+            const bounds = getAllObjectsBounds();
+            const padding = 50;
+
+            if (!bounds) {
+                showToast('Nothing to export');
+                return;
+            }
+
+            exportCanvas.width = bounds.width + padding * 2;
+            exportCanvas.height = bounds.height + padding * 2;
+            const exportCtx = exportCanvas.getContext('2d');
+
+            exportCtx.fillStyle = '#1a1a1e';
+            exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+            exportCtx.translate(padding - bounds.x, padding - bounds.y);
+
+            state.objects.forEach(obj => {
+                exportCtx.strokeStyle = obj.color || '#ffffff';
+                exportCtx.fillStyle = obj.fillColor || 'transparent';
+                exportCtx.lineWidth = obj.lineWidth || 2;
+                exportCtx.lineCap = 'round';
+                exportCtx.lineJoin = 'round';
+                drawObjectToContext(exportCtx, obj);
+            });
+
+            const link = document.createElement('a');
+            link.download = 'whiteboard.png';
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
+            showToast('Exported PNG');
+        }
+
+        function drawObjectToContext(ctx, obj) {
+            switch (obj.type) {
+                case 'path':
+                    if (obj.points && obj.points.length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(obj.points[0].x, obj.points[0].y);
+                        for (let i = 1; i < obj.points.length; i++) {
+                            ctx.lineTo(obj.points[i].x, obj.points[i].y);
+                        }
+                        ctx.stroke();
+                    }
+                    break;
+                case 'rect':
+                    ctx.beginPath();
+                    ctx.rect(obj.x, obj.y, obj.width, obj.height);
+                    if (obj.filled) ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.ellipse(obj.x + obj.radiusX, obj.y + obj.radiusY,
+                               Math.abs(obj.radiusX), Math.abs(obj.radiusY), 0, 0, Math.PI * 2);
+                    if (obj.filled) ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'line':
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x, obj.y);
+                    ctx.lineTo(obj.x2, obj.y2);
+                    ctx.stroke();
+                    break;
+                case 'arrow':
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x, obj.y);
+                    ctx.lineTo(obj.x2, obj.y2);
+                    ctx.stroke();
+                    const angle = Math.atan2(obj.y2 - obj.y, obj.x2 - obj.x);
+                    const headLen = 15;
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x2, obj.y2);
+                    ctx.lineTo(obj.x2 - headLen * Math.cos(angle - Math.PI / 6),
+                              obj.y2 - headLen * Math.sin(angle - Math.PI / 6));
+                    ctx.moveTo(obj.x2, obj.y2);
+                    ctx.lineTo(obj.x2 - headLen * Math.cos(angle + Math.PI / 6),
+                              obj.y2 - headLen * Math.sin(angle + Math.PI / 6));
+                    ctx.stroke();
+                    break;
+                case 'text':
+                    ctx.font = `${obj.fontSize || 24}px Inter, sans-serif`;
+                    ctx.fillStyle = obj.color;
+                    ctx.fillText(obj.text, obj.x, obj.y);
+                    break;
+            }
+        }
+
+        function getAllObjectsBounds() {
+            if (state.objects.length === 0) return null;
+
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+            state.objects.forEach(obj => {
+                const bounds = getObjectBounds(obj);
+                if (bounds) {
+                    minX = Math.min(minX, bounds.x);
+                    minY = Math.min(minY, bounds.y);
+                    maxX = Math.max(maxX, bounds.x + bounds.width);
+                    maxY = Math.max(maxY, bounds.y + bounds.height);
+                }
+            });
+
+            return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        }
+
+        // ============================================
+        // COLOR PICKER SETUP
+        // ============================================
+        function setupColorPickers() {
+            const strokeContainer = document.getElementById('strokeColors');
+            const fillContainer = document.getElementById('fillColors');
+
+            COLORS.forEach(color => {
+                // Stroke color swatch
+                const strokeSwatch = document.createElement('div');
+                strokeSwatch.className = 'color-swatch' + (color === toolSettings.strokeColor ? ' active' : '');
+                strokeSwatch.style.background = color;
+                strokeSwatch.onclick = () => {
+                    toolSettings.strokeColor = color;
+                    document.getElementById('customStrokeColor').value = color;
+                    strokeContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    strokeSwatch.classList.add('active');
+                };
+                strokeContainer.appendChild(strokeSwatch);
+
+                // Fill color swatch
+                const fillSwatch = document.createElement('div');
+                fillSwatch.className = 'color-swatch' + (color === toolSettings.fillColor ? ' active' : '');
+                fillSwatch.style.background = color;
+                fillSwatch.onclick = () => {
+                    toolSettings.fillColor = color;
+                    fillContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    fillSwatch.classList.add('active');
+                };
+                fillContainer.appendChild(fillSwatch);
+            });
+
+            // Custom color input
+            document.getElementById('customStrokeColor').addEventListener('input', (e) => {
+                toolSettings.strokeColor = e.target.value;
+                strokeContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            });
+
+            // Fill checkbox
+            document.getElementById('enableFill').addEventListener('change', (e) => {
+                toolSettings.filled = e.target.checked;
+            });
+
+            // Line width slider
+            document.getElementById('lineWidth').addEventListener('input', (e) => {
+                toolSettings.lineWidth = parseInt(e.target.value);
+                document.getElementById('lineWidthValue').textContent = e.target.value + 'px';
+            });
+        }
+
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Space for panning
+                if (e.code === 'Space' && !spacePressed) {
+                    spacePressed = true;
+                    document.getElementById('canvasWrapper').style.cursor = 'grab';
+                }
+
+                // Tool shortcuts (only when not typing)
+                if (document.activeElement.tagName !== 'INPUT') {
+                    switch (e.key.toLowerCase()) {
+                        case 'v': setTool('select'); break;
+                        case 'p': setTool('pen'); break;
+                        case 'r': setTool('rect'); break;
+                        case 'c': setTool('circle'); break;
+                        case 'l': setTool('line'); break;
+                        case 'a': setTool('arrow'); break;
+                        case 't': setTool('text'); break;
+                        case 'e': setTool('eraser'); break;
+                    }
+
+                    // Undo/Redo
+                    if (e.ctrlKey || e.metaKey) {
+                        if (e.key === 'z' && !e.shiftKey) {
+                            e.preventDefault();
+                            undo();
+                        } else if (e.key === 'z' && e.shiftKey) {
+                            e.preventDefault();
+                            redo();
+                        } else if (e.key === 'y') {
+                            e.preventDefault();
+                            redo();
+                        }
+                    }
+
+                    // Delete selected
+                    if ((e.key === 'Delete' || e.key === 'Backspace') && state.selection.length > 0) {
+                        e.preventDefault();
+                        saveUndoState();
+                        state.objects = state.objects.filter(o => !state.selection.includes(o.id));
+                        state.selection = [];
+                        saveToLocalStorage();
+                        render();
+                        showToast('Deleted');
+                    }
+
+                    // Escape to deselect
+                    if (e.key === 'Escape') {
+                        state.selection = [];
+                        document.getElementById('textInputOverlay').style.display = 'none';
+                        render();
+                    }
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') {
+                    spacePressed = false;
+                    if (!isPanning) {
+                        document.getElementById('canvasWrapper').style.cursor = '';
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        // Navigation functions
+        function navGoTo(href) {
+            window.location.href = href;
+        }
+
+        function navMinimize() {
+            if (isElectron) window.electronAPI.window.minimize();
+        }
+
+        function navMaximize() {
+            if (isElectron) window.electronAPI.window.maximize();
+        }
+
+        function navClose() {
+            if (isElectron) window.electronAPI.window.close();
+        }
+
+        function openTerminal() {
+            if (isElectron) window.electronAPI.window.openTerminal();
+        }
+
+        function togglePlayer() {
+            // Music player not available on whiteboard page
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvasWrapper');
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            render();
+        }
+
+        function init() {
+            canvas = document.getElementById('whiteboardCanvas');
+            ctx = canvas.getContext('2d');
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Mouse events
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mouseleave', handleMouseUp);
+            canvas.addEventListener('wheel', handleWheel, { passive: false });
+
+            // Prevent context menu
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Tool buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', () => setTool(btn.dataset.tool));
+            });
+
+            setupColorPickers();
+            setupKeyboardShortcuts();
+            loadFromLocalStorage();
+            render();
+        }
+
+        // Start when DOM ready
+        if (document.readyState === 'complete') {
+            init();
+        } else {
+            window.addEventListener('load', init);
+        }
+    </script>
+    <script src="nav.js"></script>
+</body>
+</html>

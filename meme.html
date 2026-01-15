@@ -99,6 +99,58 @@
             border-color: var(--accent);
         }
 
+        .nav-btn.home-btn {
+            background: linear-gradient(180deg, #2a2a30 0%, #1a1a1a 100%);
+            border: 1px solid #444;
+            color: #C52638;
+            margin-right: 8px;
+        }
+
+        .nav-btn.home-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .nav-btn.whiteboard-btn {
+            background: linear-gradient(180deg, #2a4a6a 0%, #1a3a5a 100%);
+            border: 1px solid #3a5a7a;
+            color: #7ab;
+        }
+
+        .nav-btn.whiteboard-btn:hover {
+            background: linear-gradient(180deg, #3a5a7a 0%, #2a4a6a 100%);
+            border-color: #4dabf7;
+            color: #4dabf7;
+            box-shadow: 0 0 8px rgba(77, 171, 247, 0.3);
+        }
+
+        .nav-btn.kabuki-btn {
+            background: linear-gradient(180deg, #4a2a4a 0%, #3a1a3a 100%);
+            border: 1px solid #5a3a5a;
+            color: #b7a;
+        }
+
+        .nav-btn.kabuki-btn:hover {
+            background: linear-gradient(180deg, #5a3a5a 0%, #4a2a4a 100%);
+            border-color: #9775fa;
+            color: #9775fa;
+            box-shadow: 0 0 8px rgba(151, 117, 250, 0.3);
+        }
+
+        .nav-btn.arcade-btn {
+            background: linear-gradient(180deg, #2a4a2a 0%, #1a3a1a 100%);
+            border: 1px solid #3a5a3a;
+            color: #7b7;
+        }
+
+        .nav-btn.arcade-btn:hover {
+            background: linear-gradient(180deg, #3a5a3a 0%, #2a4a2a 100%);
+            border-color: #51cf66;
+            color: #51cf66;
+            box-shadow: 0 0 8px rgba(81, 207, 102, 0.3);
+        }
+
         .nav-btn.terminal-btn {
             background: linear-gradient(180deg, #333 0%, #1a1a1a 100%);
             border: 1px solid #444;
@@ -1613,9 +1665,14 @@
     <nav class="nav-ribbon">
         <div class="nav-left" id="navButtonContainer">
             <span class="nav-brand"><span>ō</span>-face</span>
+            <button class="nav-btn home-btn" onclick="goHome()" title="Back to Dashboard">&#x2302; Home</button>
             <button class="nav-btn active" data-btn-id="gifs" draggable="true" onclick="showTab('search')">GIFs</button>
             <button class="nav-btn" data-btn-id="memes" draggable="true" onclick="showTab('generator')">Memes</button>
             <button class="nav-btn" data-btn-id="favorites" draggable="true" onclick="showTab('favorites')">Favorites</button>
+            <button class="nav-btn whiteboard-btn" onclick="goToWhiteboard()">Whiteboard</button>
+            <button class="nav-btn kabuki-btn" onclick="goToKabuki()">Kabuki</button>
+            <button class="nav-btn arcade-btn" onclick="goToArcade()">Arcade</button>
+            <button class="nav-btn" onclick="goToSoundboard()">Soundboard</button>
             <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
             <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
         </div>
@@ -1827,6 +1884,26 @@
             } else {
                 alert('Terminal is only available in the Electron app. Run: npm start');
             }
+        }
+
+        function goHome() {
+            window.location.href = 'splash.html';
+        }
+
+        function goToWhiteboard() {
+            window.location.href = 'whiteboard.html';
+        }
+
+        function goToKabuki() {
+            window.location.href = 'kabuki.html';
+        }
+
+        function goToArcade() {
+            window.location.href = 'arcade.html';
+        }
+
+        function goToSoundboard() {
+            window.location.href = 'soundboard.html';
         }
 
         // Hide window controls if not in Electron
