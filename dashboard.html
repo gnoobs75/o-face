@@ -1,0 +1,3019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ō-face</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent: #C52638;
+            --accent-glow: rgba(197, 38, 56, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.35);
+            --drawer-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(197, 38, 56, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(56, 38, 197, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(38, 197, 156, 0.05) 0%, transparent 50%);
+            animation: bgPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+            50% { transform: translate(-5%, -5%) scale(1.1); opacity: 0.8; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* Stock Ticker */
+        .stock-ticker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: linear-gradient(180deg, #1a1a20, #0f0f14);
+            border-bottom: 1px solid var(--border);
+            z-index: 1001;
+            overflow: hidden;
+            display: none;
+        }
+        .stock-ticker.active {
+            display: block;
+        }
+        body.stonks-active .nav-ribbon {
+            top: 28px;
+        }
+        body.stonks-active .left-drawer {
+            top: 84px;
+        }
+        body.stonks-active .main-content {
+            padding-top: 84px;
+        }
+        .ticker-content {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            white-space: nowrap;
+            animation: tickerScroll 30s linear infinite;
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 12px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .ticker-symbol {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .ticker-price {
+            color: var(--text-secondary);
+            margin-right: 6px;
+        }
+        .ticker-change {
+            font-weight: 600;
+        }
+        .ticker-change.up { color: #00ff88; }
+        .ticker-change.down { color: #ff4444; }
+        .ticker-separator {
+            color: var(--text-muted);
+            margin: 0 10px;
+        }
+
+        /* Glass Nav Bar */
+        .nav-ribbon {
+            height: 56px;
+            background: rgba(20, 20, 28, 0.98);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            -webkit-app-region: drag;
+            position: relative;
+            z-index: 100;
+        }
+
+        .nav-ribbon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            -webkit-app-region: no-drag;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-primary);
+            padding: 0 16px 0 8px;
+            -webkit-app-region: drag;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-brand span {
+            color: var(--accent);
+        }
+
+        /* Drawer toggle button */
+        .drawer-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            background: var(--bg-glass);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.3s;
+            -webkit-app-region: no-drag;
+        }
+
+        .drawer-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--border-light);
+        }
+
+        .drawer-toggle span {
+            width: 18px;
+            height: 2px;
+            background: var(--text-secondary);
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+
+        .drawer-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+        }
+
+        .drawer-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .drawer-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(4px, -4px);
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            -webkit-app-region: no-drag;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .nav-btn:hover::before { opacity: 1; }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:active { transform: translateY(0) scale(0.98); }
+
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        /* Page-specific button accents */
+        .nav-btn.ronin-btn:not(.active):hover { border-color: #ff00ff40; box-shadow: 0 0 20px rgba(255,0,255,0.1); background: linear-gradient(135deg, rgba(255,0,255,0.1), rgba(0,255,255,0.1)); }
+        .nav-btn.kabuki-btn:not(.active):hover { border-color: #9775fa40; box-shadow: 0 0 20px rgba(151,117,250,0.1); }
+        .nav-btn.meme-btn:not(.active):hover { border-color: #ffa94d40; box-shadow: 0 0 20px rgba(255,169,77,0.1); }
+        .nav-btn.arcade-btn:not(.active):hover { border-color: #51cf6640; box-shadow: 0 0 20px rgba(81,207,102,0.1); }
+
+        /* Window controls */
+        .nav-right {
+            display: flex;
+            -webkit-app-region: no-drag;
+        }
+
+        .window-btn {
+            width: 46px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-radius: 6px;
+        }
+
+        .window-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .window-btn.close:hover {
+            background: #e81123;
+            color: white;
+        }
+
+        /* ============================================
+           LEFT DRAWER
+           ============================================ */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .left-drawer {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            bottom: 0;
+            width: var(--drawer-width);
+            background: #0f0f14;
+            border-right: 1px solid var(--border);
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .left-drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .drawer-section {
+            margin-bottom: 25px;
+        }
+
+        .drawer-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Profile Section */
+        .profile-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent), #ff6b6b);
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Drawer Items */
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .drawer-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .drawer-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .drawer-item-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .drawer-item-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .drawer-item-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Favorites Section */
+        .fav-section {
+            margin-bottom: 12px;
+        }
+        .fav-section-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .fav-section-title .count {
+            background: var(--bg-glass);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+        }
+        .fav-slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .fav-slider-arrow {
+            width: 20px;
+            height: 50px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .fav-slider-arrow:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+        .fav-slider {
+            flex: 1;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .fav-slider::-webkit-scrollbar { display: none; }
+        .favorites-grid {
+            display: flex;
+            gap: 6px;
+            padding: 2px;
+        }
+        .favorite-item {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .favorite-item:hover {
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .favorite-item.copied {
+            animation: flashCopied 0.5s ease-out;
+        }
+        @keyframes flashCopied {
+            0%, 100% { box-shadow: none; }
+            50% { box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0,255,0,0.3); border-color: #0f0; }
+        }
+        .favorite-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .favorites-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .favorites-empty-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+        .fav-view-all {
+            margin-top: 8px;
+            text-align: center;
+        }
+        .fav-view-all-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .fav-view-all-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Main content area */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dashboard home view */
+        #dashboardView {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-dark);
+            min-height: 200px;
+        }
+
+        #introVideo {
+            max-width: 85%;
+            max-height: 75%;
+            object-fit: contain;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        #introVideo:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .skip-hint {
+            position: absolute;
+            bottom: 40px;
+            color: var(--text-muted);
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        #dashboardView:hover .skip-hint {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+
+        /* Content iframe */
+        #contentFrame {
+            display: none;
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+        }
+
+        #contentFrame.loaded {
+            opacity: 1;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-dark);
+            z-index: 50;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Page transition */
+        .page-transition {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 300;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .page-transition.active {
+            opacity: 1;
+        }
+
+        /* Preferences modal styles */
+        .pref-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pref-item:last-child {
+            border-bottom: none;
+        }
+
+        .pref-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .pref-toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .pref-toggle.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .pref-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .pref-toggle.active::after {
+            left: 22px;
+        }
+
+        /* Mini Player in Drawer */
+        .mini-player {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mini-player-art {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #ff6b6b);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .mini-player-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .mini-player-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-player-artist {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-player-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mini-player-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .mini-player-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .mini-player-btn.play-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            color: white;
+        }
+
+        .mini-player-btn.play-btn:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .mini-player-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        /* Adjust drawer content padding for mini player */
+        .drawer-content {
+            padding-bottom: 80px;
+        }
+
+        /* dōice Floating Panel (draggable) */
+        .dice-panel {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 180px;
+            background: #0f0f14;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .dice-panel.open {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .dice-panel.dragging {
+            transition: none;
+        }
+        .dice-panel-header {
+            padding: 10px 12px;
+            background: #1a1a20;
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+        .dice-panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .dice-panel-close {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .dice-panel-close:hover { background: var(--bg-input); color: var(--text-primary); }
+        .dice-panel-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dice-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+        .dice-type-btn {
+            padding: 8px 4px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .dice-type-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        .dice-type-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .dice-qty-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dice-qty-row label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .dice-quantity-input {
+            width: 50px;
+            padding: 6px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 14px;
+            text-align: center;
+        }
+        .dice-roll-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .dice-roll-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+        .dice-history {
+            max-height: 150px;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+        .dice-history-item {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dice-history-item:last-child { border-bottom: none; }
+        .dice-history-item .roll-result {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .dice-history-item.crit .roll-result { color: #ff4444; }
+        .dice-history-item.nat1 .roll-result { color: #6666ff; }
+
+        /* Fullscreen Dice Rolling Arena */
+        .dice-arena-fullscreen {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            z-index: 9998;
+            pointer-events: none;
+            display: none;
+            perspective: 1500px;
+        }
+        .dice-arena-fullscreen.active {
+            display: block;
+            pointer-events: auto;
+        }
+        .rolling-die-3d {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            transform-style: preserve-3d;
+            pointer-events: none;
+            animation: diceRoll3D 2s ease-out forwards;
+        }
+        .rolling-die-3d.settled { animation: none; }
+        @keyframes diceRoll3D {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            25% { transform: rotateX(540deg) rotateY(360deg) rotateZ(180deg); }
+            50% { transform: rotateX(1080deg) rotateY(720deg) rotateZ(360deg); }
+            75% { transform: rotateX(1260deg) rotateY(900deg) rotateZ(450deg); }
+            100% { transform: rotateX(1440deg) rotateY(1080deg) rotateZ(540deg); }
+        }
+
+        /* Base die shape */
+        .die-shape {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .die-face {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            backface-visibility: visible;
+        }
+
+        /* D4 - Tetrahedron (pyramid) */
+        .die-tetrahedron { transform-style: preserve-3d; }
+        .tetra-face {
+            width: 0; height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 70px solid var(--accent);
+            background: none !important;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .tetra-face-0 { transform: rotateX(19.5deg) translateZ(20px) translateY(5px); border-bottom-color: #c52638; }
+        .tetra-face-1 { transform: rotateY(120deg) rotateX(19.5deg) translateZ(20px) translateY(5px); border-bottom-color: #a52030; }
+        .tetra-face-2 { transform: rotateY(240deg) rotateX(19.5deg) translateZ(20px) translateY(5px); border-bottom-color: #951828; }
+        .tetra-face-3 { transform: rotateX(-90deg) translateZ(-25px); border-bottom-color: #851020; }
+        .die-d4 .tetra-face { font-size: 24px; padding-top: 35px; }
+
+        /* D6 - Cube */
+        .die-cube { transform-style: preserve-3d; }
+        .cube-face {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #c52638, #8b1a28);
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            font-size: 32px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+        }
+        .cube-front  { transform: rotateY(0deg) translateZ(40px); }
+        .cube-back   { transform: rotateY(180deg) translateZ(40px); }
+        .cube-right  { transform: rotateY(90deg) translateZ(40px); }
+        .cube-left   { transform: rotateY(-90deg) translateZ(40px); }
+        .cube-top    { transform: rotateX(90deg) translateZ(40px); }
+        .cube-bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        /* D8 - Octahedron (two pyramids) */
+        .die-octahedron { transform-style: preserve-3d; }
+        .octa-face {
+            width: 0; height: 0;
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 55px solid;
+            background: none !important;
+        }
+        .octa-face-0 { transform: rotateX(35deg) translateZ(25px); border-bottom-color: #c52638; font-size: 20px; padding-top: 25px; }
+        .octa-face-1 { transform: rotateY(90deg) rotateX(35deg) translateZ(25px); border-bottom-color: #b52030; }
+        .octa-face-2 { transform: rotateY(180deg) rotateX(35deg) translateZ(25px); border-bottom-color: #a51828; }
+        .octa-face-3 { transform: rotateY(270deg) rotateX(35deg) translateZ(25px); border-bottom-color: #951020; }
+        .octa-face-4 { transform: rotateX(145deg) translateZ(25px); border-bottom-color: #851828; }
+        .octa-face-5 { transform: rotateY(90deg) rotateX(145deg) translateZ(25px); border-bottom-color: #751020; }
+        .octa-face-6 { transform: rotateY(180deg) rotateX(145deg) translateZ(25px); border-bottom-color: #650818; }
+        .octa-face-7 { transform: rotateY(270deg) rotateX(145deg) translateZ(25px); border-bottom-color: #550010; }
+
+        /* D10 - Kite-shaped faces */
+        .die-d10 { transform-style: preserve-3d; }
+        .d10-face {
+            width: 35px;
+            height: 50px;
+            background: linear-gradient(180deg, #c52638, #8b1a28);
+            clip-path: polygon(50% 0%, 100% 40%, 50% 100%, 0% 40%);
+            font-size: 18px;
+            padding-top: 12px;
+        }
+        .d10-face-0 { transform: rotateY(0deg) rotateX(25deg) translateZ(30px); }
+        .d10-face-1 { transform: rotateY(36deg) rotateX(25deg) translateZ(30px); }
+        .d10-face-2 { transform: rotateY(72deg) rotateX(25deg) translateZ(30px); }
+        .d10-face-3 { transform: rotateY(108deg) rotateX(25deg) translateZ(30px); }
+        .d10-face-4 { transform: rotateY(144deg) rotateX(25deg) translateZ(30px); }
+        .d10-face-5 { transform: rotateY(180deg) rotateX(155deg) translateZ(30px); }
+        .d10-face-6 { transform: rotateY(216deg) rotateX(155deg) translateZ(30px); }
+        .d10-face-7 { transform: rotateY(252deg) rotateX(155deg) translateZ(30px); }
+        .d10-face-8 { transform: rotateY(288deg) rotateX(155deg) translateZ(30px); }
+        .d10-face-9 { transform: rotateY(324deg) rotateX(155deg) translateZ(30px); }
+
+        /* D12 - Dodecahedron (pentagons) */
+        .die-dodecahedron { transform-style: preserve-3d; }
+        .dodeca-face {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, #c52638, #8b1a28);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            font-size: 16px;
+            padding-top: 10px;
+        }
+        .dodeca-face-0 { transform: translateZ(40px); }
+        .dodeca-face-1 { transform: rotateX(116.6deg) translateZ(40px); }
+        .dodeca-face-2 { transform: rotateY(72deg) rotateX(116.6deg) translateZ(40px); }
+        .dodeca-face-3 { transform: rotateY(144deg) rotateX(116.6deg) translateZ(40px); }
+        .dodeca-face-4 { transform: rotateY(216deg) rotateX(116.6deg) translateZ(40px); }
+        .dodeca-face-5 { transform: rotateY(288deg) rotateX(116.6deg) translateZ(40px); }
+        .dodeca-face-6 { transform: rotateX(180deg) translateZ(40px); }
+        .dodeca-face-7 { transform: rotateY(36deg) rotateX(63.4deg) translateZ(40px); }
+        .dodeca-face-8 { transform: rotateY(108deg) rotateX(63.4deg) translateZ(40px); }
+        .dodeca-face-9 { transform: rotateY(180deg) rotateX(63.4deg) translateZ(40px); }
+        .dodeca-face-10 { transform: rotateY(252deg) rotateX(63.4deg) translateZ(40px); }
+        .dodeca-face-11 { transform: rotateY(324deg) rotateX(63.4deg) translateZ(40px); }
+
+        /* D20 - Icosahedron (triangles) */
+        .die-icosahedron { transform-style: preserve-3d; }
+        .icosa-face {
+            width: 0; height: 0;
+            border-left: 28px solid transparent;
+            border-right: 28px solid transparent;
+            border-bottom: 48px solid #c52638;
+            background: none !important;
+            font-size: 16px;
+            padding-top: 20px;
+        }
+        .icosa-face-0 { transform: translateZ(38px) rotateZ(0deg); border-bottom-color: #c52638; }
+        .icosa-face-1 { transform: rotateY(72deg) translateZ(38px); border-bottom-color: #b82030; }
+        .icosa-face-2 { transform: rotateY(144deg) translateZ(38px); border-bottom-color: #ab1828; }
+        .icosa-face-3 { transform: rotateY(216deg) translateZ(38px); border-bottom-color: #9e1020; }
+        .icosa-face-4 { transform: rotateY(288deg) translateZ(38px); border-bottom-color: #910818; }
+        .icosa-face-5 { transform: rotateX(52deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #840010; }
+        .icosa-face-6 { transform: rotateY(72deg) rotateX(52deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #c52638; }
+        .icosa-face-7 { transform: rotateY(144deg) rotateX(52deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #b82030; }
+        .icosa-face-8 { transform: rotateY(216deg) rotateX(52deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #ab1828; }
+        .icosa-face-9 { transform: rotateY(288deg) rotateX(52deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #9e1020; }
+        .icosa-face-10 { transform: rotateX(128deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #910818; }
+        .icosa-face-11 { transform: rotateY(72deg) rotateX(128deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #840010; }
+        .icosa-face-12 { transform: rotateY(144deg) rotateX(128deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #c52638; }
+        .icosa-face-13 { transform: rotateY(216deg) rotateX(128deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #b82030; }
+        .icosa-face-14 { transform: rotateY(288deg) rotateX(128deg) translateZ(38px) rotateZ(36deg); border-bottom-color: #ab1828; }
+        .icosa-face-15 { transform: rotateX(180deg) translateZ(38px); border-bottom-color: #9e1020; }
+        .icosa-face-16 { transform: rotateY(72deg) rotateX(180deg) translateZ(38px); border-bottom-color: #910818; }
+        .icosa-face-17 { transform: rotateY(144deg) rotateX(180deg) translateZ(38px); border-bottom-color: #840010; }
+        .icosa-face-18 { transform: rotateY(216deg) rotateX(180deg) translateZ(38px); border-bottom-color: #c52638; }
+        .icosa-face-19 { transform: rotateY(288deg) rotateX(180deg) translateZ(38px); border-bottom-color: #b82030; }
+
+        /* Crit and Nat1 effects for all dice */
+        .rolling-die-3d.crit .die-face,
+        .rolling-die-3d.crit .cube-face,
+        .rolling-die-3d.crit .tetra-face,
+        .rolling-die-3d.crit .octa-face,
+        .rolling-die-3d.crit .d10-face,
+        .rolling-die-3d.crit .dodeca-face {
+            background: linear-gradient(145deg, #ff4444, #cc0000) !important;
+            box-shadow: 0 0 30px #ff0000, 0 0 60px #ff4444;
+        }
+        .rolling-die-3d.crit .icosa-face { border-bottom-color: #ff4444 !important; }
+        .rolling-die-3d.crit .tetra-face { border-bottom-color: #ff4444 !important; }
+        .rolling-die-3d.crit .octa-face { border-bottom-color: #ff4444 !important; }
+        .rolling-die-3d.crit.settled .die-face { animation: critPulse 0.5s ease-in-out infinite; }
+        @keyframes critPulse {
+            0%, 100% { box-shadow: 0 0 30px #ff0000, 0 0 60px #ff4444; }
+            50% { box-shadow: 0 0 50px #ff0000, 0 0 100px #ff4444; }
+        }
+        .rolling-die-3d.nat1 .die-face,
+        .rolling-die-3d.nat1 .cube-face { background: linear-gradient(145deg, #4444ff, #000088) !important; opacity: 0.8; }
+        .rolling-die-3d.nat1 .icosa-face { border-bottom-color: #4444ff !important; }
+
+        /* Dice result popup */
+        .dice-result-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(180deg, #2a1a0a, #1a0f05);
+            border: 4px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px 50px;
+            z-index: 9999;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5), 0 20px 60px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .dice-result-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .dice-result-popup .total {
+            font-size: 72px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        .dice-result-popup .breakdown {
+            font-size: 18px;
+            color: #cd853f;
+            margin-top: 10px;
+        }
+        .dice-result-popup.crit .total {
+            color: #ff4444;
+            text-shadow: 0 0 30px #ff0000;
+        }
+        .dice-result-popup.nat1 .total {
+            color: #6666ff;
+        }
+
+        /* WinAmp Player */
+        .winamp-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 500;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        .winamp-overlay.open { display: block; }
+        .winamp-player {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            background: linear-gradient(180deg, #3a3a4a, #1e1e28);
+            border: 2px solid #555;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        .winamp-player.dragging {
+            transition: none;
+        }
+        .winamp-titlebar {
+            height: 32px;
+            background: linear-gradient(180deg, #4a4a5a, #2a2a3a);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            border-bottom: 1px solid #222;
+            cursor: move;
+            user-select: none;
+        }
+        .winamp-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0f0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .winamp-controls { display: flex; gap: 4px; }
+        .winamp-ctrl-btn {
+            width: 22px;
+            height: 22px;
+            border: 1px solid #666;
+            background: linear-gradient(180deg, #4a4a5a, #2a2a3a);
+            color: #aaa;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .winamp-ctrl-btn:hover { background: #555; color: #fff; }
+        .winamp-display {
+            background: #0a1a0a;
+            padding: 12px 15px;
+            border: 2px inset #333;
+            margin: 8px;
+            border-radius: 4px;
+        }
+        .winamp-track-info {
+            font-size: 14px;
+            color: #0f0;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 8px;
+            text-shadow: 0 0 8px #0f0;
+        }
+        .winamp-time-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .winamp-time {
+            font-family: 'Consolas', monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .winamp-kbps, .winamp-khz {
+            font-size: 10px;
+            color: #0a0;
+        }
+        .winamp-seek-container { padding: 0 15px 10px; }
+        .winamp-seek {
+            width: 100%;
+            height: 12px;
+            -webkit-appearance: none;
+            background: #222;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .winamp-seek::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(180deg, #0f0, #080);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #0f0;
+            cursor: pointer;
+        }
+        .winamp-body {
+            padding: 10px 15px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
+        }
+        .winamp-buttons { display: flex; gap: 8px; }
+        .winamp-btn {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #555;
+            background: linear-gradient(180deg, #4a4a5a, #2a2a3a);
+            color: #ccc;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .winamp-btn:hover { background: #555; color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.3); }
+        .winamp-btn:active { transform: scale(0.95); }
+        .winamp-volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #888;
+        }
+        .winamp-volume {
+            width: 80px;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #222;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .winamp-volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 18px;
+            background: linear-gradient(180deg, #666, #333);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .winamp-visualizer {
+            height: 100px;
+            background: #0a0a0f;
+            margin: 0 8px 8px;
+            border: 2px inset #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .winamp-visualizer canvas { width: 100%; height: 100%; }
+        .winamp-playlist {
+            max-height: 120px;
+            overflow-y: auto;
+            background: #111;
+            margin: 0 8px 8px;
+            border: 2px inset #333;
+            border-radius: 4px;
+        }
+        .winamp-playlist-item {
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #0a0;
+            cursor: pointer;
+            border-bottom: 1px solid #222;
+        }
+        .winamp-playlist-item:hover { background: #1a1a1a; color: #0f0; }
+        .winamp-playlist-item.active { background: #0a2a0a; color: #0f0; font-weight: bold; }
+        .winamp-footer {
+            display: flex;
+            background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
+            border-top: 1px solid #444;
+        }
+        .winamp-footer-btn {
+            flex: 1;
+            padding: 12px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: #888;
+            transition: all 0.15s;
+        }
+        .winamp-footer-btn:hover { background: rgba(0,255,0,0.1); color: #0f0; }
+        .winamp-footer-btn:not(:last-child) { border-right: 1px solid #333; }
+        .winamp-footer-btn.screensaver { color: #f0a; }
+        .winamp-footer-btn.screensaver:hover { background: rgba(255,0,170,0.1); }
+
+        /* Screensaver Overlay */
+        .screensaver-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            cursor: none;
+        }
+        .screensaver-overlay.active { display: block; }
+        .screensaver-overlay canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .screensaver-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.3);
+            font-size: 12px;
+            pointer-events: none;
+            animation: fadeHint 3s ease-out forwards;
+        }
+        @keyframes fadeHint {
+            0%, 70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 3D Dice Graphics */
+        .dice-3d-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+            min-height: 80px;
+            perspective: 600px;
+        }
+
+        .dice-3d {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            transform-style: preserve-3d;
+            animation: diceRoll3D 1s ease-out forwards;
+        }
+
+        @keyframes diceRoll3D {
+            0% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg) scale(0.3); }
+            60% { transform: rotateX(20deg) rotateY(-20deg) rotateZ(10deg) scale(1.1); }
+            80% { transform: rotateX(-10deg) rotateY(10deg) rotateZ(-5deg) scale(0.95); }
+            100% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); }
+        }
+
+        /* D20 - Icosahedron approximation */
+        .dice-d20 {
+            width: 60px;
+            height: 70px;
+        }
+
+        .dice-d20 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #2d1f4e, #1a1030);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            border: 2px solid #9b59b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #e8d5f0;
+            text-shadow: 0 0 10px rgba(155, 89, 182, 0.8);
+            box-shadow: inset 0 0 20px rgba(155, 89, 182, 0.3);
+        }
+
+        .dice-d20.crit .dice-face {
+            background: linear-gradient(145deg, #4a1a1a, #2a0808);
+            border-color: #ff4444;
+            color: #ff6666;
+            text-shadow: 0 0 15px rgba(255, 68, 68, 0.9);
+            box-shadow: 0 0 25px rgba(255, 68, 68, 0.5), inset 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+
+        .dice-d20.nat1 .dice-face {
+            background: linear-gradient(145deg, #1a1a4a, #080820);
+            border-color: #4a6eff;
+            color: #6688ff;
+            text-shadow: 0 0 15px rgba(74, 110, 255, 0.9);
+        }
+
+        /* D12 - Dodecahedron */
+        .dice-d12 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1a4a2a, #0a2a15);
+            clip-path: polygon(50% 0%, 100% 35%, 85% 90%, 15% 90%, 0% 35%);
+            border: 2px solid #2ecc71;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #a8f0c0;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+        }
+
+        /* D10 */
+        .dice-d10 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #4a3a1a, #2a2008);
+            clip-path: polygon(50% 0%, 95% 50%, 50% 100%, 5% 50%);
+            border: 2px solid #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffd580;
+            text-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+        }
+
+        /* D8 - Octahedron */
+        .dice-d8 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1a3a4a, #082028);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #a0d4f0;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
+        }
+
+        /* D6 - Cube */
+        .dice-d6 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #4a1a1a, #2a0808);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+            border: 2px solid #e74c3c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f0a0a0;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+        }
+
+        /* D4 - Tetrahedron */
+        .dice-d4 {
+            width: 60px;
+            height: 55px;
+        }
+
+        .dice-d4 .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #3a1a4a, #200830);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            border: 2px solid #9b59b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #d8b0e8;
+            text-shadow: 0 0 10px rgba(155, 89, 182, 0.8);
+        }
+
+        .dice-3d.crit .dice-face {
+            box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Page transition overlay -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- Drawer overlay (click to close) -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+
+    <!-- WinAmp Player Overlay -->
+    <div class="winamp-overlay" id="winampOverlay" onclick="closeWinamp(event)">
+        <div class="winamp-player" onclick="event.stopPropagation()">
+            <div class="winamp-titlebar">
+                <span class="winamp-title">Win<span style="color: var(--accent);">Ō</span>mp</span>
+                <div class="winamp-controls">
+                    <button class="winamp-ctrl-btn" onclick="minimizeWinamp()" title="Minimize to bar">_</button>
+                    <button class="winamp-ctrl-btn" onclick="closeWinamp()" title="Close">×</button>
+                </div>
+            </div>
+            <div class="winamp-display">
+                <div class="winamp-track-info" id="winampTrackName">No track loaded</div>
+                <div class="winamp-time-row">
+                    <span class="winamp-time" id="winampTime">0:00</span>
+                    <span class="winamp-kbps">320kbps</span>
+                    <span class="winamp-khz">44khz</span>
+                </div>
+            </div>
+            <div class="winamp-seek-container">
+                <input type="range" class="winamp-seek" id="winampSeek" min="0" max="100" value="0" oninput="seekWinamp(this.value)">
+            </div>
+            <div class="winamp-body">
+                <div class="winamp-buttons">
+                    <button class="winamp-btn" onclick="miniPlayerPrev()" title="Previous">⏮</button>
+                    <button class="winamp-btn" onclick="miniPlayerToggle()" id="winampPlayBtn" title="Play">▶</button>
+                    <button class="winamp-btn" onclick="stopWinamp()" title="Stop">⏹</button>
+                    <button class="winamp-btn" onclick="miniPlayerNext()" title="Next">⏭</button>
+                </div>
+                <div class="winamp-volume-container">
+                    <span>🔊</span>
+                    <input type="range" class="winamp-volume" id="winampVolume" min="0" max="100" value="70" oninput="setWinampVolume(this.value)">
+                </div>
+            </div>
+            <div class="winamp-visualizer" id="winampVisualizer">
+                <canvas id="winampCanvas"></canvas>
+            </div>
+            <div class="winamp-playlist" id="winampPlaylist"></div>
+            <div class="winamp-footer">
+                <button class="winamp-footer-btn" onclick="openAudioFiles()">+ Add</button>
+                <button class="winamp-footer-btn" onclick="clearWinampPlaylist()">Clear</button>
+                <button class="winamp-footer-btn screensaver" onclick="openScreensaver()">🌌 Screensaver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screensaver Overlay -->
+    <div class="screensaver-overlay" id="screensaverOverlay" onclick="closeScreensaver()">
+        <canvas id="screensaverCanvas"></canvas>
+        <div class="screensaver-hint">Click anywhere to exit</div>
+    </div>
+
+    <!-- dōice Panel (Companion to Drawer) -->
+    <div class="dice-panel" id="dicePanel">
+        <div class="dice-panel-header">
+            <span class="dice-panel-title">d<span style="color: var(--accent);">ō</span>ice</span>
+            <button class="dice-panel-close" onclick="closeDicePanel()">×</button>
+        </div>
+        <div class="dice-panel-content">
+            <div class="dice-selector">
+                <button class="dice-type-btn" data-dice="4" onclick="selectDice(4)">d4</button>
+                <button class="dice-type-btn" data-dice="6" onclick="selectDice(6)">d6</button>
+                <button class="dice-type-btn" data-dice="8" onclick="selectDice(8)">d8</button>
+                <button class="dice-type-btn" data-dice="10" onclick="selectDice(10)">d10</button>
+                <button class="dice-type-btn" data-dice="12" onclick="selectDice(12)">d12</button>
+                <button class="dice-type-btn selected" data-dice="20" onclick="selectDice(20)">d20</button>
+            </div>
+            <div class="dice-qty-row">
+                <label>How many?</label>
+                <input type="number" class="dice-quantity-input" id="diceQuantity" value="1" min="1" max="10">
+            </div>
+            <button class="dice-roll-btn" onclick="rollDiceFullscreen()">⚔ ROLL ⚔</button>
+            <div class="dice-history" id="diceHistory">
+                <div style="color: #5a4a3a; text-align: center; padding: 20px;">Roll history appears here</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Dice Arena -->
+    <div class="dice-arena-fullscreen" id="diceArenaFullscreen">
+        <div class="dice-result-popup" id="diceResultPopup">
+            <div class="total" id="diceResultTotal"></div>
+            <div class="breakdown" id="diceResultBreakdown"></div>
+        </div>
+    </div>
+
+    <!-- Left Drawer -->
+    <div class="left-drawer" id="leftDrawer">
+        <div class="drawer-content">
+            <!-- Profile Section -->
+            <div class="drawer-section">
+                <div class="drawer-section-title">Profile</div>
+                <div class="profile-card">
+                    <div class="profile-avatar">⚔️</div>
+                    <div class="profile-name">Rōnin User</div>
+                    <div class="profile-role">Software Warrior</div>
+                </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="drawer-section">
+                <div class="drawer-section-title">Preferences</div>
+                <div class="pref-item">
+                    <span class="pref-label">Sound Effects</span>
+                    <div class="pref-toggle active" data-pref="sound" onclick="togglePref(this, 'sound')"></div>
+                </div>
+                <div class="pref-item">
+                    <span class="pref-label">Animations</span>
+                    <div class="pref-toggle active" data-pref="animations" onclick="togglePref(this, 'animations')"></div>
+                </div>
+                <div class="pref-item">
+                    <span class="pref-label">Auto-play Video</span>
+                    <div class="pref-toggle active" data-pref="autoplay" onclick="togglePref(this, 'autoplay')"></div>
+                </div>
+            </div>
+
+            <!-- Favorites Section -->
+            <div class="drawer-section">
+                <div class="drawer-section-title">Favorites</div>
+                <div id="favoritesContainer">
+                    <div class="favorites-empty">
+                        <div class="favorites-empty-icon">⭐</div>
+                        <div>No favorites yet</div>
+                        <div style="font-size: 11px; margin-top: 4px;">Save memes from memerat<span style="color: var(--accent);">ō</span>r</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Section -->
+            <div class="drawer-section">
+                <div class="drawer-section-title">Tools</div>
+                <div class="drawer-item" onclick="openTerminal()">
+                    <span class="drawer-item-icon">>_</span>
+                    <span class="drawer-item-label"><span style="color: var(--accent);">ō</span>-term</span>
+                </div>
+                <div class="drawer-item" onclick="navigateTo('whiteboard.html', 'whiteboard')">
+                    <span class="drawer-item-icon">📝</span>
+                    <span class="drawer-item-label">Whiteb<span style="color: var(--accent);">ō</span>ard</span>
+                </div>
+                <div class="drawer-item" onclick="navigateTo('meme.html', 'memes')">
+                    <span class="drawer-item-icon">🎨</span>
+                    <span class="drawer-item-label">memerat<span style="color: var(--accent);">ō</span>r</span>
+                </div>
+                <div class="drawer-item" onclick="navigateTo('soundboard.html', 'soundboard')">
+                    <span class="drawer-item-icon">🔊</span>
+                    <span class="drawer-item-label">S<span style="color: var(--accent);">ō</span>unds</span>
+                </div>
+                <div class="drawer-item" onclick="toggleDicePanel()">
+                    <span class="drawer-item-icon">🎲</span>
+                    <span class="drawer-item-label">d<span style="color: var(--accent);">ō</span>ice</span>
+                </div>
+                <div class="drawer-item" onclick="toggleStonks()">
+                    <span class="drawer-item-icon">📈</span>
+                    <span class="drawer-item-label">st<span style="color: var(--accent);">ō</span>nks</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Player -->
+        <div class="mini-player" id="miniPlayer">
+            <div class="mini-player-progress" id="miniPlayerProgress"></div>
+            <div class="mini-player-art" id="miniPlayerArt">🎵</div>
+            <div class="mini-player-info">
+                <div class="mini-player-title" id="miniPlayerTitle">Win<span style="color: var(--accent);">Ō</span>mp</div>
+                <div class="mini-player-artist" id="miniPlayerArtist">No track loaded</div>
+            </div>
+            <div class="mini-player-controls">
+                <button class="mini-player-btn" onclick="miniPlayerPrev()" title="Previous">⏮</button>
+                <button class="mini-player-btn play-btn" id="miniPlayerPlayBtn" onclick="miniPlayerToggle()" title="Play/Pause">▶</button>
+                <button class="mini-player-btn" onclick="miniPlayerNext()" title="Next">⏭</button>
+                <button class="mini-player-btn" onclick="expandPlayer()" title="Expand Player">⤢</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Ticker -->
+    <div class="stock-ticker" id="stockTicker">
+        <div class="ticker-content" id="tickerContent"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-ribbon">
+        <div class="nav-left">
+            <button class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <span class="nav-brand"><span>ō</span>-face</span>
+            <button class="nav-btn ronin-btn" data-page-id="ronin" onclick="navigateTo('ronin.html', 'ronin')">⚔️ Rōnin</button>
+            <button class="nav-btn kabuki-btn" data-page-id="kabuki" onclick="navigateTo('kabuki.html', 'kabuki')">Kabuki</button>
+            <button class="nav-btn meme-btn" data-page-id="memes" onclick="navigateTo('meme.html', 'memes')">Memes</button>
+            <button class="nav-btn arcade-btn" data-page-id="arcade" onclick="navigateTo('arcade.html', 'arcade')">Arcade</button>
+        </div>
+        <div class="nav-right">
+            <button class="window-btn" onclick="navMinimize()" title="Minimize">&#x2212;</button>
+            <button class="window-btn" onclick="navMaximize()" title="Maximize">&#x25A1;</button>
+            <button class="window-btn close" onclick="navClose()" title="Close">&#x2715;</button>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="dashboard-container">
+            <!-- Loading overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loader"></div>
+            </div>
+
+            <!-- Dashboard home view with video -->
+            <div id="dashboardView">
+                <video id="introVideo" autoplay muted>
+                    <source src="assets/mancorn.mp4" type="video/mp4">
+                </video>
+                <div class="skip-hint">Click anywhere to skip</div>
+            </div>
+
+            <!-- Content iframe for pages -->
+            <iframe id="contentFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles (disabled for performance)
+        function createParticles() {
+            // Disabled
+        }
+        // createParticles();
+
+        // Dashboard state
+        window.isDashboard = true;
+        const LAST_PAGE_KEY = 'dashboard_last_page';
+        const FAVORITES_KEY = 'meme_favorites';
+        const PREFS_KEY = 'dashboard_prefs';
+        const contentFrame = document.getElementById('contentFrame');
+        const dashboardView = document.getElementById('dashboardView');
+        const introVideo = document.getElementById('introVideo');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const pageTransition = document.getElementById('pageTransition');
+        const leftDrawer = document.getElementById('leftDrawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+        const drawerToggle = document.getElementById('drawerToggle');
+
+        // Drawer toggle
+        function toggleDrawer() {
+            leftDrawer.classList.toggle('open');
+            drawerOverlay.classList.toggle('active');
+            drawerToggle.classList.toggle('active');
+        }
+
+        // Preferences toggle
+        function togglePref(element, pref) {
+            element.classList.toggle('active');
+            const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+            prefs[pref] = element.classList.contains('active');
+            localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+        }
+
+        // Load preferences
+        function loadPrefs() {
+            const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || '{"sound":true,"animations":true,"autoplay":true}');
+            document.querySelectorAll('.pref-toggle').forEach(toggle => {
+                const prefAttr = toggle.getAttribute('data-pref');
+                if (prefAttr && prefs[prefAttr] === false) {
+                    toggle.classList.remove('active');
+                }
+            });
+        }
+
+        // Load and display favorites from meme page storage
+        function loadFavorites() {
+            const container = document.getElementById('favoritesContainer');
+            const gifs = JSON.parse(localStorage.getItem('favGifs') || '[]');
+            const templates = JSON.parse(localStorage.getItem('favTemplates') || '[]');
+            const memes = JSON.parse(localStorage.getItem('favMemes') || '[]');
+
+            const totalCount = gifs.length + templates.length + memes.length;
+
+            if (totalCount === 0) {
+                container.innerHTML = `
+                    <div class="favorites-empty">
+                        <div class="favorites-empty-icon">⭐</div>
+                        <div>No favorites yet</div>
+                        <div style="font-size: 11px; margin-top: 4px;">Star GIFs, templates, or save memes</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            // GIFs section
+            if (gifs.length > 0) {
+                html += `
+                    <div class="fav-section">
+                        <div class="fav-section-title">GIFs <span class="count">${gifs.length}</span></div>
+                        <div class="fav-slider-wrapper">
+                            <button class="fav-slider-arrow" onclick="slideFav('gifsSlider', -1)">◀</button>
+                            <div class="fav-slider" id="gifsSlider">
+                                <div class="favorites-grid">
+                                    ${gifs.slice(0, 20).map((g, i) => `
+                                        <div class="favorite-item" onclick="copyFavGif(this, ${i})" title="Click to copy">
+                                            <img src="${g.previewUrl}" alt="${g.title || 'GIF'}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <button class="fav-slider-arrow" onclick="slideFav('gifsSlider', 1)">▶</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Templates section
+            if (templates.length > 0) {
+                html += `
+                    <div class="fav-section">
+                        <div class="fav-section-title">Templates <span class="count">${templates.length}</span></div>
+                        <div class="fav-slider-wrapper">
+                            <button class="fav-slider-arrow" onclick="slideFav('templatesSlider', -1)">◀</button>
+                            <div class="fav-slider" id="templatesSlider">
+                                <div class="favorites-grid">
+                                    ${templates.slice(0, 20).map((t, i) => `
+                                        <div class="favorite-item" onclick="copyFavTemplate(this, ${i})" title="Click to copy">
+                                            <img src="${t.url}" alt="${t.name}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <button class="fav-slider-arrow" onclick="slideFav('templatesSlider', 1)">▶</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Created memes section
+            if (memes.length > 0) {
+                html += `
+                    <div class="fav-section">
+                        <div class="fav-section-title">Created <span class="count">${memes.length}</span></div>
+                        <div class="fav-slider-wrapper">
+                            <button class="fav-slider-arrow" onclick="slideFav('memesSlider', -1)">◀</button>
+                            <div class="fav-slider" id="memesSlider">
+                                <div class="favorites-grid">
+                                    ${memes.slice(0, 20).map((m, i) => `
+                                        <div class="favorite-item" onclick="copyFavMeme(this, ${i})" title="Click to copy">
+                                            <img src="${m.data}" alt="Meme">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <button class="fav-slider-arrow" onclick="slideFav('memesSlider', 1)">▶</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // View all button
+            html += `
+                <div class="fav-view-all">
+                    <button class="fav-view-all-btn" onclick="openFavoritesPage()">View All Favorites</button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function slideFav(sliderId, direction) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                slider.scrollBy({ left: direction * 120, behavior: 'smooth' });
+            }
+        }
+
+        function flashItem(element) {
+            element.classList.add('copied');
+            setTimeout(() => element.classList.remove('copied'), 500);
+        }
+
+        async function copyFavGif(element, index) {
+            const gifs = JSON.parse(localStorage.getItem('favGifs') || '[]');
+            const gif = gifs[index];
+            if (gif) {
+                try {
+                    await navigator.clipboard.writeText(gif.fullUrl);
+                    flashItem(element);
+                } catch (e) {
+                    // Fallback: copy to temp input
+                    const input = document.createElement('input');
+                    input.value = gif.fullUrl;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                    flashItem(element);
+                }
+            }
+        }
+
+        async function copyFavTemplate(element, index) {
+            const templates = JSON.parse(localStorage.getItem('favTemplates') || '[]');
+            const template = templates[index];
+            if (template) {
+                try {
+                    await navigator.clipboard.writeText(template.url);
+                    flashItem(element);
+                } catch (e) {
+                    const input = document.createElement('input');
+                    input.value = template.url;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                    flashItem(element);
+                }
+            }
+        }
+
+        async function copyFavMeme(element, index) {
+            const memes = JSON.parse(localStorage.getItem('favMemes') || '[]');
+            const meme = memes[index];
+            if (meme) {
+                try {
+                    // For data URLs, try to copy as image
+                    const blob = await (await fetch(meme.data)).blob();
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ [blob.type]: blob })
+                    ]);
+                    flashItem(element);
+                } catch (e) {
+                    // Fallback: copy data URL as text
+                    try {
+                        await navigator.clipboard.writeText(meme.data);
+                    } catch (e2) {
+                        const input = document.createElement('input');
+                        input.value = meme.data;
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(input);
+                    }
+                    flashItem(element);
+                }
+            }
+        }
+
+        function openFavoritesPage() {
+            navigateTo('meme.html', 'memes');
+            setTimeout(() => {
+                contentFrame.contentWindow.postMessage({ type: 'showFavoritesTab' }, '*');
+            }, 500);
+        }
+
+        // Navigate to a content page with transition
+        function navigateTo(href, pageId) {
+            // Close drawer if open
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+
+            // Start transition
+            pageTransition.classList.add('active');
+
+            setTimeout(() => {
+                dashboardView.style.display = 'none';
+                contentFrame.classList.remove('loaded');
+                contentFrame.style.display = 'block';
+                loadingOverlay.classList.add('active');
+                contentFrame.src = href;
+                localStorage.setItem(LAST_PAGE_KEY, JSON.stringify({ href, pageId }));
+                updateActiveButton(pageId);
+
+                // End transition
+                setTimeout(() => {
+                    pageTransition.classList.remove('active');
+                }, 100);
+            }, 300);
+        }
+
+        // Handle iframe load
+        contentFrame.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingOverlay.classList.remove('active');
+                contentFrame.classList.add('loaded');
+            }, 100);
+        });
+
+        // Update active nav button
+        function updateActiveButton(pageId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.pageId === pageId) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Window controls
+        function navMinimize() {
+            if (window.electronAPI) window.electronAPI.window.minimize();
+        }
+
+        function navMaximize() {
+            if (window.electronAPI) window.electronAPI.window.maximize();
+        }
+
+        function navClose() {
+            if (window.electronAPI) window.electronAPI.window.close();
+        }
+
+        // Open terminal in separate window
+        function openTerminal() {
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+            if (window.electronAPI) window.electronAPI.window.openTerminal();
+        }
+
+        // Music player toggle (for full player in iframe)
+        function togglePlayer() {
+            if (contentFrame.style.display !== 'none' && contentFrame.contentWindow) {
+                try {
+                    if (typeof contentFrame.contentWindow.togglePlayer === 'function') {
+                        contentFrame.contentWindow.togglePlayer();
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Direct call failed, trying postMessage');
+                }
+                contentFrame.contentWindow.postMessage({ type: 'togglePlayer' }, '*');
+            }
+        }
+
+        // ============================================
+        // MINI PLAYER
+        // ============================================
+        const miniPlayerAudio = new Audio();
+        let miniPlayerPlaying = false;
+        let miniPlayerTrackIndex = 0;
+
+        // Playlist from assets/music
+        const miniPlayerPlaylist = [
+            { title: 'Crush', artist: 'Giorgio Vitté', src: 'assets/music/Giorgio Vitté - Crush.mp3' },
+            { title: 'MOVIN', artist: 'dannyminus', src: 'assets/music/dannyminus - MOVIN.mp3' },
+            { title: 'Bitchin Sauce', artist: 'CHAE 13', src: 'assets/music/CHAE 13 - Bitchin Sauce.mp3' },
+            { title: 'Pharisees', artist: 'Art1fact', src: 'assets/music/Art1fact - Pharisees.mp3' },
+            { title: 'Hell Awakens', artist: 'Flint', src: 'assets/music/Flint - Hell Awakens.mp3' },
+            { title: 'Eremite', artist: 'Art1fact', src: 'assets/music/Art1fact - Eremite.mp3' },
+            { title: 'On up on Winning', artist: 'Ariel Dahan', src: 'assets/music/Ariel Dahan - On up on Winning - Instrumental version.mp3' },
+            { title: 'Really Want It', artist: 'Zooki', src: 'assets/music/Zooki - Really Want It - Instrumental version.mp3' },
+            { title: 'Devotion', artist: 'Art1fact', src: 'assets/music/Art1fact - Devotion.mp3' },
+            { title: 'Different Now', artist: 'WinŌmp', src: 'assets/music/different-now.mp3' },
+            { title: 'Digital Ascension', artist: 'WinŌmp', src: 'assets/music/digital-ascension.mp3' },
+            { title: 'Blood and Thunder', artist: 'WinŌmp', src: 'assets/music/blood-and-thunder.mp3' }
+        ];
+
+        // Mini player elements
+        const miniPlayerTitle = document.getElementById('miniPlayerTitle');
+        const miniPlayerArtist = document.getElementById('miniPlayerArtist');
+        const miniPlayerPlayBtn = document.getElementById('miniPlayerPlayBtn');
+        const miniPlayerProgress = document.getElementById('miniPlayerProgress');
+
+        // Toggle play/pause
+        function miniPlayerToggle() {
+            if (miniPlayerPlaying) {
+                miniPlayerAudio.pause();
+                miniPlayerPlaying = false;
+                if (miniPlayerPlayBtn) miniPlayerPlayBtn.textContent = '▶';
+                if (fullPlayerPlayBtn) fullPlayerPlayBtn.textContent = '▶';
+            } else {
+                // Load track if not loaded
+                if (!miniPlayerAudio.src || miniPlayerAudio.src === '') {
+                    loadMiniPlayerTrack(0);
+                }
+                miniPlayerAudio.play().catch(e => console.log('Audio play error:', e));
+                miniPlayerPlaying = true;
+                if (miniPlayerPlayBtn) miniPlayerPlayBtn.textContent = '⏸';
+                if (fullPlayerPlayBtn) fullPlayerPlayBtn.textContent = '⏸';
+            }
+        }
+
+        // Previous track
+        function miniPlayerPrev() {
+            miniPlayerTrackIndex = (miniPlayerTrackIndex - 1 + miniPlayerPlaylist.length) % miniPlayerPlaylist.length;
+            loadMiniPlayerTrack(miniPlayerTrackIndex);
+            if (miniPlayerPlaying) {
+                miniPlayerAudio.play().catch(e => console.log('Audio play error:', e));
+            }
+        }
+
+        // Next track
+        function miniPlayerNext() {
+            miniPlayerTrackIndex = (miniPlayerTrackIndex + 1) % miniPlayerPlaylist.length;
+            loadMiniPlayerTrack(miniPlayerTrackIndex);
+            if (miniPlayerPlaying) {
+                miniPlayerAudio.play().catch(e => console.log('Audio play error:', e));
+            }
+        }
+
+        // Load a track
+        function loadMiniPlayerTrack(index) {
+            if (miniPlayerPlaylist.length === 0) return;
+            const track = miniPlayerPlaylist[index];
+            miniPlayerAudio.src = track.src;
+            // Update mini player
+            if (miniPlayerTitle) miniPlayerTitle.textContent = track.title;
+            if (miniPlayerArtist) miniPlayerArtist.textContent = track.artist;
+            if (miniPlayerProgress) miniPlayerProgress.style.width = '0%';
+            // Update full player
+            if (fullPlayerTitle) fullPlayerTitle.textContent = track.title;
+            if (fullPlayerArtist) fullPlayerArtist.textContent = track.artist;
+            if (fullPlayerProgressBar) fullPlayerProgressBar.style.width = '0%';
+        }
+
+        // Initialize first track display
+        if (miniPlayerPlaylist.length > 0) {
+            const firstTrack = miniPlayerPlaylist[0];
+            if (miniPlayerTitle) miniPlayerTitle.textContent = firstTrack.title;
+            if (miniPlayerArtist) miniPlayerArtist.textContent = firstTrack.artist;
+        }
+
+        // WinAmp Player elements
+        const winampOverlay = document.getElementById('winampOverlay');
+        const winampTrackName = document.getElementById('winampTrackName');
+        const winampTime = document.getElementById('winampTime');
+        const winampSeek = document.getElementById('winampSeek');
+        const winampPlayBtn = document.getElementById('winampPlayBtn');
+        const winampVolume = document.getElementById('winampVolume');
+        const winampPlaylist = document.getElementById('winampPlaylist');
+        const winampCanvas = document.getElementById('winampCanvas');
+        const screensaverOverlay = document.getElementById('screensaverOverlay');
+        const screensaverCanvas = document.getElementById('screensaverCanvas');
+        let audioContext, analyser, dataArray;
+        let screensaverAnimId = null;
+        let currentScreensaver = 'matrix';
+
+        // Expand to WinAmp player
+        function expandPlayer() {
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+            updateWinampDisplay();
+            renderWinampPlaylist();
+            winampOverlay.classList.add('open');
+            initVisualizer();
+        }
+
+        function closeWinamp(event) {
+            if (event && event.target && event.target !== winampOverlay) return;
+            winampOverlay.classList.remove('open');
+            // Reset position for next open
+            const player = document.querySelector('.winamp-player');
+            if (player) {
+                player.style.left = '50%';
+                player.style.top = '50%';
+                player.style.transform = 'translate(-50%, -50%)';
+            }
+        }
+
+        function minimizeWinamp() {
+            winampOverlay.classList.remove('open');
+            // Reset position for next open
+            const player = document.querySelector('.winamp-player');
+            if (player) {
+                player.style.left = '50%';
+                player.style.top = '50%';
+                player.style.transform = 'translate(-50%, -50%)';
+            }
+        }
+
+        function updateWinampDisplay() {
+            if (miniPlayerPlaylist.length > 0) {
+                const track = miniPlayerPlaylist[miniPlayerTrackIndex];
+                winampTrackName.textContent = `${track.artist} - ${track.title}`;
+            }
+            winampPlayBtn.textContent = miniPlayerPlaying ? '⏸' : '▶';
+            winampVolume.value = miniPlayerAudio.volume * 100;
+        }
+
+        function renderWinampPlaylist() {
+            winampPlaylist.innerHTML = miniPlayerPlaylist.map((track, i) => `
+                <div class="winamp-playlist-item ${i === miniPlayerTrackIndex ? 'active' : ''}" onclick="playWinampTrack(${i})">
+                    ${i + 1}. ${track.artist} - ${track.title}
+                </div>
+            `).join('');
+        }
+
+        function playWinampTrack(index) {
+            miniPlayerTrackIndex = index;
+            loadAndPlayTrack(miniPlayerPlaylist[index]);
+            renderWinampPlaylist();
+        }
+
+        function seekWinamp(value) {
+            if (miniPlayerAudio.duration) {
+                miniPlayerAudio.currentTime = (value / 100) * miniPlayerAudio.duration;
+            }
+        }
+
+        function setWinampVolume(value) {
+            miniPlayerAudio.volume = value / 100;
+        }
+
+        function stopWinamp() {
+            miniPlayerAudio.pause();
+            miniPlayerAudio.currentTime = 0;
+            miniPlayerPlaying = false;
+            updateMiniPlayerUI();
+            updateWinampDisplay();
+        }
+
+        function clearWinampPlaylist() {
+            // Keep default tracks, just reset
+            miniPlayerTrackIndex = 0;
+            renderWinampPlaylist();
+        }
+
+        function openAudioFiles() {
+            if (window.electronAPI && window.electronAPI.openAudioFiles) {
+                window.electronAPI.openAudioFiles();
+            }
+        }
+
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Visualizer
+        function initVisualizer() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                const source = audioContext.createMediaElementSource(miniPlayerAudio);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            }
+            drawVisualizer();
+        }
+
+        function drawVisualizer() {
+            if (!winampOverlay.classList.contains('open')) return;
+            requestAnimationFrame(drawVisualizer);
+
+            const ctx = winampCanvas.getContext('2d');
+            const width = winampCanvas.width = winampCanvas.offsetWidth;
+            const height = winampCanvas.height = winampCanvas.offsetHeight;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, width, height);
+
+            const barWidth = width / dataArray.length * 2;
+            let x = 0;
+
+            for (let i = 0; i < dataArray.length; i++) {
+                const barHeight = (dataArray[i] / 255) * height;
+                const hue = (i / dataArray.length) * 120;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+                x += barWidth;
+            }
+        }
+
+        // Screensavers
+        function openScreensaver() {
+            screensaverOverlay.classList.add('active');
+            startScreensaver();
+        }
+
+        function closeScreensaver() {
+            screensaverOverlay.classList.remove('active');
+            if (screensaverAnimId) {
+                cancelAnimationFrame(screensaverAnimId);
+                screensaverAnimId = null;
+            }
+        }
+
+        function startScreensaver() {
+            const ctx = screensaverCanvas.getContext('2d');
+            screensaverCanvas.width = window.innerWidth;
+            screensaverCanvas.height = window.innerHeight;
+
+            // Matrix rain effect
+            const fontSize = 16;
+            const columns = Math.floor(screensaverCanvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+            const chars = 'ōアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789'.split('');
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, screensaverCanvas.width, screensaverCanvas.height);
+
+                ctx.fillStyle = '#0f0';
+                ctx.font = `${fontSize}px monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    // Random red ō
+                    if (char === 'ō') {
+                        ctx.fillStyle = '#C52638';
+                        ctx.fillText(char, x, y);
+                        ctx.fillStyle = '#0f0';
+                    } else {
+                        ctx.fillText(char, x, y);
+                    }
+
+                    if (y > screensaverCanvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+
+                screensaverAnimId = requestAnimationFrame(drawMatrix);
+            }
+
+            drawMatrix();
+        }
+
+        // ============================================
+        // ō-ICE DICE ROLLER
+        // ============================================
+        let selectedDiceType = 20;
+        const dicePanel = document.getElementById('dicePanel');
+        const diceArenaFullscreen = document.getElementById('diceArenaFullscreen');
+        let diceHistory = [];
+
+        function toggleDicePanel() {
+            if (dicePanel.classList.contains('open')) {
+                closeDicePanel();
+            } else {
+                openDicePanel();
+            }
+        }
+
+        function openDicePanel() {
+            dicePanel.classList.add('open');
+            // Close drawer if open
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+        }
+
+        function closeDicePanel() {
+            dicePanel.classList.remove('open');
+            // Reset position for next open
+            setTimeout(() => {
+                dicePanel.style.left = '50%';
+                dicePanel.style.top = '50%';
+                dicePanel.style.transform = 'translate(-50%, -50%) scale(0)';
+            }, 200);
+        }
+
+        function selectDice(sides) {
+            selectedDiceType = sides;
+            document.querySelectorAll('.dice-type-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (parseInt(btn.dataset.dice) === sides) {
+                    btn.classList.add('selected');
+                }
+            });
+        }
+
+        // Create 3D dice shape based on type
+        function createDiceShape(diceType, value) {
+            const shape = document.createElement('div');
+            shape.className = 'die-shape';
+
+            switch(diceType) {
+                case 4: // Tetrahedron (d4) - pyramid
+                    shape.classList.add('die-tetrahedron');
+                    for (let f = 0; f < 4; f++) {
+                        const face = document.createElement('div');
+                        face.className = `die-face tetra-face tetra-face-${f}`;
+                        face.textContent = f === 0 ? value : '';
+                        shape.appendChild(face);
+                    }
+                    break;
+
+                case 6: // Cube (d6)
+                    shape.classList.add('die-cube');
+                    const cubeFaces = ['front', 'back', 'top', 'bottom', 'left', 'right'];
+                    cubeFaces.forEach((face, idx) => {
+                        const faceEl = document.createElement('div');
+                        faceEl.className = `die-face cube-face cube-${face}`;
+                        faceEl.textContent = idx === 0 ? value : (idx < 4 ? '•' : '');
+                        shape.appendChild(faceEl);
+                    });
+                    break;
+
+                case 8: // Octahedron (d8) - two pyramids
+                    shape.classList.add('die-octahedron');
+                    for (let f = 0; f < 8; f++) {
+                        const face = document.createElement('div');
+                        face.className = `die-face octa-face octa-face-${f}`;
+                        face.textContent = f === 0 ? value : '';
+                        shape.appendChild(face);
+                    }
+                    break;
+
+                case 10: // Pentagonal trapezohedron (d10)
+                    shape.classList.add('die-d10');
+                    for (let f = 0; f < 10; f++) {
+                        const face = document.createElement('div');
+                        face.className = `die-face d10-face d10-face-${f}`;
+                        face.textContent = f === 0 ? value : '';
+                        shape.appendChild(face);
+                    }
+                    break;
+
+                case 12: // Dodecahedron (d12)
+                    shape.classList.add('die-dodecahedron');
+                    for (let f = 0; f < 12; f++) {
+                        const face = document.createElement('div');
+                        face.className = `die-face dodeca-face dodeca-face-${f}`;
+                        face.textContent = f === 0 ? value : '';
+                        shape.appendChild(face);
+                    }
+                    break;
+
+                case 20: // Icosahedron (d20)
+                    shape.classList.add('die-icosahedron');
+                    for (let f = 0; f < 20; f++) {
+                        const face = document.createElement('div');
+                        face.className = `die-face icosa-face icosa-face-${f}`;
+                        face.textContent = f === 0 ? value : '';
+                        shape.appendChild(face);
+                    }
+                    break;
+
+                default: // Fallback to cube
+                    shape.classList.add('die-cube');
+                    const defaultFaces = ['front', 'back', 'top', 'bottom', 'left', 'right'];
+                    defaultFaces.forEach((face, idx) => {
+                        const faceEl = document.createElement('div');
+                        faceEl.className = `die-face cube-face cube-${face}`;
+                        faceEl.textContent = idx === 0 ? value : '';
+                        shape.appendChild(faceEl);
+                    });
+            }
+
+            return shape;
+        }
+
+        function rollDiceFullscreen() {
+            const quantity = Math.min(10, Math.max(1, parseInt(document.getElementById('diceQuantity').value) || 1));
+            const arena = diceArenaFullscreen;
+            const resultPopup = document.getElementById('diceResultPopup');
+
+            // Clear any existing dice
+            arena.querySelectorAll('.rolling-die-3d').forEach(d => d.remove());
+            resultPopup.classList.remove('show', 'crit', 'nat1');
+
+            // Show fullscreen arena
+            arena.style.display = 'block';
+            arena.classList.add('active');
+
+            const results = [];
+            const diceElements = [];
+
+            // Create 3D rolling dice across the screen
+            for (let i = 0; i < quantity; i++) {
+                const value = Math.floor(Math.random() * selectedDiceType) + 1;
+                results.push(value);
+
+                // Create 3D die with proper geometry
+                const die = document.createElement('div');
+                die.className = `rolling-die-3d die-d${selectedDiceType}`;
+
+                // Random starting position from edges
+                const startX = Math.random() * window.innerWidth;
+                const startY = -100;
+                die.style.left = startX + 'px';
+                die.style.top = startY + 'px';
+                die.style.animationDelay = (i * 0.15) + 's';
+
+                // Create appropriate shape based on dice type
+                const shape = createDiceShape(selectedDiceType, value);
+                die.appendChild(shape);
+
+                // Add crit/nat1 glow
+                if ((selectedDiceType === 20 && value === 20) || value === selectedDiceType) {
+                    die.classList.add('crit');
+                }
+                if (selectedDiceType === 20 && value === 1) {
+                    die.classList.add('nat1');
+                }
+
+                arena.appendChild(die);
+                diceElements.push({ die, value });
+
+                // Animate to random position
+                setTimeout(() => {
+                    const endX = 150 + Math.random() * (window.innerWidth - 400);
+                    const endY = 150 + Math.random() * (window.innerHeight - 400);
+                    die.style.transition = 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    die.style.left = endX + 'px';
+                    die.style.top = endY + 'px';
+                }, 50 + i * 100);
+            }
+
+            // Show results after animation
+            setTimeout(() => {
+                const total = results.reduce((a, b) => a + b, 0);
+                const breakdown = results.join(' + ');
+                const hasCrit = results.some(v => v === selectedDiceType || (selectedDiceType === 20 && v === 20));
+                const hasNat1 = selectedDiceType === 20 && results.some(v => v === 1);
+
+                document.getElementById('diceResultTotal').textContent = `${hasCrit ? '🔥 ' : ''}${total}${hasCrit ? ' 🔥' : ''}${hasNat1 ? ' 💀' : ''}`;
+                document.getElementById('diceResultBreakdown').textContent = `${quantity}d${selectedDiceType}: ${breakdown}`;
+
+                resultPopup.classList.add('show');
+                if (hasCrit) resultPopup.classList.add('crit');
+                if (hasNat1) resultPopup.classList.add('nat1');
+
+                // Add to history
+                addDiceToHistory(quantity, selectedDiceType, total, hasCrit, hasNat1);
+
+                // Stop dice animation
+                diceElements.forEach(({ die }) => {
+                    die.classList.add('settled');
+                });
+            }, 2000);
+
+            // Close fullscreen after delay
+            setTimeout(() => {
+                closeFullscreenDice();
+            }, 4500);
+        }
+
+        function closeFullscreenDice() {
+            const arena = diceArenaFullscreen;
+            const resultPopup = document.getElementById('diceResultPopup');
+
+            resultPopup.classList.remove('show');
+            arena.classList.remove('active');
+
+            setTimeout(() => {
+                arena.style.display = 'none';
+                arena.querySelectorAll('.rolling-die-3d').forEach(d => d.remove());
+            }, 300);
+        }
+
+        function addDiceToHistory(quantity, diceType, total, isCrit, isNat1) {
+            const historyEl = document.getElementById('diceHistory');
+
+            // Create history item
+            const item = document.createElement('div');
+            item.className = 'dice-history-item';
+            if (isCrit) item.classList.add('crit');
+            if (isNat1) item.classList.add('nat1');
+
+            item.innerHTML = `
+                <span class="roll-type">${quantity}d${diceType}</span>
+                <span class="roll-result">${isCrit ? '🔥 ' : ''}${total}${isNat1 ? ' 💀' : ''}</span>
+            `;
+
+            // Clear placeholder if first roll
+            if (diceHistory.length === 0) {
+                historyEl.innerHTML = '';
+            }
+
+            historyEl.insertBefore(item, historyEl.firstChild);
+            diceHistory.unshift({ quantity, diceType, total, isCrit, isNat1 });
+
+            // Keep only last 10 rolls
+            if (diceHistory.length > 10) {
+                diceHistory.pop();
+                if (historyEl.lastChild) historyEl.removeChild(historyEl.lastChild);
+            }
+        }
+
+        // Click anywhere on fullscreen to close early
+        diceArenaFullscreen.addEventListener('click', closeFullscreenDice);
+
+        // ============================================
+        // DRAGGABLE PANELS
+        // ============================================
+        function makeDraggable(panel, handle) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            handle.addEventListener('mousedown', (e) => {
+                if (e.target.tagName === 'BUTTON') return; // Don't drag when clicking buttons
+                isDragging = true;
+                panel.classList.add('dragging');
+
+                const rect = panel.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(panel);
+                // Remove transform centering on first drag
+                if (computedStyle.transform !== 'none' || panel.style.left === '50%') {
+                    panel.style.left = rect.left + 'px';
+                    panel.style.top = rect.top + 'px';
+                    panel.style.transform = 'none';
+                }
+
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = rect.left;
+                initialY = rect.top;
+
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+
+                let newX = initialX + deltaX;
+                let newY = initialY + deltaY;
+
+                // Keep panel within viewport
+                const panelRect = panel.getBoundingClientRect();
+                newX = Math.max(0, Math.min(newX, window.innerWidth - panelRect.width));
+                newY = Math.max(0, Math.min(newY, window.innerHeight - panelRect.height));
+
+                panel.style.left = newX + 'px';
+                panel.style.top = newY + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    panel.classList.remove('dragging');
+                }
+            });
+        }
+
+        // Make dice panel draggable
+        const dicePanelHeader = document.querySelector('.dice-panel-header');
+        if (dicePanelHeader) {
+            makeDraggable(dicePanel, dicePanelHeader);
+        }
+
+        // Make WinAmp player draggable
+        const winampPlayer = document.querySelector('.winamp-player');
+        const winampTitlebar = document.querySelector('.winamp-titlebar');
+        if (winampPlayer && winampTitlebar) {
+            makeDraggable(winampPlayer, winampTitlebar);
+        }
+
+        // ============================================
+        // STŌNKS TICKER
+        // ============================================
+        const stockTicker = document.getElementById('stockTicker');
+        const tickerContent = document.getElementById('tickerContent');
+        let stonksActive = false;
+
+        const fakeStocks = [
+            { symbol: 'ŌFACE', name: 'ō-face Inc' },
+            { symbol: 'RŌNIN', name: 'Ronin Corp' },
+            { symbol: 'MEME', name: 'Memeratōr Ltd' },
+            { symbol: 'DICE', name: 'Dōice Gaming' },
+            { symbol: 'SNDS', name: 'Sōunds Audio' },
+            { symbol: 'WBRD', name: 'Whitebōard Tech' },
+            { symbol: 'TERM', name: 'ō-term Systems' },
+            { symbol: 'WNMP', name: 'WinŌmp Media' },
+            { symbol: 'KBKI', name: 'Kabuki Theatre' },
+            { symbol: 'ARCD', name: 'Arcade Holdings' },
+            { symbol: 'GME', name: 'GameStop' },
+            { symbol: 'AMC', name: 'AMC Entertainment' },
+            { symbol: 'TSLA', name: 'Tesla' },
+            { symbol: 'NVDA', name: 'NVIDIA' },
+            { symbol: 'AAPL', name: 'Apple' },
+        ];
+
+        function generateTickerData() {
+            return fakeStocks.map(stock => {
+                const price = (Math.random() * 500 + 10).toFixed(2);
+                const change = (Math.random() * 20 - 10).toFixed(2);
+                const isUp = parseFloat(change) >= 0;
+                return {
+                    ...stock,
+                    price,
+                    change: (isUp ? '+' : '') + change,
+                    percent: (isUp ? '+' : '') + (Math.random() * 10 - 5).toFixed(2) + '%',
+                    isUp
+                };
+            });
+        }
+
+        function renderTicker() {
+            const data = generateTickerData();
+            // Duplicate for seamless scrolling
+            const items = [...data, ...data].map(stock => `
+                <span class="ticker-item">
+                    <span class="ticker-symbol">${stock.symbol}</span>
+                    <span class="ticker-price">$${stock.price}</span>
+                    <span class="ticker-change ${stock.isUp ? 'up' : 'down'}">${stock.change} (${stock.percent})</span>
+                </span>
+                <span class="ticker-separator">│</span>
+            `).join('');
+            tickerContent.innerHTML = items;
+        }
+
+        function toggleStonks() {
+            stonksActive = !stonksActive;
+            if (stonksActive) {
+                renderTicker();
+                stockTicker.classList.add('active');
+                document.body.classList.add('stonks-active');
+                // Close drawer if open
+                if (leftDrawer.classList.contains('open')) {
+                    toggleDrawer();
+                }
+            } else {
+                stockTicker.classList.remove('active');
+                document.body.classList.remove('stonks-active');
+            }
+        }
+
+        // Update ticker prices periodically
+        setInterval(() => {
+            if (stonksActive) {
+                renderTicker();
+            }
+        }, 10000);
+
+        // Update progress bar (mini and WinAmp player)
+        miniPlayerAudio.addEventListener('timeupdate', () => {
+            if (miniPlayerAudio.duration) {
+                const progress = (miniPlayerAudio.currentTime / miniPlayerAudio.duration) * 100;
+                if (miniPlayerProgress) miniPlayerProgress.style.width = progress + '%';
+                // WinAmp updates
+                if (winampSeek) winampSeek.value = progress;
+                if (winampTime) winampTime.textContent = formatTime(miniPlayerAudio.currentTime);
+            }
+        });
+
+        // Auto play next track
+        miniPlayerAudio.addEventListener('ended', () => {
+            miniPlayerTrackIndex = (miniPlayerTrackIndex + 1) % miniPlayerPlaylist.length;
+            loadMiniPlayerTrack(miniPlayerTrackIndex);
+            miniPlayerAudio.play().catch(e => console.log('Audio play error:', e));
+            updateWinampDisplay();
+            renderWinampPlaylist();
+        });
+
+        // Listen for track updates from iframe (WinŌmp full player)
+        window.addEventListener('message', (event) => {
+            const { data } = event;
+            if (data && data.type === 'miniPlayerUpdate') {
+                if (miniPlayerTitle) miniPlayerTitle.textContent = data.title || 'Unknown';
+                if (miniPlayerArtist) miniPlayerArtist.textContent = data.artist || 'Unknown';
+                if (data.playing !== undefined) {
+                    miniPlayerPlaying = data.playing;
+                    if (miniPlayerPlayBtn) miniPlayerPlayBtn.textContent = data.playing ? '⏸' : '▶';
+                }
+            }
+        });
+
+        // After video ends, navigate to Ronin with A-Team theme
+        function showDefaultPage() {
+            introVideo.style.opacity = '0';
+            introVideo.style.transform = 'scale(0.95)';
+            const skipHint = document.querySelector('.skip-hint');
+            if (skipHint) skipHint.style.opacity = '0';
+
+            setTimeout(() => {
+                // Set A-Team as default theme for Ronin
+                localStorage.setItem('ronin_theme', 'ateam');
+                // Navigate to Ronin page
+                navigateTo('ronin.html', 'ronin');
+            }, 600);
+        }
+
+        introVideo.addEventListener('ended', showDefaultPage);
+        introVideo.addEventListener('click', showDefaultPage);
+        introVideo.addEventListener('error', () => {
+            console.error('Video failed to load');
+            showDefaultPage();
+        });
+
+        // Message bridge for iframe communication
+        window.addEventListener('message', (event) => {
+            const { data } = event;
+            if (!data || !data.type) return;
+
+            // Handle electronAPI calls from iframe
+            if (data.type === 'electronAPI' && window.electronAPI) {
+                const { id, method, args = [] } = data;
+                const [obj, func] = method.split('.');
+
+                try {
+                    let result;
+                    if (window.electronAPI[obj] && typeof window.electronAPI[obj][func] === 'function') {
+                        result = window.electronAPI[obj][func](...args);
+                    }
+
+                    if (result && typeof result.then === 'function') {
+                        result.then(res => {
+                            contentFrame.contentWindow.postMessage({
+                                type: 'electronAPI-response',
+                                id,
+                                result: res
+                            }, '*');
+                        }).catch(err => {
+                            contentFrame.contentWindow.postMessage({
+                                type: 'electronAPI-response',
+                                id,
+                                error: err.message
+                            }, '*');
+                        });
+                    } else {
+                        contentFrame.contentWindow.postMessage({
+                            type: 'electronAPI-response',
+                            id,
+                            result
+                        }, '*');
+                    }
+                } catch (err) {
+                    contentFrame.contentWindow.postMessage({
+                        type: 'electronAPI-response',
+                        id,
+                        error: err.message
+                    }, '*');
+                }
+            }
+
+            if (data.type === 'getPlatform' && window.electronAPI) {
+                contentFrame.contentWindow.postMessage({
+                    type: 'platform',
+                    platform: window.electronAPI.platform
+                }, '*');
+            }
+
+            if (data.type === 'navigate') {
+                if (data.href) {
+                    navigateTo(data.href, data.pageId);
+                }
+            }
+
+            // Listen for favorites updates from meme page
+            if (data.type === 'favoritesUpdated') {
+                loadFavorites();
+            }
+        });
+
+        // Forward sound:playDone events to iframe
+        if (window.electronAPI && window.electronAPI.sound) {
+            window.electronAPI.sound.onPlayDone(() => {
+                if (contentFrame.contentWindow) {
+                    contentFrame.contentWindow.postMessage({ type: 'sound:playDone' }, '*');
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.electronAPI === 'undefined') {
+                const navRight = document.querySelector('.nav-right');
+                if (navRight) navRight.style.display = 'none';
+            }
+
+            loadPrefs();
+            loadFavorites();
+
+            // Video fallback - if video doesn't start in 3 seconds, skip it
+            let videoStarted = false;
+            introVideo.addEventListener('playing', () => { videoStarted = true; });
+            setTimeout(() => {
+                if (!videoStarted && dashboardView.style.display !== 'none') {
+                    console.log('Video fallback triggered - skipping to default page');
+                    showDefaultPage();
+                }
+            }, 3000);
+
+            // Restore last page if exists
+            const lastPage = localStorage.getItem(LAST_PAGE_KEY);
+            if (lastPage) {
+                try {
+                    const { href, pageId } = JSON.parse(lastPage);
+                    if (href) {
+                        introVideo.pause();
+                        introVideo.style.display = 'none';
+                        const skipHint = document.querySelector('.skip-hint');
+                        if (skipHint) skipHint.style.display = 'none';
+                        dashboardView.style.display = 'none';
+                        contentFrame.style.display = 'block';
+                        loadingOverlay.classList.add('active');
+                        contentFrame.src = href;
+                        updateActiveButton(pageId);
+                    }
+                } catch (e) {
+                    console.error('Failed to restore last page:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

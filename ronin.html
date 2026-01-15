@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>~*~RōNiN cOnSuLtInG~*~ Welcome 2 My Page!!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Ma+Shan+Zheng&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        /* ============================================
+           BASE VARIABLES & THEME SYSTEM
+           ============================================ */
+        :root {
+            /* MySpace Theme (Default) */
+            --theme-bg: #000033;
+            --theme-bg-card: rgba(0, 0, 50, 0.8);
+            --theme-primary: #ff00ff;
+            --theme-secondary: #00ffff;
+            --theme-accent: #ffff00;
+            --theme-accent2: #00ff00;
+            --theme-text: #ffffff;
+            --theme-text-dim: #888888;
+            --theme-border: #ff00ff;
+            --theme-glow: rgba(255, 0, 255, 0.5);
+            --theme-font: 'Comic Neue', 'Comic Sans MS', cursive;
+            --theme-font-display: 'Press Start 2P', cursive;
+        }
+
+        /* Star Trek LCARS Theme */
+        [data-theme="startrek"] {
+            --theme-bg: #000000;
+            --theme-bg-card: #1a1a2e;
+            --theme-primary: #ff9900;
+            --theme-secondary: #cc99ff;
+            --theme-accent: #9999ff;
+            --theme-accent2: #ff5555;
+            --theme-text: #ff9900;
+            --theme-text-dim: #cc6600;
+            --theme-border: #ff9900;
+            --theme-glow: rgba(255, 153, 0, 0.5);
+            --theme-font: 'Share Tech Mono', monospace;
+            --theme-font-display: 'Orbitron', sans-serif;
+        }
+
+        /* Knight Rider Theme */
+        [data-theme="knightrider"] {
+            --theme-bg: #0a0a0a;
+            --theme-bg-card: #1a1a1a;
+            --theme-primary: #ff0000;
+            --theme-secondary: #ff3333;
+            --theme-accent: #ffcc00;
+            --theme-accent2: #ff0000;
+            --theme-text: #ff0000;
+            --theme-text-dim: #660000;
+            --theme-border: #ff0000;
+            --theme-glow: rgba(255, 0, 0, 0.5);
+            --theme-font: 'Share Tech Mono', monospace;
+            --theme-font-display: 'Orbitron', sans-serif;
+        }
+
+        /* Kung Fu Theatre Theme */
+        [data-theme="kungfu"] {
+            --theme-bg: #1a0a0a;
+            --theme-bg-card: rgba(40, 20, 20, 0.9);
+            --theme-primary: #ffd700;
+            --theme-secondary: #ff4444;
+            --theme-accent: #ff6600;
+            --theme-accent2: #ffcc00;
+            --theme-text: #ffd700;
+            --theme-text-dim: #996600;
+            --theme-border: #ff4444;
+            --theme-glow: rgba(255, 68, 68, 0.5);
+            --theme-font: 'Cinzel', serif;
+            --theme-font-display: 'Ma Shan Zheng', cursive;
+        }
+
+        /* G.I. Joe Theme */
+        [data-theme="gijoe"] {
+            --theme-bg: #0a1a0a;
+            --theme-bg-card: rgba(10, 30, 10, 0.9);
+            --theme-primary: #00ff00;
+            --theme-secondary: #ffcc00;
+            --theme-accent: #ff0000;
+            --theme-accent2: #00ccff;
+            --theme-text: #00ff00;
+            --theme-text-dim: #006600;
+            --theme-border: #00ff00;
+            --theme-glow: rgba(0, 255, 0, 0.5);
+            --theme-font: 'Share Tech Mono', monospace;
+            --theme-font-display: 'Orbitron', sans-serif;
+        }
+
+        /* Transformers Theme */
+        [data-theme="transformers"] {
+            --theme-bg: #0a0a1a;
+            --theme-bg-card: rgba(20, 20, 50, 0.9);
+            --theme-primary: #ff3300;
+            --theme-secondary: #0066ff;
+            --theme-accent: #ffcc00;
+            --theme-accent2: #ff0066;
+            --theme-text: #ff3300;
+            --theme-text-dim: #993300;
+            --theme-border: #ff3300;
+            --theme-glow: rgba(255, 51, 0, 0.5);
+            --theme-font: 'Orbitron', sans-serif;
+            --theme-font-display: 'Orbitron', sans-serif;
+        }
+
+        /* My Little Pony Theme */
+        [data-theme="mlp"] {
+            --theme-bg: #2a1a3a;
+            --theme-bg-card: rgba(60, 40, 80, 0.9);
+            --theme-primary: #ff69b4;
+            --theme-secondary: #87ceeb;
+            --theme-accent: #dda0dd;
+            --theme-accent2: #98fb98;
+            --theme-text: #ff69b4;
+            --theme-text-dim: #cc5599;
+            --theme-border: #ff69b4;
+            --theme-glow: rgba(255, 105, 180, 0.5);
+            --theme-font: 'Comic Neue', 'Comic Sans MS', cursive;
+            --theme-font-display: 'Comic Neue', 'Comic Sans MS', cursive;
+        }
+
+        /* Simpsons Theme */
+        [data-theme="simpsons"] {
+            --theme-bg: #70c1f0;
+            --theme-bg-card: rgba(255, 217, 0, 0.95);
+            --theme-primary: #ffd900;
+            --theme-secondary: #ff6b00;
+            --theme-accent: #ff0000;
+            --theme-accent2: #00aa00;
+            --theme-text: #000000;
+            --theme-text-dim: #555555;
+            --theme-border: #ffd900;
+            --theme-glow: rgba(255, 217, 0, 0.6);
+            --theme-font: 'Comic Neue', 'Comic Sans MS', cursive;
+            --theme-font-display: 'Comic Neue', 'Comic Sans MS', cursive;
+        }
+
+        /* A-Team Theme */
+        [data-theme="ateam"] {
+            --theme-bg: #1a1a1a;
+            --theme-bg-card: rgba(30, 30, 30, 0.95);
+            --theme-primary: #ff0000;
+            --theme-secondary: #ffd700;
+            --theme-accent: #c0c0c0;
+            --theme-accent2: #ff3333;
+            --theme-text: #ff0000;
+            --theme-text-dim: #880000;
+            --theme-border: #ff0000;
+            --theme-glow: rgba(255, 0, 0, 0.5);
+            --theme-font: 'Orbitron', sans-serif;
+            --theme-font-display: 'Orbitron', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--theme-bg);
+            font-family: var(--theme-font);
+            color: var(--theme-text);
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* ============================================
+           THEME SELECTOR
+           ============================================ */
+        .theme-selector {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--theme-primary);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 0 30px var(--theme-glow);
+            transition: all 0.3s;
+        }
+
+        .theme-selector-title {
+            font-family: var(--theme-font-display);
+            font-size: 10px;
+            color: var(--theme-accent);
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .theme-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            padding: 10px 15px;
+            border: 2px solid var(--theme-border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--theme-text);
+            font-family: var(--theme-font);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn:hover {
+            background: var(--theme-primary);
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--theme-glow);
+        }
+
+        .theme-btn.active {
+            background: var(--theme-primary);
+            color: #000;
+        }
+
+        .theme-btn-icon {
+            font-size: 16px;
+        }
+
+        /* ============================================
+           BACKGROUND EFFECTS
+           ============================================ */
+        .bg-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* MySpace Starfield */
+        .starfield .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Star Trek Warp Effect */
+        .warp-field {
+            display: none;
+        }
+
+        [data-theme="startrek"] .warp-field {
+            display: block;
+        }
+
+        [data-theme="startrek"] .starfield {
+            display: none;
+        }
+
+        .warp-star {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            height: 2px;
+            animation: warpSpeed 2s linear infinite;
+        }
+
+        @keyframes warpSpeed {
+            0% { transform: translateX(-100vw) scaleX(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateX(100vw) scaleX(2); opacity: 0; }
+        }
+
+        /* Knight Rider Scanner */
+        .kitt-scanner {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: #111;
+            border-bottom: 1px solid #333;
+        }
+
+        [data-theme="knightrider"] .kitt-scanner {
+            display: block;
+        }
+
+        .kitt-light {
+            position: absolute;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #ff0000, #ff3333, #ff0000, transparent);
+            animation: kittScan 2s ease-in-out infinite;
+            box-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
+        }
+
+        @keyframes kittScan {
+            0%, 100% { left: 0; }
+            50% { left: calc(100% - 100px); }
+        }
+
+        /* Kung Fu Theatre Effect */
+        .kungfu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+            pointer-events: none;
+            animation: filmGrain 0.1s infinite;
+        }
+
+        [data-theme="kungfu"] .kungfu-overlay {
+            display: block;
+        }
+
+        @keyframes filmGrain {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.9; }
+        }
+
+        .dragon-border {
+            display: none;
+        }
+
+        [data-theme="kungfu"] .dragon-border {
+            display: block;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(90deg, #8B0000, #ffd700, #8B0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+            color: #000;
+            text-shadow: 0 0 10px #ffd700;
+            letter-spacing: 20px;
+        }
+
+        /* ============================================
+           LCARS PANELS (Star Trek)
+           ============================================ */
+        [data-theme="startrek"] .glitter-border {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        [data-theme="startrek"] .glitter-border-inner {
+            background: #000;
+            border: none;
+            border-left: 30px solid var(--theme-primary);
+            border-radius: 0 0 0 30px;
+            position: relative;
+        }
+
+        [data-theme="startrek"] .glitter-border-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -30px;
+            width: 30px;
+            height: 60px;
+            background: var(--theme-secondary);
+            border-radius: 0 0 0 30px;
+        }
+
+        [data-theme="startrek"] .glitter-border-inner::after {
+            content: 'LCARS 47';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            color: var(--theme-accent);
+        }
+
+        [data-theme="startrek"] .section-title {
+            background: var(--theme-secondary);
+            color: #000;
+            border-radius: 0 20px 20px 0;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        [data-theme="startrek"] .section-content {
+            border: 2px solid var(--theme-primary);
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* ============================================
+           KNIGHT RIDER DASHBOARD
+           ============================================ */
+        [data-theme="knightrider"] .profile-pic {
+            border: 3px solid #ff0000;
+            background: #000;
+            box-shadow: 0 0 20px #ff0000, inset 0 0 30px rgba(255,0,0,0.3);
+        }
+
+        [data-theme="knightrider"] .glitter-border {
+            background: linear-gradient(90deg, #330000, #ff0000, #330000);
+            padding: 3px;
+        }
+
+        [data-theme="knightrider"] .glitter-border-inner {
+            background: #0a0a0a;
+            border: 1px solid #333;
+        }
+
+        [data-theme="knightrider"] .section-title {
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        [data-theme="knightrider"] .nav-pill {
+            border: 2px solid #ff0000;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        [data-theme="knightrider"] .nav-pill:hover,
+        [data-theme="knightrider"] .nav-pill.active {
+            background: #ff0000;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        /* Voice indicator for Knight Rider */
+        .kitt-voice {
+            display: none;
+        }
+
+        [data-theme="knightrider"] .kitt-voice {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin: 15px 0;
+            height: 40px;
+        }
+
+        .voice-bar {
+            width: 8px;
+            height: 40px;
+            background: #ff0000;
+            animation: voiceBar 0.5s ease-in-out infinite;
+            box-shadow: 0 0 10px #ff0000;
+            transform-origin: center;
+        }
+
+        .voice-bar:nth-child(2) { animation-delay: 0.1s; }
+        .voice-bar:nth-child(3) { animation-delay: 0.2s; }
+        .voice-bar:nth-child(4) { animation-delay: 0.3s; }
+        .voice-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes voiceBar {
+            0%, 100% { transform: scaleY(0.25); opacity: 0.5; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        /* ============================================
+           KUNG FU THEATRE
+           ============================================ */
+        [data-theme="kungfu"] .profile-pic {
+            border: 5px solid #8B0000;
+            background: radial-gradient(circle, #2a1a1a, #0a0000);
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.5), inset 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        [data-theme="kungfu"] .profile-name {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 36px;
+            color: #ffd700;
+            text-shadow: 3px 3px 0 #8B0000, 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        [data-theme="kungfu"] .glitter-border {
+            background: linear-gradient(90deg, #8B0000, #ffd700, #8B0000);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        [data-theme="kungfu"] .glitter-border-inner {
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='rgba(139,0,0,0.1)'/%3E%3C/svg%3E"), #1a0a0a;
+            border: 2px solid #8B0000;
+        }
+
+        [data-theme="kungfu"] .section-title {
+            background: linear-gradient(90deg, #8B0000, #cc0000);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 20px;
+            letter-spacing: 5px;
+            border-radius: 0;
+        }
+
+        [data-theme="kungfu"] .section-content {
+            border: 2px solid #8B0000;
+            border-top: none;
+            border-radius: 0;
+        }
+
+        [data-theme="kungfu"] .nav-pill {
+            border: 2px solid #8B0000;
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(180deg, #2a1a1a, #1a0a0a);
+        }
+
+        [data-theme="kungfu"] .nav-pill:hover,
+        [data-theme="kungfu"] .nav-pill.active {
+            background: linear-gradient(180deg, #8B0000, #660000);
+            color: #ffd700;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+        }
+
+        /* ============================================
+           G.I. JOE THEME
+           ============================================ */
+        .gijoe-radar {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            border: 3px solid #00ff00;
+            border-radius: 50%;
+            background: radial-gradient(circle, #001100 0%, #000500 100%);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 30px rgba(0, 255, 0, 0.1);
+        }
+
+        [data-theme="gijoe"] .gijoe-radar {
+            display: block;
+        }
+
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff00, transparent);
+            transform-origin: left center;
+            animation: radarSweep 3s linear infinite;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        @keyframes radarSweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .radar-grid {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle, transparent 30%, rgba(0, 255, 0, 0.1) 31%, transparent 32%),
+                radial-gradient(circle, transparent 60%, rgba(0, 255, 0, 0.1) 61%, transparent 62%),
+                linear-gradient(0deg, transparent 49%, rgba(0, 255, 0, 0.1) 50%, transparent 51%),
+                linear-gradient(90deg, transparent 49%, rgba(0, 255, 0, 0.1) 50%, transparent 51%);
+        }
+
+        .radar-blip {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+            animation: blip 2s ease-in-out infinite;
+        }
+
+        @keyframes blip {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        [data-theme="gijoe"] .profile-pic {
+            border: 4px solid #00ff00;
+            background: linear-gradient(135deg, #001a00, #003300);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+        }
+
+        [data-theme="gijoe"] .glitter-border {
+            background: repeating-linear-gradient(
+                45deg,
+                #003300,
+                #003300 10px,
+                #004400 10px,
+                #004400 20px
+            );
+            padding: 4px;
+        }
+
+        [data-theme="gijoe"] .section-title {
+            background: linear-gradient(90deg, #003300, #006600);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-left: 5px solid #ffcc00;
+        }
+
+        [data-theme="gijoe"] .nav-pill {
+            border: 2px solid #00ff00;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 50, 0, 0.8);
+        }
+
+        [data-theme="gijoe"] .nav-pill:hover,
+        [data-theme="gijoe"] .nav-pill.active {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        /* ============================================
+           TRANSFORMERS THEME
+           ============================================ */
+        .autobot-logo {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            font-size: 60px;
+            color: #ff3300;
+            text-shadow: 0 0 30px #ff3300, 0 0 60px #ff0000;
+            animation: transformPulse 3s ease-in-out infinite;
+        }
+
+        [data-theme="transformers"] .autobot-logo {
+            display: block;
+        }
+
+        @keyframes transformPulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+
+        .transform-grid {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(255, 51, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0, 102, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        [data-theme="transformers"] .transform-grid {
+            display: block;
+        }
+
+        [data-theme="transformers"] .profile-pic {
+            border: 4px solid #ff3300;
+            background: linear-gradient(135deg, #1a0a0a, #0a0a2a);
+            box-shadow: 0 0 30px rgba(255, 51, 0, 0.5), 0 0 60px rgba(0, 102, 255, 0.3);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+        }
+
+        [data-theme="transformers"] .glitter-border {
+            background: linear-gradient(135deg, #ff3300 0%, #0066ff 50%, #ff3300 100%);
+            background-size: 200% 200%;
+            animation: transformGradient 5s ease infinite;
+            padding: 4px;
+            clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
+        }
+
+        @keyframes transformGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        [data-theme="transformers"] .section-title {
+            background: linear-gradient(90deg, #ff3300, #cc2200);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
+        }
+
+        [data-theme="transformers"] .nav-pill {
+            border: 2px solid #ff3300;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            padding: 10px 25px;
+        }
+
+        [data-theme="transformers"] .nav-pill:hover,
+        [data-theme="transformers"] .nav-pill.active {
+            background: linear-gradient(135deg, #ff3300, #ff6600);
+            color: #000;
+            box-shadow: 0 0 20px #ff3300;
+        }
+
+        /* ============================================
+           MY LITTLE PONY THEME
+           ============================================ */
+        .rainbow-stripe {
+            display: none;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg,
+                #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3,
+                #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3
+            );
+            background-size: 200% 100%;
+            animation: rainbowMove 3s linear infinite;
+        }
+
+        [data-theme="mlp"] .rainbow-stripe {
+            display: block;
+        }
+
+        @keyframes rainbowMove {
+            from { background-position: 0% 50%; }
+            to { background-position: 200% 50%; }
+        }
+
+        .sparkle-field {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        [data-theme="mlp"] .sparkle-field {
+            display: block;
+        }
+
+        [data-theme="mlp"] .profile-pic {
+            border: 5px solid #ff69b4;
+            background: linear-gradient(135deg, #ffb6c1, #dda0dd, #87ceeb);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(135, 206, 235, 0.3);
+            border-radius: 50%;
+        }
+
+        [data-theme="mlp"] .glitter-border {
+            background: linear-gradient(90deg,
+                #ff69b4, #ffb6c1, #dda0dd, #87ceeb, #98fb98, #ffb6c1, #ff69b4
+            );
+            background-size: 300% 100%;
+            animation: rainbowBorder 4s ease infinite;
+            padding: 5px;
+            border-radius: 20px;
+        }
+
+        @keyframes rainbowBorder {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        [data-theme="mlp"] .glitter-border-inner {
+            border-radius: 15px;
+            background: linear-gradient(180deg, rgba(60, 40, 80, 0.95), rgba(40, 30, 60, 0.95));
+        }
+
+        [data-theme="mlp"] .section-title {
+            background: linear-gradient(90deg, #ff69b4, #dda0dd);
+            border-radius: 20px 20px 0 0;
+        }
+
+        [data-theme="mlp"] .section-content {
+            border-radius: 0 0 15px 15px;
+            border-color: #ff69b4;
+        }
+
+        [data-theme="mlp"] .nav-pill {
+            border: 2px solid #ff69b4;
+            border-radius: 25px;
+            background: rgba(255, 105, 180, 0.2);
+        }
+
+        [data-theme="mlp"] .nav-pill:hover,
+        [data-theme="mlp"] .nav-pill.active {
+            background: linear-gradient(135deg, #ff69b4, #dda0dd);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+        }
+
+        [data-theme="mlp"] .profile-name {
+            background: linear-gradient(90deg, #ff69b4, #87ceeb, #dda0dd, #98fb98);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        [data-theme="mlp"] .interest-tag {
+            border-radius: 25px;
+            background: linear-gradient(135deg, #ff69b4, #87ceeb);
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        /* ============================================
+           A-TEAM THEME
+           ============================================ */
+        .ateam-stripe {
+            display: none;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: linear-gradient(180deg,
+                #1a1a1a 0%,
+                #ff0000 20%,
+                #ff0000 40%,
+                #1a1a1a 40%,
+                #1a1a1a 60%,
+                #ffd700 60%,
+                #ffd700 80%,
+                #1a1a1a 80%
+            );
+            box-shadow: 0 2px 10px rgba(255, 0, 0, 0.5);
+        }
+
+        [data-theme="ateam"] .ateam-stripe {
+            display: block;
+        }
+
+        .ateam-bullet-holes {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        [data-theme="ateam"] .ateam-bullet-holes {
+            display: block;
+        }
+
+        .bullet-hole {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, #000 30%, transparent 31%),
+                        radial-gradient(ellipse at 30% 30%, rgba(50,50,50,0.8) 0%, transparent 50%);
+            border-radius: 50%;
+            box-shadow: inset 0 0 5px #000;
+        }
+
+        [data-theme="ateam"] .profile-pic {
+            border: 5px solid #ff0000;
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+        }
+
+        [data-theme="ateam"] .glitter-border {
+            background: linear-gradient(90deg, #ff0000, #1a1a1a 30%, #1a1a1a 70%, #ffd700);
+            padding: 4px;
+        }
+
+        [data-theme="ateam"] .glitter-border-inner {
+            background: #1a1a1a;
+            border: 2px solid #333;
+        }
+
+        [data-theme="ateam"] .section-title {
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+        }
+
+        [data-theme="ateam"] .section-content {
+            background: #1a1a1a;
+            border: 2px solid #ff0000;
+        }
+
+        [data-theme="ateam"] .nav-pill {
+            border: 2px solid #ff0000;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #333, #1a1a1a);
+        }
+
+        [data-theme="ateam"] .nav-pill:hover,
+        [data-theme="ateam"] .nav-pill.active {
+            background: linear-gradient(180deg, #ff0000, #cc0000);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        [data-theme="ateam"] .marquee-container {
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+            border: 2px solid #ffd700;
+        }
+
+        [data-theme="ateam"] .marquee-text {
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        [data-theme="ateam"] .visitor-counter {
+            background: #1a1a1a;
+            border: 3px solid #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        [data-theme="ateam"] .interest-tag {
+            background: linear-gradient(135deg, #ff0000, #ffd700);
+            color: #000;
+            font-weight: bold;
+        }
+
+        [data-theme="ateam"] .profile-name {
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 2px 2px 0 #ffd700;
+        }
+
+        /* Gold chain decoration */
+        [data-theme="ateam"] .profile-header::after {
+            content: '⛓️ ⛓️ ⛓️';
+            display: block;
+            font-size: 24px;
+            margin-top: 10px;
+            letter-spacing: 10px;
+            animation: chainSwing 2s ease-in-out infinite;
+        }
+
+        @keyframes chainSwing {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        /* ============================================
+           SIMPSONS THEME
+           ============================================ */
+        .simpsons-clouds {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        [data-theme="simpsons"] .simpsons-clouds {
+            display: block;
+        }
+
+        .cloud {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow:
+                30px 10px 0 10px #fff,
+                60px 0 0 20px #fff,
+                90px 10px 0 10px #fff,
+                30px -10px 0 20px #fff,
+                60px -15px 0 10px #fff;
+            animation: cloudFloat linear infinite;
+        }
+
+        @keyframes cloudFloat {
+            from { transform: translateX(-200px); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        .donut {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #ff69b4;
+            border-radius: 50%;
+            box-shadow: inset 0 0 0 15px #70c1f0;
+            animation: donutFloat 8s ease-in-out infinite;
+        }
+
+        .donut::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow:
+                12px 5px 0 #ffff00,
+                8px 15px 0 #00ff00,
+                -5px 10px 0 #ff6600,
+                20px 12px 0 #ff0000;
+        }
+
+        @keyframes donutFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        [data-theme="simpsons"] .profile-pic {
+            border: 5px solid #ffd900;
+            background: linear-gradient(180deg, #ffd900, #ffaa00);
+            box-shadow: 0 0 30px rgba(255, 217, 0, 0.6);
+        }
+
+        [data-theme="simpsons"] .glitter-border {
+            background: #ffd900;
+            padding: 5px;
+            border-radius: 15px;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        [data-theme="simpsons"] .glitter-border-inner {
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 10px;
+        }
+
+        [data-theme="simpsons"] .section-title {
+            background: #ffd900;
+            color: #000;
+            border: 2px solid #000;
+            border-bottom: none;
+            font-weight: bold;
+            text-shadow: none;
+        }
+
+        [data-theme="simpsons"] .section-content {
+            background: #fff;
+            border: 2px solid #000;
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .nav-pill {
+            border: 2px solid #000;
+            background: #ffd900;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        [data-theme="simpsons"] .nav-pill:hover,
+        [data-theme="simpsons"] .nav-pill.active {
+            background: #ff6b00;
+            color: #fff;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        [data-theme="simpsons"] .profile-name {
+            color: #000;
+            text-shadow: 2px 2px 0 #ffd900;
+        }
+
+        [data-theme="simpsons"] .marquee-container {
+            background: #ffd900;
+            border: 3px solid #000;
+        }
+
+        [data-theme="simpsons"] .marquee-text {
+            color: #000;
+            font-weight: bold;
+        }
+
+        [data-theme="simpsons"] .visitor-counter {
+            background: #ffd900;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        [data-theme="simpsons"] .counter-display {
+            color: #000;
+            text-shadow: none;
+        }
+
+        [data-theme="simpsons"] .counter-label {
+            color: #555;
+        }
+
+        [data-theme="simpsons"] .contact-text,
+        [data-theme="simpsons"] .contact-text a {
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .friend-card {
+            background: #fff;
+            border: 2px solid #000;
+        }
+
+        [data-theme="simpsons"] .friend-name {
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .friend-avatar {
+            background: #ffd900;
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .interest-tag {
+            background: #ffd900;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        [data-theme="simpsons"] .guestbook-entry {
+            background: #fff;
+            border-left: 4px solid #ffd900;
+            border: 2px solid #000;
+        }
+
+        [data-theme="simpsons"] .guestbook-message {
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .about-section p {
+            color: #333;
+        }
+
+        [data-theme="simpsons"] .about-section h2 {
+            color: #ff6b00;
+        }
+
+        [data-theme="simpsons"] .crew-member {
+            background: #fff;
+            border: 2px solid #000;
+        }
+
+        [data-theme="simpsons"] .crew-avatar {
+            background: #ffd900;
+        }
+
+        [data-theme="simpsons"] .crew-name {
+            color: #000;
+        }
+
+        [data-theme="simpsons"] .crew-role {
+            color: #555;
+        }
+
+        /* Theme Music Player */
+        .theme-music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .music-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--theme-primary);
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--theme-primary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--theme-glow);
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            background: var(--theme-primary);
+            color: #000;
+        }
+
+        .music-toggle.playing {
+            animation: musicPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--theme-glow); }
+            50% { box-shadow: 0 0 40px var(--theme-glow), 0 0 60px var(--theme-primary); }
+        }
+
+        .music-label {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            color: var(--theme-text);
+            border: 1px solid var(--theme-border);
+            white-space: nowrap;
+        }
+
+        /* Hide midi-player element but keep functional */
+        midi-player {
+            display: none;
+        }
+
+        /* Movie title card effect */
+        .kungfu-title {
+            display: none;
+        }
+
+        [data-theme="kungfu"] .kungfu-title {
+            display: block;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kungfu-title h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 48px;
+            color: #ffd700;
+            text-shadow: 4px 4px 0 #8B0000, 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: kungfuTitle 3s ease-in-out infinite;
+        }
+
+        @keyframes kungfuTitle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .kungfu-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: #ff6600;
+            letter-spacing: 10px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================
+           COMMON STYLES (Adapted per theme)
+           ============================================ */
+        .myspace-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 10px;
+        }
+
+        [data-theme="kungfu"] .myspace-wrapper {
+            padding-top: 60px;
+        }
+
+        [data-theme="knightrider"] .myspace-wrapper {
+            padding-top: 30px;
+        }
+
+        .glitter-border {
+            background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary), var(--theme-primary), var(--theme-secondary));
+            background-size: 300% 100%;
+            animation: glitterMove 3s linear infinite;
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes glitterMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .glitter-border-inner {
+            background: var(--theme-bg);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border: 5px solid var(--theme-primary);
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 80px;
+            animation: glow 2s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--theme-glow);
+            transition: all 0.5s;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px var(--theme-glow); }
+            50% { box-shadow: 0 0 40px var(--theme-glow), 0 0 60px var(--theme-glow); }
+        }
+
+        .profile-name {
+            font-family: var(--theme-font-display);
+            font-size: 24px;
+            color: var(--theme-primary);
+            text-shadow: 0 0 10px var(--theme-glow);
+            animation: textGlow 1.5s ease-in-out infinite alternate;
+            transition: all 0.5s;
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px var(--theme-glow); }
+            to { text-shadow: 0 0 20px var(--theme-glow), 0 0 30px var(--theme-secondary); }
+        }
+
+        .profile-tagline {
+            font-size: 18px;
+            color: var(--theme-accent);
+            margin-top: 10px;
+        }
+
+        /* Marquee */
+        .marquee-container {
+            background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary));
+            padding: 10px 0;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
+            font-weight: bold;
+            color: #000;
+            font-size: 16px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        [data-theme="startrek"] .marquee-container {
+            background: var(--theme-primary);
+            border-radius: 0 20px 20px 0;
+            margin-left: 30px;
+        }
+
+        [data-theme="startrek"] .marquee-text {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        [data-theme="knightrider"] .marquee-container {
+            background: linear-gradient(90deg, #000, #ff0000, #000);
+            border: 1px solid #ff0000;
+        }
+
+        [data-theme="knightrider"] .marquee-text {
+            font-family: 'Orbitron', sans-serif;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        [data-theme="kungfu"] .marquee-container {
+            background: linear-gradient(90deg, #8B0000, #ffd700, #8B0000);
+            border-radius: 0;
+        }
+
+        [data-theme="kungfu"] .marquee-text {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+        }
+
+        /* Nav Pills */
+        .nav-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .nav-pill {
+            background: linear-gradient(180deg, #333, #111);
+            border: 2px solid var(--theme-secondary);
+            color: var(--theme-secondary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: var(--theme-font);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-pill:hover, .nav-pill.active {
+            background: var(--theme-secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--theme-glow);
+        }
+
+        /* Two column layout */
+        .myspace-columns {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .myspace-columns { grid-template-columns: 1fr; }
+            .theme-selector { right: 10px; padding: 10px; }
+        }
+
+        .left-column section { margin-bottom: 20px; }
+
+        .section-title {
+            background: linear-gradient(90deg, var(--theme-accent), var(--theme-primary));
+            color: #000;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.5s;
+        }
+
+        .section-content {
+            background: var(--theme-bg-card);
+            border: 2px solid var(--theme-primary);
+            border-top: none;
+            padding: 15px;
+            border-radius: 0 0 5px 5px;
+            transition: all 0.5s;
+        }
+
+        /* Visitor counter */
+        .visitor-counter {
+            text-align: center;
+            padding: 15px;
+            background: #000;
+            border: 3px solid var(--theme-primary);
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .counter-display {
+            font-family: var(--theme-font-display);
+            font-size: 20px;
+            color: var(--theme-accent2);
+            text-shadow: 0 0 10px var(--theme-accent2);
+            letter-spacing: 3px;
+        }
+
+        .counter-label {
+            font-size: 12px;
+            color: var(--theme-accent);
+            margin-top: 5px;
+        }
+
+        [data-theme="startrek"] .visitor-counter {
+            border-left: 10px solid var(--theme-secondary);
+            border-radius: 0;
+        }
+
+        [data-theme="startrek"] .counter-label::before {
+            content: 'STARDATE: ';
+        }
+
+        [data-theme="knightrider"] .visitor-counter {
+            border-color: #ff0000;
+            box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        [data-theme="kungfu"] .visitor-counter {
+            border: 3px double #ffd700;
+            background: linear-gradient(180deg, #1a0a0a, #0a0000);
+        }
+
+        /* Contact items */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+        }
+
+        .contact-item:last-child { border-bottom: none; }
+        .contact-icon { font-size: 20px; }
+        .contact-text { color: var(--theme-secondary); }
+        .contact-text a { color: var(--theme-secondary); text-decoration: none; }
+        .contact-text a:hover { color: var(--theme-primary); text-decoration: underline; }
+
+        /* Top Friends Grid */
+        .top-friends-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .friend-card {
+            text-align: center;
+            padding: 10px 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--theme-secondary);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .friend-card:hover {
+            transform: scale(1.1) rotate(2deg);
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 15px var(--theme-glow);
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #333, #666);
+            border-radius: 5px;
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--theme-accent2);
+        }
+
+        .friend-name {
+            font-size: 9px;
+            color: var(--theme-accent);
+        }
+
+        /* About section */
+        .about-section { line-height: 1.8; }
+
+        .about-section h2 {
+            color: var(--theme-primary);
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-section p {
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .highlight {
+            color: var(--theme-accent2);
+            font-weight: bold;
+        }
+
+        /* Interests/Services tags */
+        .interests-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .interest-tag {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Crew grid */
+        .crew-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .crew-member {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--theme-secondary);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .crew-member:hover {
+            border-color: var(--theme-primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--theme-glow);
+        }
+
+        .crew-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .crew-name {
+            font-weight: bold;
+            color: var(--theme-accent);
+            font-size: 12px;
+        }
+
+        .crew-role {
+            font-size: 10px;
+            color: var(--theme-secondary);
+            margin-top: 5px;
+        }
+
+        /* Values list */
+        .values-list { list-style: none; }
+
+        .values-list li {
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .values-list li:last-child { border-bottom: none; }
+
+        .value-icon {
+            font-size: 20px;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .value-text strong { color: var(--theme-primary); }
+
+        /* Guestbook */
+        .guestbook-entry {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 3px solid var(--theme-primary);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .guestbook-author {
+            color: var(--theme-accent);
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .guestbook-date { color: #666; font-size: 10px; margin-left: 10px; }
+        .guestbook-message { margin-top: 5px; color: #ccc; font-size: 14px; }
+
+        /* Page sections */
+        .page-section { display: none; }
+
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Footer */
+        .myspace-footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 30px;
+            border-top: 2px dashed var(--theme-primary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: var(--theme-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover { color: var(--theme-primary); }
+
+        .made-with { font-size: 12px; color: #666; }
+
+        .made-with span {
+            color: var(--theme-primary);
+            animation: heartbeat 1s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .blink { animation: blink 1s step-end infinite; }
+        .red-o { color: #C52638; }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Under construction */
+        .under-construction { text-align: center; padding: 20px; margin-top: 30px; }
+
+        .construction-text {
+            font-family: var(--theme-font-display);
+            font-size: 12px;
+            color: var(--theme-accent);
+            animation: blink 0.5s step-end infinite;
+        }
+
+        /* Status section */
+        .status-section { text-align: center; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--theme-primary), var(--theme-secondary));
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body data-theme="myspace">
+    <!-- Background Effects -->
+    <div class="bg-effect starfield" id="starfield"></div>
+    <div class="bg-effect warp-field" id="warpField"></div>
+    <div class="kungfu-overlay"></div>
+
+    <!-- Knight Rider Scanner -->
+    <div class="kitt-scanner">
+        <div class="kitt-light"></div>
+    </div>
+
+    <!-- G.I. Joe Radar -->
+    <div class="gijoe-radar">
+        <div class="radar-grid"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-blip" style="top: 30%; left: 60%;"></div>
+        <div class="radar-blip" style="top: 70%; left: 40%;"></div>
+        <div class="radar-blip" style="top: 45%; left: 75%;"></div>
+    </div>
+
+    <!-- Transformers Logo & Grid -->
+    <div class="autobot-logo">&#x2699;</div>
+    <div class="transform-grid"></div>
+
+    <!-- My Little Pony Rainbow -->
+    <div class="rainbow-stripe"></div>
+    <div class="sparkle-field" id="sparkleField"></div>
+
+    <!-- Simpsons Clouds & Donuts -->
+    <div class="simpsons-clouds" id="simpsonsClouds"></div>
+
+    <!-- A-Team Effects -->
+    <div class="ateam-stripe"></div>
+    <div class="ateam-bullet-holes" id="ateamBullets"></div>
+
+    <!-- Theme Music Player - Using JZZ MIDI library -->
+    <script src="https://cdn.jsdelivr.net/npm/jzz@1.8.0/javascript/JZZ.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jzz-midi-smf@1.8.0/javascript/JZZ.midi.SMF.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jzz-synth-tiny@1.3.0/javascript/JZZ.synth.Tiny.js"></script>
+    <div class="theme-music-player" id="themeMusicPlayer">
+        <span class="music-label" id="musicLabel">Theme Music</span>
+        <button class="music-toggle" id="musicToggle" onclick="toggleThemeMusic()">
+            <span class="music-icon" id="musicIcon">🔇</span>
+        </button>
+    </div>
+
+    <!-- Kung Fu Dragon Border -->
+    <div class="dragon-border">龍 RŌNIN 龍</div>
+
+    <!-- Theme Selector -->
+    <div class="theme-selector">
+        <div class="theme-selector-title">Choose Theme</div>
+        <div class="theme-buttons">
+            <button class="theme-btn active" onclick="setTheme('myspace')" data-theme="myspace">
+                <span class="theme-btn-icon">💾</span> MySpace
+            </button>
+            <button class="theme-btn" onclick="setTheme('startrek')" data-theme="startrek">
+                <span class="theme-btn-icon">🖖</span> Star Trek
+            </button>
+            <button class="theme-btn" onclick="setTheme('knightrider')" data-theme="knightrider">
+                <span class="theme-btn-icon">🚗</span> Knight Rider
+            </button>
+            <button class="theme-btn" onclick="setTheme('kungfu')" data-theme="kungfu">
+                <span class="theme-btn-icon">🥋</span> Kung Fu
+            </button>
+            <button class="theme-btn" onclick="setTheme('gijoe')" data-theme="gijoe">
+                <span class="theme-btn-icon">🎖️</span> G.I. Joe
+            </button>
+            <button class="theme-btn" onclick="setTheme('transformers')" data-theme="transformers">
+                <span class="theme-btn-icon">🤖</span> Transformers
+            </button>
+            <button class="theme-btn" onclick="setTheme('mlp')" data-theme="mlp">
+                <span class="theme-btn-icon">🦄</span> My Little Pony
+            </button>
+            <button class="theme-btn" onclick="setTheme('simpsons')" data-theme="simpsons">
+                <span class="theme-btn-icon">🍩</span> Simpsons
+            </button>
+            <button class="theme-btn" onclick="setTheme('ateam')" data-theme="ateam">
+                <span class="theme-btn-icon">🚐</span> A-Team
+            </button>
+        </div>
+    </div>
+
+    <script src="iframe-bridge.js"></script>
+
+    <div class="myspace-wrapper">
+        <!-- Kung Fu Title Card -->
+        <div class="kungfu-title">
+            <h1>飛龍在天</h1>
+            <div class="kungfu-subtitle">welcome to the <span style="color: var(--theme-primary, #C52638);">ō</span>-tranet</div>
+        </div>
+
+        <!-- Marquee Banner -->
+        <div class="marquee-container">
+            <div class="marquee-text" id="marqueeText">
+                ★彡 WELCOME TO RŌNIN CONSULTING 彡★ Expert Engineers Delivering Superior Software!! ★彡 Nashville's #1 Software Development Team ★彡 Now with AI Services!! ★彡 Thanks 4 stopping by!! ★彡
+            </div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="glitter-border">
+            <div class="glitter-border-inner">
+                <div class="profile-header">
+                    <div class="profile-pic">⚔️</div>
+                    <div class="profile-name" id="profileName">~*~R<span class="red-o">ō</span>NiN cOnSuLtInG~*~</div>
+                    <div class="profile-tagline">★ Expert Engineers Delivering Superior Software ★</div>
+
+                    <!-- Knight Rider Voice Indicator -->
+                    <div class="kitt-voice">
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                    </div>
+
+                    <p style="margin-top: 15px; color: #888;" id="listeningTo">
+                        <span class="blink">♪</span> Currently Listening To: Coding Lo-Fi Beats <span class="blink">♪</span>
+                    </p>
+                </div>
+
+                <!-- Navigation Pills -->
+                <div class="nav-pills">
+                    <button class="nav-pill active" onclick="showPage('home')">🏠 Home</button>
+                    <button class="nav-pill" onclick="showPage('about')">👤 About Us</button>
+                    <button class="nav-pill" onclick="showPage('services')">💼 Services</button>
+                    <button class="nav-pill" onclick="showPage('crew')">👥 The Crew</button>
+                    <button class="nav-pill" onclick="showPage('guestbook')">📝 Guestbook</button>
+                    <button class="nav-pill" onclick="showPage('contact')">📧 Contact</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="myspace-columns">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Visitor Counter -->
+                <div class="visitor-counter">
+                    <div class="counter-display" id="visitorCount">001337</div>
+                    <div class="counter-label" id="counterLabel">~*~ Visitors Since 2010 ~*~</div>
+                </div>
+
+                <!-- Contact Section -->
+                <section>
+                    <div class="section-title">📞 Contact R<span class="red-o">ō</span>nin</div>
+                    <div class="section-content">
+                        <div class="contact-item">
+                            <span class="contact-icon">📱</span>
+                            <span class="contact-text">(866) 543-7683</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <span class="contact-text"><a href="mailto:info@ronin.consulting">info@ronin.consulting</a></span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span class="contact-text">Franklin, TN</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">🌐</span>
+                            <span class="contact-text"><a href="https://ronin.consulting" target="_blank">ronin.consulting</a></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Top Friends (Clients) -->
+                <section>
+                    <div class="section-title">⭐ Top Friends</div>
+                    <div class="section-content">
+                        <div class="top-friends-grid">
+                            <div class="friend-card"><div class="friend-avatar">HCA</div><div class="friend-name">HCA Healthcare</div></div>
+                            <div class="friend-card"><div class="friend-avatar">L3</div><div class="friend-name">L3Harris</div></div>
+                            <div class="friend-card"><div class="friend-avatar">🚗</div><div class="friend-name">Volvo</div></div>
+                            <div class="friend-card"><div class="friend-avatar">JH</div><div class="friend-name">Jack Henry</div></div>
+                            <div class="friend-card"><div class="friend-avatar">GE</div><div class="friend-name">GoEngineer</div></div>
+                            <div class="friend-card"><div class="friend-avatar">NH</div><div class="friend-name">Newport Health</div></div>
+                            <div class="friend-card"><div class="friend-avatar">Q</div><div class="friend-name">Quantum</div></div>
+                            <div class="friend-card"><div class="friend-avatar">P</div><div class="friend-name">Parallon</div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Status -->
+                <section>
+                    <div class="section-title">🟢 Status</div>
+                    <div class="section-content status-section">
+                        <p style="color: var(--theme-accent2);">
+                            <span class="blink">●</span> <span id="statusText">ONLINE & CODING</span>
+                        </p>
+                        <p style="font-size: 11px; color: #888; margin-top: 10px;" id="moodText">
+                            Last Login: Just now!<br>
+                            Mood: <span style="color: var(--theme-accent);">💻 Caffeinated</span>
+                        </p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- HOME PAGE -->
+                <div class="page-section active" id="page-home">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>✨ Welcome!! ✨</h2>
+                            <p id="welcomeText">
+                                HeY wHaT's Up!!! Thanks 4 checking out <span class="highlight">Rōnin Consulting</span>!!!
+                                We're Nashville's premier software development crew and we're here 2 help u build
+                                <span class="highlight">AMAZING</span> software!! 🚀
+                            </p>
+                            <p>
+                                We've been doing this since 2010 and we've worked with some pretty
+                                <span style="color: var(--theme-primary);">~*~AWESOME~*~</span> companies!!
+                            </p>
+                            <p>
+                                Whether u need <span class="highlight">Custom Development</span>,
+                                <span class="highlight">Cloud Migration</span>, or even
+                                <span class="highlight">AI Services</span> - we got u covered!! 💯
+                            </p>
+
+                            <h2 style="margin-top: 30px;">🎯 What We Do</h2>
+                            <div class="interests-list">
+                                <span class="interest-tag">Custom Development</span>
+                                <span class="interest-tag">Cloud Services</span>
+                                <span class="interest-tag">System Integration</span>
+                                <span class="interest-tag">AI & Machine Learning</span>
+                                <span class="interest-tag">Salesforce</span>
+                                <span class="interest-tag">Project Outsourcing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABOUT PAGE -->
+                <div class="page-section" id="page-about">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>👤 About Rōnin</h2>
+                            <p>
+                                Rōnin Consulting solves business needs through <span class="highlight">exceptional software development</span>.
+                                We focus on assembling strong, balanced teams that are knowledgeable, trustworthy, and reliable!!
+                            </p>
+
+                            <h2 style="margin-top: 30px;">⚔️ The Rōnin Way</h2>
+                            <ul class="values-list">
+                                <li><span class="value-icon">💫</span><span class="value-text"><strong>Foster lasting relationships</strong> - Built on trust and mutual support</span></li>
+                                <li><span class="value-icon">🔥</span><span class="value-text"><strong>Face challenges head-on</strong> - Challenges promote confidence</span></li>
+                                <li><span class="value-icon">🛤️</span><span class="value-text"><strong>All paths lead to progress</strong> - Commitment yields experience</span></li>
+                                <li><span class="value-icon">✊</span><span class="value-text"><strong>Words backed by action</strong> - Follow-through and commitment</span></li>
+                                <li><span class="value-icon">🎯</span><span class="value-text"><strong>Own your strengths</strong> - Continuous self-improvement</span></li>
+                                <li><span class="value-icon">🔄</span><span class="value-text"><strong>Tight feedback loop</strong> - Consistent review and growth</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SERVICES PAGE -->
+                <div class="page-section" id="page-services">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>💼 Our Services</h2>
+                            <h3 style="color: var(--theme-primary); margin: 20px 0 10px;">🖥️ Custom Development</h3>
+                            <p>Building secure, scalable, maintainable solutions tailored 2 YOUR needs!!</p>
+                            <h3 style="color: var(--theme-secondary); margin: 20px 0 10px;">☁️ Cloud Migration</h3>
+                            <p>Azure, AWS, Google Cloud - we speak ALL the cloud languages!!</p>
+                            <h3 style="color: var(--theme-accent2); margin: 20px 0 10px;">🔗 System Integration</h3>
+                            <p>Making all ur systems talk 2 each other like best friends!!</p>
+                            <h3 style="color: var(--theme-accent); margin: 20px 0 10px;">🤖 AI Services</h3>
+                            <p>Gateway to AI - harness the power of artificial intelligence!!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CREW PAGE -->
+                <div class="page-section" id="page-crew">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>👥 The Crew</h2>
+                            <h3 style="color: var(--theme-accent); margin: 20px 0 15px;">⭐ Owners</h3>
+                            <div class="crew-grid">
+                                <div class="crew-member"><div class="crew-avatar">👨‍💻</div><div class="crew-name">Byron McClain</div><div class="crew-role">Enterprise Architect</div></div>
+                                <div class="crew-member"><div class="crew-avatar">👨‍💻</div><div class="crew-name">Ryan Kettrey</div><div class="crew-role">Enterprise Architect</div></div>
+                                <div class="crew-member"><div class="crew-avatar">👔</div><div class="crew-name">Chuck Harris</div><div class="crew-role">Business Architect</div></div>
+                                <div class="crew-member"><div class="crew-avatar">🎯</div><div class="crew-name">Guy Edwards</div><div class="crew-role">COO</div></div>
+                            </div>
+                            <h3 style="color: var(--theme-secondary); margin: 30px 0 15px;">🤝 Partners</h3>
+                            <div class="crew-grid">
+                                <div class="crew-member"><div class="crew-avatar">🎨</div><div class="crew-name">Brian Weiss</div><div class="crew-role">UI/UX Architect</div></div>
+                                <div class="crew-member"><div class="crew-avatar">⚡</div><div class="crew-name">Sean Thurman</div><div class="crew-role">Sr. Engineer</div></div>
+                                <div class="crew-member"><div class="crew-avatar">🔧</div><div class="crew-name">Derek Adams</div><div class="crew-role">Sr. Engineer</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GUESTBOOK PAGE -->
+                <div class="page-section" id="page-guestbook">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>📝 Guestbook</h2>
+                            <div class="guestbook-entry"><span class="guestbook-author">~*xXCodeMasterXx*~</span><span class="guestbook-date">2 hrs ago</span><p class="guestbook-message">OMG u guys r the BEST!! Thx 4 building our app!! 💯🔥</p></div>
+                            <div class="guestbook-entry"><span class="guestbook-author">CloudNinja2000</span><span class="guestbook-date">Yesterday</span><p class="guestbook-message">Just migrated 2 the cloud with Ronin - smooth like butter!! ☁️✨</p></div>
+                            <div class="guestbook-entry"><span class="guestbook-author">SalesforceQueen</span><span class="guestbook-date">3 days ago</span><p class="guestbook-message">Best Salesforce team EVER!! 👑</p></div>
+                            <div class="guestbook-entry"><span class="guestbook-author">Captain Kirk</span><span class="guestbook-date">Stardate 47634.4</span><p class="guestbook-message">Their code is... logical. Live long and prosper! 🖖</p></div>
+                            <div class="guestbook-entry"><span class="guestbook-author">KITT</span><span class="guestbook-date">1985</span><p class="guestbook-message">Michael, these engineers are highly skilled. I approve. 🚗</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTACT PAGE -->
+                <div class="page-section" id="page-contact">
+                    <div class="glitter-border">
+                        <div class="glitter-border-inner about-section">
+                            <h2>📧 Contact Us</h2>
+                            <div style="margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                                <p style="margin-bottom: 15px;"><span style="color: var(--theme-primary);">📱 Phone:</span><br><span style="font-size: 20px; color: var(--theme-accent2);">(866) 543-7683</span></p>
+                                <p style="margin-bottom: 15px;"><span style="color: var(--theme-primary);">📧 Email:</span><br><a href="mailto:info@ronin.consulting" style="font-size: 18px; color: var(--theme-secondary);">info@ronin.consulting</a></p>
+                                <p style="margin-bottom: 15px;"><span style="color: var(--theme-primary);">📍 HQ:</span><br><span style="color: #ccc;">6640 Carothers Pkwy Suite 150<br>Franklin, TN 37067</span></p>
+                                <p><span style="color: var(--theme-primary);">🌍 Also in:</span><br><span style="color: var(--theme-accent);">Nashville • Atlanta</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="myspace-footer">
+            <div class="footer-links">
+                <a href="https://ronin.consulting" target="_blank">Official Site</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Careers</a>
+            </div>
+            <p class="made-with">Made with <span>♥</span> in Nashville, TN</p>
+            <p style="font-size: 10px; color: #444; margin-top: 10px;" id="footerNote">~*~ Thanks 4 visiting!! ~*~</p>
+        </div>
+    </div>
+
+    <script src="nav.js"></script>
+    <script>
+        // Theme configurations
+        const themeConfigs = {
+            myspace: {
+                marquee: "★彡 WELCOME TO RŌNIN CONSULTING 彡★ Expert Engineers Delivering Superior Software!! ★彡 Nashville's #1 Team ★彡",
+                profileName: "~*~RōNiN cOnSuLtInG~*~",
+                listening: '<span class="blink">♪</span> Currently Listening To: Coding Lo-Fi Beats <span class="blink">♪</span>',
+                status: "ONLINE & CODING",
+                mood: 'Last Login: Just now!<br>Mood: <span style="color: var(--theme-accent);">💻 Caffeinated</span>',
+                counterLabel: "~*~ Visitors Since 2010 ~*~",
+                footer: "~*~ Thanks 4 visiting!! ~*~",
+                welcome: 'HeY wHaT\'s Up!!! Thanks 4 checking out <span class="highlight">Rōnin Consulting</span>!!! We\'re Nashville\'s premier software development crew!! 🚀'
+            },
+            startrek: {
+                marquee: "◆ STARFLEET ENGINEERING CORPS ◆ RŌNIN CONSULTING ◆ SYSTEMS NOMINAL ◆ WARP CORE STABLE ◆ ALL STATIONS REPORT READY ◆",
+                profileName: "RŌNIN CONSULTING",
+                listening: '◆ COMPUTER: All systems operational. Ready for input.',
+                status: "SYSTEMS ONLINE",
+                mood: 'Stardate: ' + (47000 + Math.floor(Math.random() * 1000)) + '.' + Math.floor(Math.random() * 10) + '<br>Status: <span style="color: var(--theme-accent);">◆ ENGAGED</span>',
+                counterLabel: "Crew Complement:",
+                footer: "◆ UNITED FEDERATION OF CODE ◆",
+                welcome: 'Captain\'s Log: <span class="highlight">Rōnin Consulting</span> represents the finest engineering talent in the quadrant. Our mission: to explore new codebases, seek out new algorithms, and boldly deploy where no code has deployed before. 🖖'
+            },
+            knightrider: {
+                marquee: "▓▓▓ KNIGHT INDUSTRIES ▓▓▓ RŌNIN CONSULTING ▓▓▓ TURBO BOOST ENGAGED ▓▓▓ PURSUIT MODE ACTIVE ▓▓▓",
+                profileName: "RŌNIN INDUSTRIES",
+                listening: '◢◤ KITT: "Michael, I\'ve analyzed their code. It\'s exceptional."',
+                status: "PURSUIT MODE",
+                mood: 'Systems: FULLY OPERATIONAL<br>Mode: <span style="color: var(--theme-accent);">◢◤ TURBO BOOST</span>',
+                counterLabel: "Miles Traveled:",
+                footer: "◢◤ ONE MAN CAN MAKE A DIFFERENCE ◤◢",
+                welcome: 'KITT ANALYSIS: <span class="highlight">Rōnin Consulting</span> demonstrates superior engineering capabilities. Their code efficiency rating exceeds 99.7%. Michael, I recommend we engage their services immediately. Turbo Boost standing by. 🚗'
+            },
+            kungfu: {
+                marquee: "龍 飛龍在天 龍 RŌNIN CONSULTING 龍 THE WAY OF THE WARRIOR CODE 龍 MASTER YOUR CRAFT 龍",
+                profileName: "浪人 RŌNIN 浪人",
+                listening: '🥋 "A journey of a thousand deployments begins with a single commit."',
+                status: "武道 TRAINING",
+                mood: 'Discipline: UNWAVERING<br>Path: <span style="color: var(--theme-accent);">龍 WAY OF CODE</span>',
+                counterLabel: "Students of the Way:",
+                footer: "龍 THE CODE IS MIGHTIER THAN THE SWORD 龍",
+                welcome: 'ANCIENT WISDOM: The masters of <span class="highlight">Rōnin Consulting</span> have trained for many seasons in the sacred arts of software development. Like the dragon ascending to heaven, their code rises above all others. 🥋'
+            },
+            gijoe: {
+                marquee: "▓▓▓ G.I. JOE ▓▓▓ RŌNIN CONSULTING ▓▓▓ A REAL AMERICAN HERO ▓▓▓ KNOWING IS HALF THE BATTLE ▓▓▓ YO JOE! ▓▓▓",
+                profileName: "RŌNIN TASK FORCE",
+                listening: '🎖️ COMMAND: "Cobra activity detected in sector 7. Deploy the code!"',
+                status: "MISSION ACTIVE",
+                mood: 'Threat Level: ELEVATED<br>Status: <span style="color: var(--theme-accent);">🎖️ COMBAT READY</span>',
+                counterLabel: "Missions Completed:",
+                footer: "▓▓▓ YO JOE! ▓▓▓",
+                welcome: 'MISSION BRIEFING: <span class="highlight">Rōnin Consulting</span> is an elite software development task force. Our mission: neutralize bugs, deploy solutions, and protect our clients\' digital infrastructure. Knowing is half the battle - writing great code is the other half! YO JOE! 🎖️'
+            },
+            transformers: {
+                marquee: "◆◆◆ AUTOBOTS ◆◆◆ RŌNIN CONSULTING ◆◆◆ MORE THAN MEETS THE EYE ◆◆◆ ROLL OUT! ◆◆◆ TRANSFORM AND DEPLOY ◆◆◆",
+                profileName: "RŌNIN PRIME",
+                listening: '🤖 OPTIMUS: "Freedom is the right of all sentient codebases."',
+                status: "TRANSFORMED",
+                mood: 'Energon: FULLY CHARGED<br>Mode: <span style="color: var(--theme-accent);">🤖 ROBOT MODE</span>',
+                counterLabel: "Transformations:",
+                footer: "◆◆◆ AUTOBOTS, ROLL OUT! ◆◆◆",
+                welcome: 'CYBERTRON LOG: <span class="highlight">Rōnin Consulting</span> - more than meets the eye! We transform complex requirements into elegant solutions. Our code is forged from pure energon. Autobots... DEPLOY! 🤖'
+            },
+            mlp: {
+                marquee: "✨🌈 WELCOME TO RŌNIN CONSULTING 🌈✨ FRIENDSHIP IS MAGIC ✨ CODING IS ALSO MAGIC ✨ EVERYPONY WELCOME 🦄✨",
+                profileName: "✨ Rōnin Sparkle ✨",
+                listening: '🦄 "Dear Princess Celestia, today I learned about microservices..."',
+                status: "SPARKLE MODE",
+                mood: 'Magic Level: MAXIMUM<br>Feeling: <span style="color: var(--theme-accent);">🌈 20% COOLER</span>',
+                counterLabel: "Friendship Points:",
+                footer: "✨ FRIENDSHIP IS MAGIC ✨",
+                welcome: 'Dear Everypony! Welcome to <span class="highlight">Rōnin Consulting</span>! We believe that the magic of friendship extends to coding too! Together, we can create software that\'s 20% cooler! Let\'s spread harmony through elegant code! 🦄🌈✨'
+            },
+            simpsons: {
+                marquee: "🍩 D'OH! 🍩 WELCOME TO RŌNIN CONSULTING 🍩 SPRINGFIELD'S FINEST SOFTWARE TEAM 🍩 EXCELLENT! 🍩 DON'T HAVE A COW, MAN! 🍩",
+                profileName: "Rōnin Simpson",
+                listening: '🍩 Homer: "Mmm... well-documented code..."',
+                status: "AY CARAMBA!",
+                mood: 'Donut Level: CRITICAL<br>Status: <span style="color: var(--theme-accent);">🍺 AT MOE\'S</span>',
+                counterLabel: "Donuts Consumed:",
+                footer: "🍩 EAT MY SHORTS! 🍩",
+                welcome: 'D\'OH! Welcome to <span class="highlight">Rōnin Consulting</span>! We\'re Springfield\'s premier software development team! Our code is so good, even Mr. Burns would approve (and that\'s saying something). We work hard so you don\'t have to - now where\'s my donut? 🍩'
+            },
+            ateam: {
+                marquee: "🚐 THE A-TEAM 🚐 RŌNIN CONSULTING 🚐 I LOVE IT WHEN A PLAN COMES TOGETHER 🚐 I PITY THE FOOL WHO DOESN'T HIRE US 🚐",
+                profileName: "THE RŌNIN-TEAM",
+                listening: '🚐 Hannibal: "I love it when a deployment comes together."',
+                status: "ON THE RUN",
+                mood: 'Mission: ACCEPTED<br>Status: <span style="color: var(--theme-accent);">⛓️ PITY THE FOOL</span>',
+                counterLabel: "Missions Completed:",
+                footer: "🚐 I PITY THE FOOL 🚐",
+                welcome: 'In 1972, a crack commando unit was sent to prison by a military court for a crime they didn\'t commit. These men promptly escaped and now survive as soldiers of fortune. If you have a software problem, if no one else can help, and if you can find them, maybe you can hire... <span class="highlight">THE RŌNIN-TEAM</span>. 🚐'
+            }
+        };
+
+        // Set theme
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('ronin_theme', theme);
+
+            // Update theme buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.theme === theme) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update content based on theme
+            const config = themeConfigs[theme];
+            document.getElementById('marqueeText').innerHTML = config.marquee;
+            document.getElementById('profileName').innerHTML = config.profileName;
+            document.getElementById('listeningTo').innerHTML = config.listening;
+            document.getElementById('statusText').innerHTML = config.status;
+            document.getElementById('moodText').innerHTML = config.mood;
+            document.getElementById('counterLabel').innerHTML = config.counterLabel;
+            document.getElementById('footerNote').innerHTML = config.footer;
+            document.getElementById('welcomeText').innerHTML = config.welcome;
+
+            // Recreate background effects
+            if (theme === 'startrek') {
+                createWarpField();
+            } else if (theme === 'mlp') {
+                createStarfield();
+                createSparkles();
+            } else if (theme === 'simpsons') {
+                createSimpsonsEffects();
+            } else if (theme === 'ateam') {
+                createATeamEffects();
+            } else {
+                createStarfield();
+            }
+
+            // Update theme music
+            updateThemeMusic(theme);
+        }
+
+        // Create MLP sparkles
+        function createSparkles() {
+            const sparkleField = document.getElementById('sparkleField');
+            if (!sparkleField) return;
+            sparkleField.innerHTML = '';
+            const colors = ['#ff69b4', '#87ceeb', '#dda0dd', '#98fb98', '#ffb6c1', '#ffd700'];
+            for (let i = 0; i < 30; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.innerHTML = ['✨', '⭐', '💖', '🌟', '💫'][Math.floor(Math.random() * 5)];
+                sparkle.style.cssText = `
+                    position: absolute;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    font-size: ${Math.random() * 20 + 10}px;
+                    animation: sparkleFloat ${Math.random() * 5 + 3}s ease-in-out infinite;
+                    animation-delay: ${Math.random() * 3}s;
+                    opacity: 0.7;
+                `;
+                sparkleField.appendChild(sparkle);
+            }
+        }
+
+        // Create Simpsons clouds and donuts
+        function createSimpsonsEffects() {
+            const container = document.getElementById('simpsonsClouds');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Create clouds
+            for (let i = 0; i < 5; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.top = (Math.random() * 40 + 10) + '%';
+                cloud.style.width = (Math.random() * 30 + 40) + 'px';
+                cloud.style.height = cloud.style.width;
+                cloud.style.animationDuration = (Math.random() * 30 + 40) + 's';
+                cloud.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(cloud);
+            }
+
+            // Create floating donuts
+            for (let i = 0; i < 6; i++) {
+                const donut = document.createElement('div');
+                donut.className = 'donut';
+                donut.style.left = (Math.random() * 90 + 5) + '%';
+                donut.style.top = (Math.random() * 70 + 15) + '%';
+                donut.style.animationDelay = (Math.random() * 5) + 's';
+                donut.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+                container.appendChild(donut);
+            }
+        }
+
+        // Create A-Team bullet holes
+        function createATeamEffects() {
+            const container = document.getElementById('ateamBullets');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Scatter bullet holes around the edges
+            for (let i = 0; i < 15; i++) {
+                const bullet = document.createElement('div');
+                bullet.className = 'bullet-hole';
+                // Keep bullets near edges
+                const side = Math.floor(Math.random() * 4);
+                if (side === 0) { // top
+                    bullet.style.left = (Math.random() * 90 + 5) + '%';
+                    bullet.style.top = (Math.random() * 15 + 5) + '%';
+                } else if (side === 1) { // right
+                    bullet.style.right = (Math.random() * 10 + 2) + '%';
+                    bullet.style.top = (Math.random() * 80 + 10) + '%';
+                } else if (side === 2) { // bottom
+                    bullet.style.left = (Math.random() * 90 + 5) + '%';
+                    bullet.style.bottom = (Math.random() * 15 + 5) + '%';
+                } else { // left
+                    bullet.style.left = (Math.random() * 10 + 2) + '%';
+                    bullet.style.top = (Math.random() * 80 + 10) + '%';
+                }
+                bullet.style.transform = `scale(${Math.random() * 0.5 + 0.7}) rotate(${Math.random() * 360}deg)`;
+                container.appendChild(bullet);
+            }
+        }
+
+        // Create starfield (MySpace & Kung Fu)
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            starfield.innerHTML = '';
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                starfield.appendChild(star);
+            }
+        }
+
+        // Create warp field (Star Trek)
+        function createWarpField() {
+            const warpField = document.getElementById('warpField');
+            warpField.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'warp-star';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 100 + 50) + 'px';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                warpField.appendChild(star);
+            }
+        }
+
+        // Increment visitor counter
+        function incrementCounter() {
+            const counter = document.getElementById('visitorCount');
+            let count = parseInt(localStorage.getItem('ronin_visitors') || '1337');
+            count++;
+            localStorage.setItem('ronin_visitors', count);
+            counter.textContent = count.toString().padStart(6, '0');
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('ronin_theme') || 'myspace';
+            document.body.setAttribute('data-theme', savedTheme);
+
+            // Update button state
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.theme === savedTheme) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Apply theme config
+            const config = themeConfigs[savedTheme];
+            if (config) {
+                document.getElementById('marqueeText').innerHTML = config.marquee;
+                document.getElementById('profileName').innerHTML = config.profileName;
+                document.getElementById('listeningTo').innerHTML = config.listening;
+                document.getElementById('statusText').innerHTML = config.status;
+                document.getElementById('moodText').innerHTML = config.mood;
+                document.getElementById('counterLabel').innerHTML = config.counterLabel;
+                document.getElementById('footerNote').innerHTML = config.footer;
+                document.getElementById('welcomeText').innerHTML = config.welcome;
+            }
+
+            // Create effects
+            if (savedTheme === 'startrek') {
+                createWarpField();
+            } else if (savedTheme === 'mlp') {
+                createStarfield();
+                createSparkles();
+            } else if (savedTheme === 'simpsons') {
+                createSimpsonsEffects();
+            } else if (savedTheme === 'ateam') {
+                createATeamEffects();
+            } else {
+                createStarfield();
+            }
+
+            // Initialize theme music
+            setTimeout(() => updateThemeMusic(savedTheme), 500);
+
+            incrementCounter();
+        });
+
+        // Theme music mapping
+        const themeMidiFiles = {
+            myspace: null,  // No MIDI for MySpace
+            startrek: 'ronin/startrek.mid',
+            knightrider: 'ronin/knightrider.mid',
+            kungfu: 'ronin/kungfu.mid',
+            gijoe: 'ronin/gijoe.mid',
+            transformers: 'ronin/transformers.mid',
+            mlp: null,  // No MIDI for MLP
+            simpsons: 'ronin/simpsons.mid',
+            ateam: 'ronin/ateam.mid'
+        };
+
+        let isMusicPlaying = false;
+        let currentMidiFile = null;
+        let midiPlayer = null;
+        let midiSynth = null;
+
+        // Initialize JZZ MIDI synth
+        async function initMidiPlayer() {
+            try {
+                await JZZ.synth.Tiny.register('Web Audio');
+                midiSynth = JZZ().openMidiOut('Web Audio');
+                console.log('MIDI synth initialized');
+            } catch (e) {
+                console.error('Failed to initialize MIDI synth:', e);
+            }
+        }
+
+        // Toggle theme music
+        async function toggleThemeMusic() {
+            const btn = document.getElementById('musicToggle');
+            const icon = document.getElementById('musicIcon');
+
+            if (!currentMidiFile) {
+                return;
+            }
+
+            if (isMusicPlaying) {
+                // Stop music
+                if (midiPlayer) {
+                    midiPlayer.stop();
+                    midiPlayer = null;
+                }
+                isMusicPlaying = false;
+                btn.classList.remove('playing');
+                icon.textContent = '🔇';
+            } else {
+                // Start music
+                try {
+                    if (!midiSynth) await initMidiPlayer();
+                    const response = await fetch(currentMidiFile);
+                    const data = await response.arrayBuffer();
+                    const smf = new JZZ.MIDI.SMF(data);
+                    midiPlayer = smf.player();
+                    midiPlayer.connect(midiSynth);
+                    midiPlayer.loop(true);
+                    midiPlayer.play();
+                    isMusicPlaying = true;
+                    btn.classList.add('playing');
+                    icon.textContent = '🔊';
+                } catch (e) {
+                    console.error('Failed to play MIDI:', e);
+                }
+            }
+        }
+
+        // Update theme music when theme changes
+        function updateThemeMusic(theme) {
+            const label = document.getElementById('musicLabel');
+            const btn = document.getElementById('musicToggle');
+            const icon = document.getElementById('musicIcon');
+
+            // Stop current music
+            if (isMusicPlaying && midiPlayer) {
+                midiPlayer.stop();
+                midiPlayer = null;
+                isMusicPlaying = false;
+                if (btn) btn.classList.remove('playing');
+                if (icon) icon.textContent = '🔇';
+            }
+
+            const midiFile = themeMidiFiles[theme];
+            currentMidiFile = midiFile;
+
+            if (midiFile) {
+                if (label) label.textContent = theme.charAt(0).toUpperCase() + theme.slice(1) + ' Theme';
+                if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+            } else {
+                if (label) label.textContent = 'No Music';
+                if (btn) { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+            }
+        }
+
+        // Sparkle trail on mouse move (for MySpace theme)
+        document.addEventListener('mousemove', (e) => {
+            if (document.body.getAttribute('data-theme') !== 'myspace') return;
+            if (Math.random() > 0.95) {
+                const sparkle = document.createElement('div');
+                sparkle.innerHTML = ['✨', '💫', '⭐'][Math.floor(Math.random() * 3)];
+                sparkle.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;pointer-events:none;z-index:9999;font-size:16px;transition:all 1s ease-out;`;
+                document.body.appendChild(sparkle);
+                setTimeout(() => { sparkle.style.opacity = '0'; sparkle.style.transform = 'translateY(-50px) scale(0)'; }, 50);
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+        });
+    </script>
+</body>
+</html>

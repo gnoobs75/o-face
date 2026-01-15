@@ -8,8 +8,9 @@ const NAV_PAGES = [
     { id: 'kabuki', label: 'Kabuki', href: 'kabuki.html', class: 'kabuki-btn', draggable: true },
     { id: 'arcade', label: 'Arcade', href: 'arcade.html', class: 'arcade-btn', draggable: true },
     { id: 'soundboard', label: 'Soundboard', href: 'soundboard.html', class: 'soundboard-btn', draggable: true },
+    { id: 'ronin', label: '⚔️ Rōnin', href: 'ronin.html', class: 'ronin-btn', draggable: true },
     { id: 'terminal', label: '&gt;_ Terminal', action: 'openTerminal', class: 'terminal-btn', draggable: true },
-    { id: 'music', label: '&#9835; Music', action: 'togglePlayer', class: 'music-btn', draggable: true }
+    { id: 'music', label: '&#9835; ō-Amp', action: 'togglePlayer', class: 'music-btn', draggable: true }
 ];
 
 // Get current page ID from filename
@@ -23,6 +24,7 @@ function getCurrentPageId() {
     if (filename === 'kabuki.html') return 'kabuki';
     if (filename === 'arcade.html') return 'arcade';
     if (filename === 'soundboard.html') return 'soundboard';
+    if (filename === 'ronin.html') return 'ronin';
     if (filename === 'terminals.html') return 'terminal';
     return null;
 }
@@ -60,7 +62,7 @@ function buildNavHTML(currentPageId) {
     let html = `
     <nav class="nav-ribbon">
         <div class="nav-left" id="navButtonContainer">
-            <span class="nav-brand"><span>o</span>-face</span>`;
+            <span class="nav-brand"><span>ō</span>-face</span>`;
 
     pages.forEach(page => {
         const isActive = page.id === currentPageId;
@@ -91,7 +93,32 @@ function buildNavHTML(currentPageId) {
 
 // Navigation functions
 function navGoTo(href) {
-    window.location.href = href;
+    // Check if we're in an iframe inside the dashboard
+    const isInIframe = window.parent !== window;
+
+    if (isInIframe) {
+        // Tell parent dashboard to navigate
+        window.parent.postMessage({
+            type: 'navigate',
+            href: href,
+            pageId: getPageIdFromHref(href)
+        }, '*');
+    } else {
+        // Direct navigation (standalone mode)
+        window.location.href = href;
+    }
+}
+
+// Get page ID from href for navigation
+function getPageIdFromHref(href) {
+    if (href === 'meme.html') return 'memes';
+    if (href === 'whiteboard.html') return 'whiteboard';
+    if (href === 'kabuki.html') return 'kabuki';
+    if (href === 'arcade.html') return 'arcade';
+    if (href === 'soundboard.html') return 'soundboard';
+    if (href === 'ronin.html') return 'ronin';
+    if (href === 'splash.html' || href === 'dashboard.html') return 'home';
+    return null;
 }
 
 function navMinimize() {

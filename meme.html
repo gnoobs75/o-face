@@ -668,15 +668,15 @@
             min-width: 100px;
         }
 
-        /* Favorites styles */
+        /* Favorites styles - Horizontal Slider */
         .favorites-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             margin-top: 30px;
         }
 
         .favorites-section {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .favorites-header {
@@ -689,21 +689,93 @@
         .favorites-header h3 {
             font-size: 1.2rem;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .favorites-header h3 .count {
+            background: var(--accent);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Slider wrapper with arrows */
+        .favorites-slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .favorites-slider-arrow {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .favorites-slider-arrow:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .favorites-slider-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .favorites-slider {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .favorites-slider::-webkit-scrollbar {
+            display: none;
         }
 
         .favorites-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            display: flex;
+            gap: 15px;
+            padding: 10px 5px;
         }
 
         .favorites-grid .fav-item {
             position: relative;
-            aspect-ratio: 1;
-            border-radius: 8px;
+            width: 140px;
+            height: 140px;
+            flex-shrink: 0;
+            border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            background: var(--bg-card);
+        }
+
+        .favorites-grid .fav-item:hover {
+            transform: scale(1.08);
+            border-color: var(--accent);
+            box-shadow: 0 8px 25px rgba(197, 38, 56, 0.3);
+            z-index: 5;
         }
 
         .favorites-grid .fav-item img {
@@ -714,21 +786,48 @@
 
         .favorites-grid .fav-item .remove-fav {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.7);
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
             border: none;
             color: var(--accent);
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 14px;
-            display: none;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         .favorites-grid .fav-item:hover .remove-fav {
-            display: block;
+            opacity: 1;
+        }
+
+        .favorites-grid .fav-item .fav-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: white;
+            font-size: 10px;
+            padding: 20px 8px 8px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .favorites-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            color: var(--text-muted);
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px dashed var(--border);
         }
 
         .favorites-actions {
@@ -1737,27 +1836,42 @@
             <div class="favorites-container">
                 <div class="favorites-section">
                     <div class="favorites-header">
-                        <h3>Favorite GIFs</h3>
+                        <h3>Favorite GIFs <span class="count" id="favGifsCount">0</span></h3>
                     </div>
-                    <div class="favorites-grid" id="favGifsGrid">
-                        <p class="hint">No favorite GIFs yet. Star a GIF to add it!</p>
+                    <div class="favorites-slider-wrapper">
+                        <button class="favorites-slider-arrow" onclick="slideLeft('favGifsSlider')">◀</button>
+                        <div class="favorites-slider" id="favGifsSlider">
+                            <div class="favorites-grid" id="favGifsGrid"></div>
+                        </div>
+                        <button class="favorites-slider-arrow" onclick="slideRight('favGifsSlider')">▶</button>
                     </div>
+                    <div class="favorites-empty" id="favGifsEmpty">No favorite GIFs yet. Star a GIF to add it!</div>
                 </div>
                 <div class="favorites-section">
                     <div class="favorites-header">
-                        <h3>Favorite Templates</h3>
+                        <h3>Favorite Templates <span class="count" id="favTemplatesCount">0</span></h3>
                     </div>
-                    <div class="favorites-grid" id="favTemplatesGrid">
-                        <p class="hint">No favorite templates yet. Star a template to add it!</p>
+                    <div class="favorites-slider-wrapper">
+                        <button class="favorites-slider-arrow" onclick="slideLeft('favTemplatesSlider')">◀</button>
+                        <div class="favorites-slider" id="favTemplatesSlider">
+                            <div class="favorites-grid" id="favTemplatesGrid"></div>
+                        </div>
+                        <button class="favorites-slider-arrow" onclick="slideRight('favTemplatesSlider')">▶</button>
                     </div>
+                    <div class="favorites-empty" id="favTemplatesEmpty">No favorite templates yet. Star a template to add it!</div>
                 </div>
                 <div class="favorites-section">
                     <div class="favorites-header">
-                        <h3>Created Memes</h3>
+                        <h3>Created Memes <span class="count" id="favMemesCount">0</span></h3>
                     </div>
-                    <div class="favorites-grid" id="favMemesGrid">
-                        <p class="hint">No saved memes yet. Create one and save it!</p>
+                    <div class="favorites-slider-wrapper">
+                        <button class="favorites-slider-arrow" onclick="slideLeft('favMemesSlider')">◀</button>
+                        <div class="favorites-slider" id="favMemesSlider">
+                            <div class="favorites-grid" id="favMemesGrid"></div>
+                        </div>
+                        <button class="favorites-slider-arrow" onclick="slideRight('favMemesSlider')">▶</button>
                     </div>
+                    <div class="favorites-empty" id="favMemesEmpty">No saved memes yet. Create one and save it!</div>
                 </div>
                 <div class="favorites-actions">
                     <button class="format-btn" onclick="exportFavorites()">Export Favorites</button>
@@ -1779,7 +1893,7 @@
     <!-- Winamp Player -->
     <div class="winamp-player skin-classic" id="winampPlayer">
         <div class="winamp-titlebar" id="winampTitlebar">
-            <span class="winamp-title">o-face Player</span>
+            <span class="winamp-title">ō-Amp</span>
             <div class="winamp-controls">
                 <button class="winamp-ctrl-btn" onclick="showSkinSelector(event)" title="Skins">S</button>
                 <button class="winamp-ctrl-btn" onclick="togglePlayerMinimize()" title="Minimize">_</button>
@@ -1861,9 +1975,11 @@
         </div>
     </div>
 
+    <script src="iframe-bridge.js"></script>
     <script>
         const KLIPY_API_KEY = 'zQjTXzloetXZMmr6sxu3bnzPCa1XBJ5oFVqqFV19dojXLWnw5VhtPQsJui4ieqaZ';
         const isElectron = typeof window.electronAPI !== 'undefined';
+        const isInIframe = window.parent !== window;
 
         // Window controls (Electron only)
         function minimizeWindow() {
@@ -1886,24 +2002,37 @@
             }
         }
 
+        // Navigation helper for iframe mode
+        function navigateTo(href, pageId) {
+            if (isInIframe) {
+                window.parent.postMessage({ type: 'navigate', href, pageId }, '*');
+            } else {
+                window.location.href = href;
+            }
+        }
+
         function goHome() {
-            window.location.href = 'splash.html';
+            if (isInIframe) {
+                window.parent.postMessage({ type: 'navigate', href: null, pageId: 'home' }, '*');
+            } else {
+                window.location.href = 'splash.html';
+            }
         }
 
         function goToWhiteboard() {
-            window.location.href = 'whiteboard.html';
+            navigateTo('whiteboard.html', 'whiteboard');
         }
 
         function goToKabuki() {
-            window.location.href = 'kabuki.html';
+            navigateTo('kabuki.html', 'kabuki');
         }
 
         function goToArcade() {
-            window.location.href = 'arcade.html';
+            navigateTo('arcade.html', 'arcade');
         }
 
         function goToSoundboard() {
-            window.location.href = 'soundboard.html';
+            navigateTo('soundboard.html', 'soundboard');
         }
 
         // Hide window controls if not in Electron
@@ -2237,6 +2366,7 @@
             });
             localStorage.setItem('favMemes', JSON.stringify(favoriteMemes));
             showToast('Meme saved to favorites!');
+            if (window.parent !== window) window.parent.postMessage({ type: 'favoritesUpdated' }, '*');
         }
 
         function toggleFavoriteTemplate(index) {
@@ -2254,6 +2384,7 @@
             renderTemplates(memeTemplates.filter(t =>
                 t.name.toLowerCase().includes(document.getElementById('templateSearch')?.value?.toLowerCase() || '')
             ));
+            if (window.parent !== window) window.parent.postMessage({ type: 'favoritesUpdated' }, '*');
         }
 
         function isTemplateFavorite(url) {
@@ -2283,6 +2414,7 @@
                 showToast('Added to favorites!');
             }
             localStorage.setItem('favGifs', JSON.stringify(favoriteGifs));
+            if (window.parent !== window) window.parent.postMessage({ type: 'favoritesUpdated' }, '*');
 
             // Update the heart button
             const btn = document.querySelectorAll('.meme-card .star-btn')[idx];
@@ -2298,44 +2430,94 @@
             showToast('GIF removed');
         }
 
+        // Slider navigation functions
+        function slideLeft(sliderId) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                slider.scrollBy({ left: -300, behavior: 'smooth' });
+            }
+        }
+
+        function slideRight(sliderId) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                slider.scrollBy({ left: 300, behavior: 'smooth' });
+            }
+        }
+
         function renderFavorites() {
             // Render favorite GIFs
             const gifsGrid = document.getElementById('favGifsGrid');
+            const gifsSlider = document.getElementById('favGifsSlider');
+            const gifsEmpty = document.getElementById('favGifsEmpty');
+            const gifsCount = document.getElementById('favGifsCount');
+
+            gifsCount.textContent = favoriteGifs.length;
             if (favoriteGifs.length === 0) {
-                gifsGrid.innerHTML = '<p class="hint">No favorite GIFs yet. Star a GIF to add it!</p>';
+                gifsSlider.parentElement.style.display = 'none';
+                gifsEmpty.style.display = 'flex';
+                gifsGrid.innerHTML = '';
             } else {
+                gifsSlider.parentElement.style.display = 'flex';
+                gifsEmpty.style.display = 'none';
                 gifsGrid.innerHTML = favoriteGifs.map((g, i) => `
                     <div class="fav-item" onclick="openLightbox('${g.fullUrl}')">
                         <img src="${g.previewUrl}" alt="${g.title}" title="${g.title}">
                         <button class="remove-fav" onclick="event.stopPropagation(); removeFavoriteGif(${i})">×</button>
+                        <div class="fav-label">${g.title || 'GIF'}</div>
                     </div>
                 `).join('');
             }
 
             // Render favorite templates
             const templatesGrid = document.getElementById('favTemplatesGrid');
+            const templatesSlider = document.getElementById('favTemplatesSlider');
+            const templatesEmpty = document.getElementById('favTemplatesEmpty');
+            const templatesCount = document.getElementById('favTemplatesCount');
+
+            templatesCount.textContent = favoriteTemplates.length;
             if (favoriteTemplates.length === 0) {
-                templatesGrid.innerHTML = '<p class="hint">No favorite templates yet. Star a template to add it!</p>';
+                templatesSlider.parentElement.style.display = 'none';
+                templatesEmpty.style.display = 'flex';
+                templatesGrid.innerHTML = '';
             } else {
+                templatesSlider.parentElement.style.display = 'flex';
+                templatesEmpty.style.display = 'none';
                 templatesGrid.innerHTML = favoriteTemplates.map((t, i) => `
                     <div class="fav-item" onclick="useFavoriteTemplate(${i})">
                         <img src="${t.url}" alt="${t.name}" title="${t.name}">
                         <button class="remove-fav" onclick="event.stopPropagation(); removeFavoriteTemplate(${i})">×</button>
+                        <div class="fav-label">${t.name}</div>
                     </div>
                 `).join('');
             }
 
             // Render saved memes
             const memesGrid = document.getElementById('favMemesGrid');
+            const memesSlider = document.getElementById('favMemesSlider');
+            const memesEmpty = document.getElementById('favMemesEmpty');
+            const memesCount = document.getElementById('favMemesCount');
+
+            memesCount.textContent = favoriteMemes.length;
             if (favoriteMemes.length === 0) {
-                memesGrid.innerHTML = '<p class="hint">No saved memes yet. Create one and save it!</p>';
+                memesSlider.parentElement.style.display = 'none';
+                memesEmpty.style.display = 'flex';
+                memesGrid.innerHTML = '';
             } else {
+                memesSlider.parentElement.style.display = 'flex';
+                memesEmpty.style.display = 'none';
                 memesGrid.innerHTML = favoriteMemes.map((m, i) => `
-                    <div class="fav-item">
+                    <div class="fav-item" onclick="openLightbox('${m.data}')">
                         <img src="${m.data}" alt="Saved meme" title="${m.template}">
-                        <button class="remove-fav" onclick="removeFavoriteMeme(${i})">×</button>
+                        <button class="remove-fav" onclick="event.stopPropagation(); removeFavoriteMeme(${i})">×</button>
+                        <div class="fav-label">${m.template || 'Meme'}</div>
                     </div>
                 `).join('');
+            }
+
+            // Notify dashboard that favorites updated
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'favoritesUpdated' }, '*');
             }
         }
 
@@ -2696,7 +2878,7 @@
             const player = document.getElementById('winampPlayer');
             const btn = document.querySelector('.nav-btn.music-btn');
             player.classList.toggle('visible');
-            btn.classList.toggle('active');
+            if (btn) btn.classList.toggle('active');
 
             if (player.classList.contains('visible') && !playerState.audioContext) {
                 setupVisualizer();
@@ -3427,6 +3609,33 @@
             // Also fire once after a short delay on load
             setTimeout(ignite, 2000);
         }
+
+        // Listen for messages from parent dashboard
+        window.addEventListener('message', (event) => {
+            if (!event.data || !event.data.type) return;
+
+            switch (event.data.type) {
+                case 'togglePlayer':
+                    togglePlayer();
+                    break;
+                case 'showFavoritesTab':
+                    showTab('favorites');
+                    break;
+                case 'openFavGif':
+                    showTab('favorites');
+                    const gif = favoriteGifs[event.data.index];
+                    if (gif) openLightbox(gif.fullUrl);
+                    break;
+                case 'openFavTemplate':
+                    useFavoriteTemplate(event.data.index);
+                    break;
+                case 'openFavMeme':
+                    showTab('favorites');
+                    const meme = favoriteMemes[event.data.index];
+                    if (meme) openLightbox(meme.data);
+                    break;
+            }
+        });
 
         // Initialize player on load
         initPlayer();

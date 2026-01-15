@@ -4,6 +4,8 @@ const os = require('os');
 const fs = require('fs');
 const http = require('http');
 
+// Hardware acceleration enabled (MIDI player was causing crashes, now disabled)
+
 // Log file path
 const LOG_FILE = path.join(__dirname, 'o-face.log');
 
@@ -44,7 +46,7 @@ function createMainWindow() {
         titleBarStyle: 'hidden'
     });
 
-    mainWindow.loadFile('splash.html');
+    mainWindow.loadFile('dashboard.html');
     mainWindow.maximize();
 
     if (process.argv.includes('--dev')) {
