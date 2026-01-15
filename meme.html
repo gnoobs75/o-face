@@ -2593,6 +2593,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderMeme();
             initCanvasEvents();
+
+            // Check URL parameter for initial tab
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam === 'generator') {
+                showTab('generator');
+            } else if (tabParam === 'favorites') {
+                showTab('favorites');
+            }
         });
 
         // Pagination state

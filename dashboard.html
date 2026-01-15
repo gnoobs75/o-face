@@ -1756,7 +1756,7 @@
                     <span class="drawer-item-icon">📝</span>
                     <span class="drawer-item-label">Whiteb<span style="color: var(--accent);">ō</span>ard</span>
                 </div>
-                <div class="drawer-item" onclick="navigateTo('meme.html', 'memes')">
+                <div class="drawer-item" onclick="navigateTo('meme.html?tab=generator', 'memes')">
                     <span class="drawer-item-icon">🎨</span>
                     <span class="drawer-item-label">memerat<span style="color: var(--accent);">ō</span>r</span>
                 </div>
@@ -2768,81 +2768,94 @@
         }
 
         // ============================================
-        // STŌNKS TICKER
+        // STŌNKS TICKER (Real Stock Data)
         // ============================================
         const stockTicker = document.getElementById('stockTicker');
         const tickerContent = document.getElementById('tickerContent');
         let stonksActive = false;
+        let stockCache = [];
 
-        const fakeStocks = [
-            { symbol: 'ŌFACE', name: 'ō-face Inc' },
-            { symbol: 'RŌNIN', name: 'Ronin Corp' },
-            { symbol: 'MEME', name: 'Memeratōr Ltd' },
-            { symbol: 'DICE', name: 'Dōice Gaming' },
-            { symbol: 'SNDS', name: 'Sōunds Audio' },
-            { symbol: 'WBRD', name: 'Whitebōard Tech' },
-            { symbol: 'TERM', name: 'ō-term Systems' },
-            { symbol: 'WNMP', name: 'WinŌmp Media' },
-            { symbol: 'KBKI', name: 'Kabuki Theatre' },
-            { symbol: 'ARCD', name: 'Arcade Holdings' },
-            { symbol: 'GME', name: 'GameStop' },
-            { symbol: 'AMC', name: 'AMC Entertainment' },
-            { symbol: 'TSLA', name: 'Tesla' },
-            { symbol: 'NVDA', name: 'NVIDIA' },
-            { symbol: 'AAPL', name: 'Apple' },
-        ];
+        // Real stock symbols to track
+        const realStocks = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'GME', 'AMC', 'AMD', 'INTC', 'NFLX', 'DIS', 'COIN', 'PLTR'];
 
-        function generateTickerData() {
-            return fakeStocks.map(stock => {
-                const price = (Math.random() * 500 + 10).toFixed(2);
-                const change = (Math.random() * 20 - 10).toFixed(2);
-                const isUp = parseFloat(change) >= 0;
-                return {
-                    ...stock,
-                    price,
-                    change: (isUp ? '+' : '') + change,
-                    percent: (isUp ? '+' : '') + (Math.random() * 10 - 5).toFixed(2) + '%',
-                    isUp
-                };
-            });
+        // Fetch real stock data from Yahoo Finance
+        async function fetchStockData() {
+            const symbols = realStocks.join(',');
+            try {
+                const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`);
+                const data = await response.json();
+
+                if (data.quoteResponse && data.quoteResponse.result) {
+                    stockCache = data.quoteResponse.result.map(stock => ({
+                        symbol: stock.symbol,
+                        name: stock.shortName || stock.symbol,
+                        price: stock.regularMarketPrice?.toFixed(2) || '0.00',
+                        change: stock.regularMarketChange?.toFixed(2) || '0.00',
+                        percent: stock.regularMarketChangePercent?.toFixed(2) || '0.00',
+                        isUp: (stock.regularMarketChange || 0) >= 0
+                    }));
+                }
+            } catch (error) {
+                console.log('Stock fetch error, using cached/fallback data:', error);
+                // Use fallback if fetch fails
+                if (stockCache.length === 0) {
+                    stockCache = realStocks.map(symbol => ({
+                        symbol,
+                        name: symbol,
+                        price: (Math.random() * 500 + 50).toFixed(2),
+                        change: (Math.random() * 10 - 5).toFixed(2),
+                        percent: (Math.random() * 5 - 2.5).toFixed(2),
+                        isUp: Math.random() > 0.5
+                    }));
+                }
+            }
+            return stockCache;
         }
 
-        function renderTicker() {
-            const data = generateTickerData();
+        function renderTicker(data) {
+            if (!data || data.length === 0) {
+                tickerContent.innerHTML = '<span class="ticker-item">Loading stōnks...</span>';
+                return;
+            }
             // Duplicate for seamless scrolling
             const items = [...data, ...data].map(stock => `
                 <span class="ticker-item">
                     <span class="ticker-symbol">${stock.symbol}</span>
                     <span class="ticker-price">$${stock.price}</span>
-                    <span class="ticker-change ${stock.isUp ? 'up' : 'down'}">${stock.change} (${stock.percent})</span>
+                    <span class="ticker-change ${stock.isUp ? 'up' : 'down'}">${stock.isUp ? '+' : ''}${stock.change} (${stock.isUp ? '+' : ''}${stock.percent}%)</span>
                 </span>
                 <span class="ticker-separator">│</span>
             `).join('');
             tickerContent.innerHTML = items;
         }
 
-        function toggleStonks() {
+        async function toggleStonks() {
             stonksActive = !stonksActive;
             if (stonksActive) {
-                renderTicker();
                 stockTicker.classList.add('active');
                 document.body.classList.add('stonks-active');
                 // Close drawer if open
                 if (leftDrawer.classList.contains('open')) {
                     toggleDrawer();
                 }
+                // Show loading state
+                renderTicker([]);
+                // Fetch and display real data
+                const data = await fetchStockData();
+                renderTicker(data);
             } else {
                 stockTicker.classList.remove('active');
                 document.body.classList.remove('stonks-active');
             }
         }
 
-        // Update ticker prices periodically
-        setInterval(() => {
+        // Update ticker prices every 30 seconds (be nice to the API)
+        setInterval(async () => {
             if (stonksActive) {
-                renderTicker();
+                const data = await fetchStockData();
+                renderTicker(data);
             }
-        }, 10000);
+        }, 30000);
 
         // Update progress bar (mini and WinAmp player)
         miniPlayerAudio.addEventListener('timeupdate', () => {
