@@ -23,7 +23,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
         openDevTools: () => ipcRenderer.invoke('window:openDevTools')
     },
     dialog: {
-        openAudioFiles: () => ipcRenderer.invoke('dialog:openAudioFiles')
+        openAudioFiles: () => ipcRenderer.invoke('dialog:openAudioFiles'),
+        saveFile: (options) => ipcRenderer.invoke('dialog:saveFile', options)
+    },
+    filesystem: {
+        readDir: (dirPath) => ipcRenderer.invoke('fs:readDir', dirPath),
+        getHomeDir: () => ipcRenderer.invoke('fs:getHomeDir'),
+        pathJoin: (...args) => ipcRenderer.invoke('fs:pathJoin', ...args),
+        writeFile: (filePath, dataUrl) => ipcRenderer.invoke('fs:writeFile', filePath, dataUrl),
+        deleteFile: (filePath) => ipcRenderer.invoke('fs:deleteFile', filePath),
+        readFile: (filePath, options) => ipcRenderer.invoke('fs:readFile', filePath, options),
+        stat: (filePath) => ipcRenderer.invoke('fs:stat', filePath),
+        watchFile: (filePath, watchId) => ipcRenderer.invoke('fs:watchFile', filePath, watchId),
+        unwatchFile: (watchId) => ipcRenderer.invoke('fs:unwatchFile', watchId),
+        onFileChanged: (callback) => {
+            ipcRenderer.on('fs:fileChanged', (event, data) => callback(data));
+        }
+    },
+    shell: {
+        exec: (command, options) => ipcRenderer.invoke('shell:exec', command, options)
+    },
+    screenshot: {
+        capture: (bounds) => ipcRenderer.invoke('screenshot:capture', bounds)
     },
     sound: {
         onPlayDone: (callback) => {

@@ -491,7 +491,8 @@
 
         <div class="toolbar">
             <div class="toolbar-left">
-                <button class="btn btn-primary" onclick="addSound()">+ Add Sound</button>
+                <button class="btn btn-primary" onclick="addSound()">+ Add File</button>
+                <button class="btn btn-secondary" onclick="openUrlModal()" style="background: var(--sound-purple); border-color: var(--sound-purple); color: white;">+ Add URL</button>
                 <div class="board-selector">
                     <label>Board:</label>
                     <select class="board-select" id="boardSelect" onchange="switchBoard()"></select>
@@ -544,6 +545,30 @@
                 <button class="btn btn-secondary" onclick="closeKeyBindModal()">Cancel</button>
                 <button class="btn btn-danger" onclick="clearKeyBinding()">Clear</button>
                 <button class="btn btn-primary" onclick="saveKeyBinding()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- URL Sound Modal -->
+    <div class="modal" id="urlModal">
+        <div class="modal-content">
+            <h2>Add Sound from URL</h2>
+            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px;">
+                Enter a direct URL to an audio file (MP3, WAV, OGG, etc.)
+            </p>
+            <input type="text" class="modal-input" id="soundUrlInput" placeholder="https://example.com/sound.mp3">
+            <input type="text" class="modal-input" id="soundNameInput" placeholder="Sound name (optional)">
+            <div style="margin-bottom: 16px;">
+                <p style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">Quick sources:</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px;" onclick="insertSampleUrl('freesound')">Freesound</button>
+                    <button class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px;" onclick="insertSampleUrl('soundbible')">SoundBible</button>
+                    <button class="btn btn-secondary" style="font-size: 11px; padding: 6px 12px;" onclick="insertSampleUrl('zapsplat')">ZapSplat</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeUrlModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addSoundFromUrl()">Add Sound</button>
             </div>
         </div>
     </div>
@@ -664,6 +689,9 @@
             for (let i = 0; i < GRID_SIZE; i++) {
                 const sound = sounds[i];
                 if (sound) {
+                    const isUrl = sound.isUrl || (sound.path && sound.path.startsWith('http'));
+                    const icon = isUrl ? '&#x1F517;' : '&#x1F50A;'; // Link or speaker icon
+                    const typeIndicator = isUrl ? '<span style="position:absolute;bottom:8px;right:8px;font-size:10px;color:var(--sound-purple);">URL</span>' : '';
                     html += `
                         <div class="sound-pad" id="pad-${i}" onclick="playSound(${i})">
                             ${sound.key ? `<div class="sound-pad-key">${escapeHtml(sound.key.toUpperCase())}</div>` : ''}
@@ -671,8 +699,9 @@
                                 <button class="pad-action-btn key-btn" onclick="event.stopPropagation(); openKeyBindModal(${i})" title="Assign key">&#x2328;</button>
                                 <button class="pad-action-btn" onclick="event.stopPropagation(); deleteSound(${i})" title="Delete">&#x2715;</button>
                             </div>
-                            <div class="sound-pad-icon">&#x1F50A;</div>
+                            <div class="sound-pad-icon">${icon}</div>
                             <div class="sound-pad-name">${escapeHtml(sound.name)}</div>
+                            ${typeIndicator}
                         </div>
                     `;
                 } else {
@@ -801,6 +830,122 @@
                 renderSoundGrid();
                 showToast('Sound removed');
             }
+        }
+
+        // ============================================
+        // URL SOUND MANAGEMENT
+        // ============================================
+        let urlPendingSlot = null;
+
+        function openUrlModal(slotIndex = null) {
+            urlPendingSlot = slotIndex;
+            document.getElementById('soundUrlInput').value = '';
+            document.getElementById('soundNameInput').value = '';
+            document.getElementById('urlModal').classList.add('visible');
+            document.getElementById('soundUrlInput').focus();
+        }
+
+        function closeUrlModal() {
+            document.getElementById('urlModal').classList.remove('visible');
+            urlPendingSlot = null;
+        }
+
+        function insertSampleUrl(source) {
+            const urlInput = document.getElementById('soundUrlInput');
+            const sampleUrls = {
+                'freesound': 'https://freesound.org/data/previews/...',
+                'soundbible': 'https://soundbible.com/grab.php?id=...',
+                'zapsplat': 'https://www.zapsplat.com/...'
+            };
+            urlInput.value = sampleUrls[source] || '';
+            urlInput.focus();
+            urlInput.select();
+            showToast(`Paste a direct link from ${source}`);
+        }
+
+        async function addSoundFromUrl() {
+            const urlInput = document.getElementById('soundUrlInput');
+            const nameInput = document.getElementById('soundNameInput');
+            const url = urlInput.value.trim();
+            let name = nameInput.value.trim();
+
+            if (!url) {
+                showToast('Please enter a URL');
+                return;
+            }
+
+            // Basic URL validation
+            try {
+                new URL(url);
+            } catch (e) {
+                showToast('Invalid URL format');
+                return;
+            }
+
+            // Extract name from URL if not provided
+            if (!name) {
+                try {
+                    const urlPath = new URL(url).pathname;
+                    name = urlPath.split('/').pop().replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') || 'URL Sound';
+                } catch (e) {
+                    name = 'URL Sound';
+                }
+            }
+
+            // Test if URL is playable
+            showToast('Testing URL...');
+            const testAudio = new Audio();
+
+            try {
+                await new Promise((resolve, reject) => {
+                    testAudio.oncanplaythrough = resolve;
+                    testAudio.onerror = () => reject(new Error('Cannot play this URL'));
+                    testAudio.src = url;
+                    // Timeout after 10 seconds
+                    setTimeout(() => reject(new Error('URL load timeout')), 10000);
+                });
+
+                // URL is valid, add to board
+                const sounds = getCurrentBoard();
+                const sound = {
+                    id: Date.now() + Math.random(),
+                    name: name,
+                    path: url,
+                    isUrl: true,
+                    isBlob: false,
+                    key: null
+                };
+
+                if (urlPendingSlot !== null && !sounds[urlPendingSlot]) {
+                    sounds[urlPendingSlot] = sound;
+                } else {
+                    const emptyIndex = sounds.findIndex((s, i) => !s && i < GRID_SIZE);
+                    if (emptyIndex !== -1) {
+                        sounds[emptyIndex] = sound;
+                    } else if (sounds.length < GRID_SIZE) {
+                        sounds.push(sound);
+                    } else {
+                        showToast('Board is full');
+                        return;
+                    }
+                }
+
+                boards[currentBoardName] = sounds;
+                saveBoards();
+                renderSoundGrid();
+                closeUrlModal();
+                showToast(`Added: ${name}`);
+
+            } catch (err) {
+                showToast(`Error: ${err.message}`);
+            }
+        }
+
+        // Update empty slot click to offer choice
+        function addSoundToSlotChoice(index) {
+            // For now just open file picker, could add a choice modal later
+            pendingSlot = index;
+            triggerFileInput();
         }
 
         // ============================================
@@ -994,6 +1139,21 @@
         // Enter key for modals
         document.getElementById('newBoardName').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') createNewBoard();
+        });
+
+        // Enter key for URL modal
+        document.getElementById('soundUrlInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addSoundFromUrl();
+        });
+        document.getElementById('soundNameInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addSoundFromUrl();
+        });
+
+        // Close URL modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('urlModal').classList.contains('visible')) {
+                closeUrlModal();
+            }
         });
     </script>
     <script src="iframe-bridge.js"></script>

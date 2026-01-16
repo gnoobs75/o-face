@@ -55,26 +55,86 @@
             color: var(--accent);
         }
 
-        .layout-buttons {
+        /* Workspace Tabs */
+        .workspace-tabs {
             display: flex;
-            gap: 4px;
+            align-items: center;
+            gap: 2px;
             -webkit-app-region: no-drag;
+            margin-left: 12px;
         }
 
-        .layout-btn {
-            padding: 4px 8px;
+        .workspace-tab {
+            padding: 4px 12px;
             font-size: 11px;
             background: transparent;
-            border: 1px solid var(--border);
+            border: 1px solid transparent;
+            border-bottom: none;
             color: var(--text-dim);
             cursor: pointer;
-            border-radius: 3px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.15s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .workspace-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .workspace-tab.active {
+            background: var(--bg-panel);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .workspace-tab-close {
+            width: 14px;
+            height: 14px;
+            font-size: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 2px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .workspace-tab:hover .workspace-tab-close {
+            display: flex;
+        }
+
+        .workspace-tab-close:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .workspace-add {
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            background: transparent;
+            border: 1px dashed var(--border);
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
             transition: all 0.15s;
         }
 
-        .layout-btn:hover, .layout-btn.active {
+        .workspace-add:hover {
             background: var(--accent);
             border-color: var(--accent);
+            border-style: solid;
             color: white;
         }
 
@@ -113,7 +173,6 @@
             padding: 2px;
             background: var(--bg-dark);
             min-height: 0; /* Critical for flex + grid combo */
-            height: calc(100vh - 32px - 24px); /* viewport minus title bar and status bar */
             overflow: hidden;
         }
 
@@ -261,6 +320,1340 @@
             margin: 0 2px;
         }
 
+        /* Main content wrapper */
+        .main-content {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.2s ease;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: 40px;
+        }
+
+        .sidebar-header {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-dark);
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .sidebar-title {
+            display: none;
+        }
+
+        .sidebar-toggle {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar.collapsed .sidebar-tabs {
+            flex-direction: column;
+            border-bottom: none;
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 8px 4px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 11px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .sidebar-tab {
+            padding: 10px 8px;
+            border-bottom: none;
+            border-left: 2px solid transparent;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        .sidebar-tab:hover {
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .sidebar-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .sidebar.collapsed .sidebar-tab.active {
+            border-bottom-color: transparent;
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed .sidebar-content {
+            display: none;
+        }
+
+        .sidebar-panel {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-panel.active {
+            display: flex;
+        }
+
+        /* File Browser Panel */
+        .path-bar {
+            padding: 8px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .path-segment {
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+
+        .path-segment:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .path-sep {
+            color: var(--text-dim);
+        }
+
+        .quick-nav {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quick-nav-btn {
+            flex: 1;
+            padding: 6px 4px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .quick-nav-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .file-item:hover {
+            background: var(--bg-dark);
+        }
+
+        .file-item.selected {
+            background: var(--accent);
+            color: white;
+        }
+
+        .file-item.dragging {
+            opacity: 0.5;
+        }
+
+        .file-icon {
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .file-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-size {
+            color: var(--text-dim);
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Snip Panel */
+        .snip-actions {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .snip-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .snip-btn:hover {
+            background: var(--accent-hover, #d63344);
+        }
+
+        .snip-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            align-content: start;
+        }
+
+        .snip-item {
+            aspect-ratio: 4/3;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .snip-item:hover {
+            border-color: var(--accent);
+        }
+
+        .snip-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .snip-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            padding: 4px;
+            font-size: 9px;
+            color: var(--text-dim);
+            display: none;
+        }
+
+        .snip-item:hover .snip-item-overlay {
+            display: block;
+        }
+
+        /* Temp Panel */
+        .temp-info {
+            padding: 12px;
+            font-size: 11px;
+            color: var(--text-dim);
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .temp-grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            align-content: start;
+        }
+
+        .temp-item {
+            aspect-ratio: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: grab;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .temp-item:hover {
+            border-color: var(--accent);
+        }
+
+        .temp-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .temp-item-delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: var(--text);
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 2px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .temp-item:hover .temp-item-delete {
+            display: flex;
+        }
+
+        .temp-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        /* Dev Tools Category System */
+        .tools-category {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tools-category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--bg-dark);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: all 0.15s;
+        }
+
+        .tools-category-header:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .tools-category-header.active {
+            color: var(--accent);
+        }
+
+        .tools-category-icon {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .tools-category.expanded .tools-category-icon {
+            transform: rotate(90deg);
+        }
+
+        .tools-category-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tools-category-list {
+            display: none;
+            padding: 4px 8px 8px;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tools-category.expanded .tools-category-list {
+            display: flex;
+        }
+
+        .tool-btn {
+            padding: 6px 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .tool-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Tool Panel (shown in sidebar content area) */
+        .tool-panel {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tool-panel.active {
+            display: flex;
+        }
+
+        .tool-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tool-panel-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-panel-close {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .tool-panel-close:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .tool-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        /* Tool Form Elements */
+        .tool-input-group {
+            margin-bottom: 12px;
+        }
+
+        .tool-label {
+            display: block;
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .tool-input {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 12px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .tool-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .tool-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .tool-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 12px;
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+        }
+
+        .tool-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .tool-select {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .tool-button {
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .tool-button:hover {
+            background: var(--accent-hover, #d63344);
+        }
+
+        .tool-button.secondary {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .tool-button.secondary:hover {
+            background: var(--border);
+        }
+
+        .tool-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tool-row > .tool-input {
+            flex: 1;
+        }
+
+        /* HTTP Tester */
+        .http-method-select {
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .http-response {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .http-response-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            font-size: 10px;
+        }
+
+        .http-status {
+            font-weight: 500;
+        }
+
+        .http-status.success { color: #4ade80; }
+        .http-status.error { color: #f87171; }
+        .http-status.redirect { color: #facc15; }
+
+        .http-response-body {
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            max-height: 300px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* cURL Builder */
+        .curl-output {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .curl-copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 4px 8px;
+            font-size: 10px;
+        }
+
+        /* WebSocket Client */
+        .ws-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .ws-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dim);
+        }
+
+        .ws-indicator.connected { background: #4ade80; }
+        .ws-indicator.connecting { background: #facc15; animation: pulse 1s infinite; }
+        .ws-indicator.error { background: #f87171; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ws-messages {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .ws-message {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ws-message:last-child { border-bottom: none; }
+        .ws-message.sent { color: #4ade80; }
+        .ws-message.received { color: #60a5fa; }
+        .ws-message.system { color: var(--text-dim); font-style: italic; }
+
+        /* Log Tail */
+        .log-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .log-output {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .log-line { white-space: pre-wrap; word-break: break-all; }
+        .log-line.highlight { background: rgba(250, 204, 21, 0.2); }
+        .log-line.error { color: #f87171; }
+        .log-line.warn { color: #facc15; }
+        .log-line.info { color: #4ade80; }
+
+        /* Diff Tool */
+        .diff-container {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .diff-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diff-side-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .diff-side textarea {
+            flex: 1;
+            min-height: 150px;
+        }
+
+        .diff-output {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            max-height: 200px;
+            overflow: auto;
+            margin-top: 8px;
+        }
+
+        .diff-add { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        .diff-remove { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+
+        /* Markdown Preview */
+        .md-container {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .md-editor, .md-preview {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .md-preview-output {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+
+        .md-preview-output h1 { font-size: 20px; margin-bottom: 12px; color: var(--text); }
+        .md-preview-output h2 { font-size: 16px; margin-bottom: 10px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+        .md-preview-output h3 { font-size: 14px; margin-bottom: 8px; color: var(--text); }
+        .md-preview-output p { margin-bottom: 8px; color: var(--text); line-height: 1.5; }
+        .md-preview-output code { background: var(--bg-panel); padding: 2px 4px; border-radius: 2px; font-family: 'Consolas', monospace; font-size: 11px; }
+        .md-preview-output pre { background: var(--bg-panel); padding: 10px; border-radius: 4px; overflow-x: auto; margin-bottom: 8px; }
+        .md-preview-output pre code { background: none; padding: 0; }
+        .md-preview-output ul, .md-preview-output ol { margin-left: 20px; margin-bottom: 8px; }
+        .md-preview-output li { margin-bottom: 4px; }
+        .md-preview-output blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--text-dim); margin: 8px 0; }
+
+        /* Git Status Panel */
+        .git-section {
+            margin-bottom: 12px;
+        }
+
+        .git-section-title {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .git-section-count {
+            background: var(--accent);
+            color: white;
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 9px;
+        }
+
+        .git-file {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-family: 'Consolas', monospace;
+            border-radius: 2px;
+        }
+
+        .git-file:hover { background: var(--border); }
+        .git-file-status { width: 16px; text-align: center; font-weight: bold; }
+        .git-file-status.added { color: #4ade80; }
+        .git-file-status.modified { color: #facc15; }
+        .git-file-status.deleted { color: #f87171; }
+        .git-file-status.untracked { color: #60a5fa; }
+
+        .git-branch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .git-branch-icon { font-size: 14px; }
+        .git-branch-name { font-family: 'Consolas', monospace; font-weight: 500; }
+
+        /* Process Monitor */
+        .process-table {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;
+        }
+
+        .process-table th {
+            text-align: left;
+            padding: 6px 8px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .process-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Consolas', monospace;
+        }
+
+        .process-table tr:hover { background: var(--border); }
+
+        .process-kill {
+            padding: 2px 6px;
+            background: transparent;
+            border: 1px solid #f87171;
+            color: #f87171;
+            font-size: 9px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .process-kill:hover { background: #f87171; color: white; }
+
+        /* Port Viewer */
+        .port-table {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;
+        }
+
+        .port-table th {
+            text-align: left;
+            padding: 6px 8px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .port-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Consolas', monospace;
+        }
+
+        .port-table tr:hover { background: var(--border); }
+
+        /* Docker Dashboard */
+        .docker-container {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .docker-container-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .docker-container-header:hover { background: var(--border); }
+
+        .docker-container-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .docker-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .docker-status.running { background: #4ade80; }
+        .docker-status.stopped { background: #f87171; }
+        .docker-status.paused { background: #facc15; }
+
+        .docker-container-name {
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+
+        .docker-container-image {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        .docker-container-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .docker-btn {
+            padding: 4px 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .docker-btn:hover { background: var(--border); color: var(--text); }
+
+        /* Snippet Manager */
+        .snippet-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .snippet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-panel);
+        }
+
+        .snippet-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .snippet-hotkey {
+            font-size: 10px;
+            color: var(--text-dim);
+            background: var(--bg-dark);
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+
+        .snippet-content {
+            padding: 10px 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            white-space: pre-wrap;
+            max-height: 100px;
+            overflow: auto;
+        }
+
+        .snippet-actions {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* SSH Manager */
+        .ssh-connection {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .ssh-connection:hover { border-color: var(--accent); }
+
+        .ssh-connection-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ssh-connection-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .ssh-connection-host {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-family: 'Consolas', monospace;
+        }
+
+        .ssh-connect-btn {
+            padding: 6px 12px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .ssh-connect-btn:hover { background: var(--accent-hover, #d63344); }
+
+        /* Command Palette */
+        .cmd-palette-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 100px;
+        }
+
+        .cmd-palette-overlay.active { display: flex; }
+
+        .cmd-palette {
+            width: 500px;
+            max-width: 90vw;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .cmd-palette-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-dark);
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 16px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .cmd-palette-input:focus { outline: none; }
+
+        .cmd-palette-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .cmd-palette-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cmd-palette-item:hover,
+        .cmd-palette-item.selected { background: var(--border); }
+
+        .cmd-palette-item-icon {
+            width: 24px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .cmd-palette-item-text {
+            flex: 1;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+
+        .cmd-palette-item-source {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* Snip overlay */
+        .snip-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: crosshair;
+            z-index: 10000;
+            display: none;
+        }
+
+        .snip-overlay.active {
+            display: block;
+        }
+
+        .snip-selection {
+            position: absolute;
+            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            pointer-events: none;
+        }
+
+        /* Snip Editor Modal */
+        .snip-editor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            z-index: 10001;
+            display: none;
+            flex-direction: column;
+            max-width: 90vw;
+            max-height: 90vh;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .snip-editor.active {
+            display: flex;
+        }
+
+        .snip-editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .snip-editor-title {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .snip-editor-tools {
+            display: flex;
+            gap: 4px;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .snip-tool-btn {
+            padding: 6px 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .snip-tool-btn:hover,
+        .snip-tool-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .snip-editor-canvas {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-dark);
+        }
+
+        .snip-editor-canvas canvas {
+            border: 1px solid var(--border);
+        }
+
+        .snip-editor-footer {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            justify-content: flex-end;
+        }
+
+        .snip-editor-btn {
+            padding: 8px 16px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .snip-editor-btn:hover {
+            background: var(--border);
+        }
+
+        .snip-editor-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .snip-editor-btn.primary:hover {
+            background: var(--accent-hover, #d63344);
+        }
+
+        /* Terminal Context Menu */
+        .terminal-context-menu {
+            position: fixed;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 0;
+            min-width: 180px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 10000;
+            display: none;
+        }
+
+        .terminal-context-menu.active {
+            display: block;
+        }
+
+        .context-menu-item {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-menu-item:hover {
+            background: var(--accent);
+        }
+
+        .context-menu-item.disabled {
+            color: var(--text-dim);
+            cursor: not-allowed;
+        }
+
+        .context-menu-item.disabled:hover {
+            background: transparent;
+        }
+
+        .context-menu-icon {
+            width: 16px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        .context-menu-label {
+            flex: 1;
+        }
+
+        .context-menu-shortcut {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
         /* Focus indicator */
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -271,7 +1664,8 @@
             animation: pulse 2s infinite;
         }
 
-        /* Attention flash for inactive panes */
+        /* Attention flash for inactive panes - DISABLED to prevent constant flashing */
+        /*
         @keyframes attention-flash {
             0%, 100% { border-color: var(--border); }
             25%, 75% { border-color: #ff6b00; }
@@ -286,18 +1680,20 @@
         .terminal-pane.attention .pane-number {
             background: #ff6b00;
         }
+        */
     </style>
 </head>
 <body>
     <div class="title-bar">
         <div class="title-bar-left">
             <span class="title-bar-title"><span>o</span>-face terminal</span>
-            <div class="layout-buttons">
-                <button class="layout-btn" onclick="setLayout(1)" title="Single">1</button>
-                <button class="layout-btn" onclick="setLayout('2h')" title="2 Horizontal">2H</button>
-                <button class="layout-btn" onclick="setLayout('2v')" title="2 Vertical">2V</button>
-                <button class="layout-btn active" onclick="setLayout(4)" title="Quad">4</button>
+            <div class="workspace-tabs" id="workspaceTabs">
+                <button class="workspace-tab active" data-workspace="0" onclick="switchWorkspace(0)">
+                    Workspace 1
+                    <span class="workspace-tab-close" onclick="event.stopPropagation(); closeWorkspace(0)">&#x2715;</span>
+                </button>
             </div>
+            <button class="workspace-add" onclick="addWorkspace()" title="New Workspace">+</button>
         </div>
         <div class="window-controls">
             <button class="window-btn" onclick="window.electronAPI.window.minimize()">&#x2212;</button>
@@ -306,58 +1702,554 @@
         </div>
     </div>
 
-    <div class="terminal-grid layout-4" id="terminalGrid">
-        <div class="terminal-pane active" id="pane-0" onclick="focusPane(0)">
-            <div class="pane-header">
-                <div class="pane-title">
-                    <span class="pane-number">1</span>
-                    <span class="pane-shell" id="shell-0">PowerShell</span>
+    <div class="main-content">
+        <div class="terminal-grid layout-4" id="terminalGrid">
+            <div class="terminal-pane active visible" id="pane-0" onclick="focusPane(0)">
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">1</span>
+                        <span class="pane-shell" id="shell-0">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(0)">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(0)">Restart</button>
+                    </div>
                 </div>
-                <div class="pane-controls">
-                    <button class="pane-btn" onclick="clearPane(0)">Clear</button>
-                    <button class="pane-btn" onclick="restartPane(0)">Restart</button>
-                </div>
+                <div class="pane-content" id="term-0"></div>
             </div>
-            <div class="pane-content" id="term-0"></div>
+            <div class="terminal-pane visible" id="pane-1" onclick="focusPane(1)">
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">2</span>
+                        <span class="pane-shell" id="shell-1">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(1)">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(1)">Restart</button>
+                    </div>
+                </div>
+                <div class="pane-content" id="term-1"></div>
+            </div>
+            <div class="terminal-pane visible" id="pane-2" onclick="focusPane(2)">
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">3</span>
+                        <span class="pane-shell" id="shell-2">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(2)">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(2)">Restart</button>
+                    </div>
+                </div>
+                <div class="pane-content" id="term-2"></div>
+            </div>
+            <div class="terminal-pane visible" id="pane-3" onclick="focusPane(3)">
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">4</span>
+                        <span class="pane-shell" id="shell-3">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(3)">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(3)">Restart</button>
+                    </div>
+                </div>
+                <div class="pane-content" id="term-3"></div>
+            </div>
         </div>
-        <div class="terminal-pane" id="pane-1" onclick="focusPane(1)">
-            <div class="pane-header">
-                <div class="pane-title">
-                    <span class="pane-number">2</span>
-                    <span class="pane-shell" id="shell-1">PowerShell</span>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Dev Tools</span>
+                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#x2630;</button>
+            </div>
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" data-panel="tools" onclick="switchSidebarTab('tools')">Tools</button>
+                <button class="sidebar-tab" data-panel="files" onclick="switchSidebarTab('files')">Files</button>
+                <button class="sidebar-tab" data-panel="snip" onclick="switchSidebarTab('snip')">Snip</button>
+            </div>
+            <div class="sidebar-content">
+                <!-- Tools Panel (Category-based dev tools) -->
+                <div class="sidebar-panel active" id="panel-tools">
+                    <div id="toolsCategories">
+                        <!-- Network Tools -->
+                        <div class="tools-category expanded" data-category="network">
+                            <div class="tools-category-header" onclick="toggleToolCategory('network')">
+                                <span class="tools-category-name">&#127760; Network</span>
+                                <span class="tools-category-icon">&#9654;</span>
+                            </div>
+                            <div class="tools-category-list">
+                                <button class="tool-btn" onclick="openTool('http')">HTTP Tester</button>
+                                <button class="tool-btn" onclick="openTool('curl')">cURL Builder</button>
+                                <button class="tool-btn" onclick="openTool('websocket')">WebSocket</button>
+                            </div>
+                        </div>
+                        <!-- File Tools -->
+                        <div class="tools-category" data-category="filetools">
+                            <div class="tools-category-header" onclick="toggleToolCategory('filetools')">
+                                <span class="tools-category-name">&#128196; File Tools</span>
+                                <span class="tools-category-icon">&#9654;</span>
+                            </div>
+                            <div class="tools-category-list">
+                                <button class="tool-btn" onclick="openTool('logtail')">Log Tail</button>
+                                <button class="tool-btn" onclick="openTool('diff')">Diff</button>
+                                <button class="tool-btn" onclick="openTool('markdown')">Markdown</button>
+                            </div>
+                        </div>
+                        <!-- Shell Tools -->
+                        <div class="tools-category" data-category="shell">
+                            <div class="tools-category-header" onclick="toggleToolCategory('shell')">
+                                <span class="tools-category-name">&#128187; Shell</span>
+                                <span class="tools-category-icon">&#9654;</span>
+                            </div>
+                            <div class="tools-category-list">
+                                <button class="tool-btn" onclick="openTool('cmdpalette')">Cmd Palette</button>
+                                <button class="tool-btn" onclick="openTool('snippets')">Snippets</button>
+                                <button class="tool-btn" onclick="openTool('ssh')">SSH</button>
+                                <button class="tool-btn" onclick="openTool('aliases')">Aliases</button>
+                            </div>
+                        </div>
+                        <!-- Git Tools -->
+                        <div class="tools-category" data-category="git">
+                            <div class="tools-category-header" onclick="toggleToolCategory('git')">
+                                <span class="tools-category-name">&#128736; Git</span>
+                                <span class="tools-category-icon">&#9654;</span>
+                            </div>
+                            <div class="tools-category-list">
+                                <button class="tool-btn" onclick="openTool('gitstatus')">Status</button>
+                                <button class="tool-btn" onclick="openTool('gitgraph')">Graph</button>
+                                <button class="tool-btn" onclick="openTool('gitdiff')">Diff</button>
+                            </div>
+                        </div>
+                        <!-- System Tools -->
+                        <div class="tools-category" data-category="system">
+                            <div class="tools-category-header" onclick="toggleToolCategory('system')">
+                                <span class="tools-category-name">&#9881; System</span>
+                                <span class="tools-category-icon">&#9654;</span>
+                            </div>
+                            <div class="tools-category-list">
+                                <button class="tool-btn" onclick="openTool('processes')">Processes</button>
+                                <button class="tool-btn" onclick="openTool('ports')">Ports</button>
+                                <button class="tool-btn" onclick="openTool('docker')">Docker</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tool Panels (shown when a tool is selected) -->
+                    <div id="toolPanelsContainer">
+                        <!-- HTTP Tester Panel -->
+                        <div class="tool-panel" id="tool-http">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#127760; HTTP Tester</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-input-group">
+                                    <div class="tool-row">
+                                        <select class="tool-select http-method-select" id="httpMethod">
+                                            <option value="GET">GET</option>
+                                            <option value="POST">POST</option>
+                                            <option value="PUT">PUT</option>
+                                            <option value="DELETE">DELETE</option>
+                                            <option value="PATCH">PATCH</option>
+                                        </select>
+                                        <input type="text" class="tool-input" id="httpUrl" placeholder="https://api.example.com/endpoint">
+                                        <button class="tool-button" onclick="sendHttpRequest()">Send</button>
+                                    </div>
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Headers (JSON)</label>
+                                    <textarea class="tool-textarea" id="httpHeaders" placeholder='{"Content-Type": "application/json"}'></textarea>
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Body</label>
+                                    <textarea class="tool-textarea" id="httpBody" placeholder='{"key": "value"}'></textarea>
+                                </div>
+                                <div class="http-response" id="httpResponse" style="display: none;">
+                                    <div class="http-response-header">
+                                        <span class="http-status" id="httpStatus"></span>
+                                        <span id="httpTime"></span>
+                                    </div>
+                                    <div class="http-response-body" id="httpResponseBody"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- cURL Builder Panel -->
+                        <div class="tool-panel" id="tool-curl">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128279; cURL Builder</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Method</label>
+                                    <select class="tool-select" id="curlMethod" onchange="updateCurlCommand()">
+                                        <option value="GET">GET</option>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="DELETE">DELETE</option>
+                                        <option value="PATCH">PATCH</option>
+                                    </select>
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">URL</label>
+                                    <input type="text" class="tool-input" id="curlUrl" placeholder="https://api.example.com" oninput="updateCurlCommand()">
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Headers (one per line: Key: Value)</label>
+                                    <textarea class="tool-textarea" id="curlHeaders" placeholder="Content-Type: application/json&#10;Authorization: Bearer token" oninput="updateCurlCommand()"></textarea>
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Body (for POST/PUT/PATCH)</label>
+                                    <textarea class="tool-textarea" id="curlBody" placeholder='{"key": "value"}' oninput="updateCurlCommand()"></textarea>
+                                </div>
+                                <div class="tool-input-group">
+                                    <label class="tool-label">Generated cURL Command</label>
+                                    <div class="curl-output" id="curlOutput">
+                                        curl "https://api.example.com"
+                                        <button class="tool-button secondary curl-copy-btn" onclick="copyCurlCommand()">Copy</button>
+                                    </div>
+                                </div>
+                                <button class="tool-button" onclick="runCurlInTerminal()">Run in Terminal</button>
+                            </div>
+                        </div>
+
+                        <!-- WebSocket Client Panel -->
+                        <div class="tool-panel" id="tool-websocket">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128268; WebSocket Client</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="ws-status">
+                                    <span class="ws-indicator" id="wsIndicator"></span>
+                                    <span id="wsStatusText">Disconnected</span>
+                                </div>
+                                <div class="tool-input-group">
+                                    <div class="tool-row">
+                                        <input type="text" class="tool-input" id="wsUrl" placeholder="wss://echo.websocket.org">
+                                        <button class="tool-button" id="wsConnectBtn" onclick="toggleWebSocket()">Connect</button>
+                                    </div>
+                                </div>
+                                <div class="ws-messages" id="wsMessages"></div>
+                                <div class="tool-input-group">
+                                    <div class="tool-row">
+                                        <input type="text" class="tool-input" id="wsMessage" placeholder="Message to send" onkeypress="if(event.key==='Enter')sendWsMessage()">
+                                        <button class="tool-button" onclick="sendWsMessage()">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Log Tail Panel -->
+                        <div class="tool-panel" id="tool-logtail">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128220; Log Tail</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-input-group">
+                                    <div class="tool-row">
+                                        <input type="text" class="tool-input" id="logFilePath" placeholder="C:\path\to\logfile.log">
+                                        <button class="tool-button secondary" onclick="browseLogFile()">Browse</button>
+                                        <button class="tool-button" id="logTailBtn" onclick="toggleLogTail()">Start</button>
+                                    </div>
+                                </div>
+                                <div class="log-controls">
+                                    <input type="text" class="tool-input" id="logFilter" placeholder="Filter..." style="flex:1;" oninput="filterLogLines()">
+                                    <label><input type="checkbox" id="logAutoScroll" checked> Auto-scroll</label>
+                                </div>
+                                <div class="log-output" id="logOutput"></div>
+                            </div>
+                        </div>
+
+                        <!-- Diff Tool Panel -->
+                        <div class="tool-panel" id="tool-diff">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128203; Diff Tool</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="diff-container">
+                                    <div class="diff-side">
+                                        <span class="diff-side-label">Original</span>
+                                        <textarea class="tool-textarea" id="diffLeft" placeholder="Paste original text here..." oninput="computeDiff()"></textarea>
+                                    </div>
+                                    <div class="diff-side">
+                                        <span class="diff-side-label">Modified</span>
+                                        <textarea class="tool-textarea" id="diffRight" placeholder="Paste modified text here..." oninput="computeDiff()"></textarea>
+                                    </div>
+                                </div>
+                                <div class="diff-output" id="diffOutput"></div>
+                            </div>
+                        </div>
+
+                        <!-- Markdown Preview Panel -->
+                        <div class="tool-panel" id="tool-markdown">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128196; Markdown Preview</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-input-group">
+                                    <div class="tool-row">
+                                        <input type="text" class="tool-input" id="mdFilePath" placeholder="Path to .md file (optional)">
+                                        <button class="tool-button secondary" onclick="browseMdFile()">Load</button>
+                                    </div>
+                                </div>
+                                <div class="md-container">
+                                    <div class="md-editor">
+                                        <span class="diff-side-label">Editor</span>
+                                        <textarea class="tool-textarea" id="mdEditor" placeholder="# Heading&#10;&#10;Write markdown here..." oninput="renderMarkdown()" style="min-height:200px;"></textarea>
+                                    </div>
+                                    <div class="md-preview">
+                                        <span class="diff-side-label">Preview</span>
+                                        <div class="md-preview-output" id="mdPreview"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Command Palette Panel -->
+                        <div class="tool-panel" id="tool-cmdpalette">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128269; Command Palette</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-input-group">
+                                    <input type="text" class="tool-input" id="cmdSearch" placeholder="Search command history..." oninput="searchCommands()">
+                                </div>
+                                <div id="cmdResults"></div>
+                                <p style="font-size:10px; color:var(--text-dim); margin-top:12px;">
+                                    Tip: Press <kbd style="background:var(--border); padding:2px 4px; border-radius:2px;">Ctrl+Shift+P</kbd> to open anywhere
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Snippets Panel -->
+                        <div class="tool-panel" id="tool-snippets">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128221; Snippets</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <button class="tool-button" onclick="addSnippet()" style="margin-bottom:12px;">+ Add Snippet</button>
+                                <div id="snippetsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- SSH Manager Panel -->
+                        <div class="tool-panel" id="tool-ssh">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128274; SSH Connections</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <button class="tool-button" onclick="addSshConnection()" style="margin-bottom:12px;">+ Add Connection</button>
+                                <div id="sshConnectionsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Aliases Panel -->
+                        <div class="tool-panel" id="tool-aliases">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128279; Shell Aliases</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-row" style="margin-bottom:12px;">
+                                    <button class="tool-button" onclick="loadAliases()">Load from Shell</button>
+                                    <button class="tool-button secondary" onclick="addAlias()">+ Add</button>
+                                </div>
+                                <div id="aliasesList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Git Status Panel -->
+                        <div class="tool-panel" id="tool-gitstatus">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128736; Git Status</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <button class="tool-button" onclick="refreshGitStatus()" style="margin-bottom:12px;">Refresh</button>
+                                <div id="gitStatusContent">
+                                    <p style="color:var(--text-dim);">Click Refresh to load git status</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Git Graph Panel -->
+                        <div class="tool-panel" id="tool-gitgraph">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128200; Commit Graph</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-row" style="margin-bottom:12px;">
+                                    <input type="number" class="tool-input" id="gitGraphCount" value="20" style="width:60px;" min="5" max="100">
+                                    <button class="tool-button" onclick="loadGitGraph()">Load</button>
+                                </div>
+                                <div id="gitGraphOutput" style="font-family:Consolas,monospace; font-size:11px; overflow:auto; white-space:pre;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Git Diff Panel -->
+                        <div class="tool-panel" id="tool-gitdiff">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128203; Git Diff</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-row" style="margin-bottom:12px;">
+                                    <select class="tool-select" id="gitDiffType" style="width:120px;">
+                                        <option value="">Unstaged</option>
+                                        <option value="--staged">Staged</option>
+                                        <option value="HEAD~1">Last Commit</option>
+                                    </select>
+                                    <button class="tool-button" onclick="loadGitDiff()">Load Diff</button>
+                                </div>
+                                <div id="gitDiffOutput" style="font-family:Consolas,monospace; font-size:11px; overflow:auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Process Monitor Panel -->
+                        <div class="tool-panel" id="tool-processes">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#9881; Processes</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <div class="tool-row" style="margin-bottom:12px;">
+                                    <input type="text" class="tool-input" id="processFilter" placeholder="Filter by name..." oninput="filterProcesses()">
+                                    <button class="tool-button" onclick="refreshProcesses()">Refresh</button>
+                                </div>
+                                <div id="processesTable" style="overflow:auto; max-height:400px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Port Viewer Panel -->
+                        <div class="tool-panel" id="tool-ports">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128268; Ports</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <button class="tool-button" onclick="refreshPorts()" style="margin-bottom:12px;">Refresh</button>
+                                <div id="portsTable" style="overflow:auto; max-height:400px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Docker Dashboard Panel -->
+                        <div class="tool-panel" id="tool-docker">
+                            <div class="tool-panel-header">
+                                <span class="tool-panel-title">&#128051; Docker</span>
+                                <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
+                            </div>
+                            <div class="tool-panel-content">
+                                <button class="tool-button" onclick="refreshDocker()" style="margin-bottom:12px;">Refresh</button>
+                                <div id="dockerContainers"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="pane-controls">
-                    <button class="pane-btn" onclick="clearPane(1)">Clear</button>
-                    <button class="pane-btn" onclick="restartPane(1)">Restart</button>
+
+                <!-- Files Panel -->
+                <div class="sidebar-panel" id="panel-files">
+                    <div class="path-bar" id="pathBar"></div>
+                    <div class="quick-nav">
+                        <button class="quick-nav-btn" onclick="navigateToQuick('home')">Home</button>
+                        <button class="quick-nav-btn" onclick="navigateToQuick('desktop')">Desktop</button>
+                        <button class="quick-nav-btn" onclick="navigateToQuick('downloads')">Downloads</button>
+                    </div>
+                    <div class="file-list" id="fileList"></div>
+                </div>
+
+                <!-- Snip Panel -->
+                <div class="sidebar-panel" id="panel-snip">
+                    <div class="snip-actions">
+                        <button class="snip-btn" onclick="startSnip()">
+                            <span>&#9986;</span> New Snip
+                        </button>
+                    </div>
+                    <div class="snip-list" id="snipList">
+                        <div class="temp-empty">No snips yet. Click "New Snip" to capture.</div>
+                    </div>
                 </div>
             </div>
-            <div class="pane-content" id="term-1"></div>
+
         </div>
-        <div class="terminal-pane" id="pane-2" onclick="focusPane(2)">
-            <div class="pane-header">
-                <div class="pane-title">
-                    <span class="pane-number">3</span>
-                    <span class="pane-shell" id="shell-2">PowerShell</span>
-                </div>
-                <div class="pane-controls">
-                    <button class="pane-btn" onclick="clearPane(2)">Clear</button>
-                    <button class="pane-btn" onclick="restartPane(2)">Restart</button>
-                </div>
-            </div>
-            <div class="pane-content" id="term-2"></div>
+    </div>
+
+    <!-- Snip Overlay -->
+    <div class="snip-overlay" id="snipOverlay">
+        <div class="snip-selection" id="snipSelection"></div>
+    </div>
+
+    <!-- Snip Editor -->
+    <div class="snip-editor" id="snipEditor">
+        <div class="snip-editor-header">
+            <span class="snip-editor-title">Edit Snip</span>
+            <button class="snip-editor-btn" onclick="closeSnipEditor()">&#x2715;</button>
         </div>
-        <div class="terminal-pane" id="pane-3" onclick="focusPane(3)">
-            <div class="pane-header">
-                <div class="pane-title">
-                    <span class="pane-number">4</span>
-                    <span class="pane-shell" id="shell-3">PowerShell</span>
-                </div>
-                <div class="pane-controls">
-                    <button class="pane-btn" onclick="clearPane(3)">Clear</button>
-                    <button class="pane-btn" onclick="restartPane(3)">Restart</button>
-                </div>
-            </div>
-            <div class="pane-content" id="term-3"></div>
+        <div class="snip-editor-tools">
+            <button class="snip-tool-btn active" data-tool="select" onclick="setSnipTool('select')">Select</button>
+            <button class="snip-tool-btn" data-tool="rect" onclick="setSnipTool('rect')">Rectangle</button>
+            <button class="snip-tool-btn" data-tool="arrow" onclick="setSnipTool('arrow')">Arrow</button>
+            <button class="snip-tool-btn" data-tool="highlight" onclick="setSnipTool('highlight')">Highlight</button>
+            <button class="snip-tool-btn" data-tool="text" onclick="setSnipTool('text')">Text</button>
+        </div>
+        <div class="snip-editor-canvas">
+            <canvas id="snipCanvas"></canvas>
+        </div>
+        <div class="snip-editor-footer">
+            <button class="snip-editor-btn" onclick="closeSnipEditor()">Cancel</button>
+            <button class="snip-editor-btn" onclick="saveSnipToTemp()">Save to Temp</button>
+            <button class="snip-editor-btn primary" onclick="saveSnipAs()">Save As...</button>
+        </div>
+    </div>
+
+    <!-- Terminal Context Menu -->
+    <div class="terminal-context-menu" id="terminalContextMenu">
+        <div class="context-menu-item" onclick="contextMenuAction('copy')">
+            <span class="context-menu-icon">&#128203;</span>
+            <span class="context-menu-label">Copy</span>
+            <span class="context-menu-shortcut">Ctrl+C</span>
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('paste')">
+            <span class="context-menu-icon">&#128203;</span>
+            <span class="context-menu-label">Paste</span>
+            <span class="context-menu-shortcut">Ctrl+V</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('splitH')">
+            <span class="context-menu-icon">&#x2503;</span>
+            <span class="context-menu-label">Split Right</span>
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('splitV')">
+            <span class="context-menu-icon">&#x2501;</span>
+            <span class="context-menu-label">Split Down</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('newTab')">
+            <span class="context-menu-icon">+</span>
+            <span class="context-menu-label">New Terminal</span>
+        </div>
+        <div class="context-menu-item" id="contextClosePane" onclick="contextMenuAction('close')">
+            <span class="context-menu-icon">&#x2715;</span>
+            <span class="context-menu-label">Close Pane</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('clear')">
+            <span class="context-menu-icon">&#x239A;</span>
+            <span class="context-menu-label">Clear</span>
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('restart')">
+            <span class="context-menu-icon">&#x21BB;</span>
+            <span class="context-menu-label">Restart Shell</span>
         </div>
     </div>
 
@@ -471,14 +2363,10 @@
         ];
 
         function checkForPrompt(paneIndex, data) {
-            // Check if data contains a bell character
-            if (data.includes('\x07')) {
-                playAttentionSound();
-                flashPane(paneIndex);
-                return;
-            }
+            // Bell character handling - disabled to prevent chime spam
+            // Sound and flash notifications have been disabled
 
-            // Track activity
+            // Track activity (kept for potential future use)
             if (!terminalActivity[paneIndex]) {
                 terminalActivity[paneIndex] = {
                     lastOutput: Date.now(),
@@ -497,30 +2385,22 @@
             // Clear existing timeout
             if (activity.timeout) clearTimeout(activity.timeout);
 
-            // Set timeout to check for prompt after silence
+            // Timeout handling - sounds and flashing disabled
             activity.timeout = setTimeout(() => {
                 if (activity.wasActive) {
-                    // Check if buffer ends with a prompt pattern
-                    const cleanBuffer = activity.buffer.replace(/\x1b\[[0-9;]*m/g, ''); // Strip ANSI
-                    for (const pattern of PROMPT_PATTERNS) {
-                        if (pattern.test(cleanBuffer)) {
-                            playAttentionSound();
-                            flashPane(paneIndex);
-                            break;
-                        }
-                    }
                     activity.wasActive = false;
                     activity.buffer = '';
                 }
-            }, 1500); // 1.5 seconds of silence after activity
+            }, 1500);
         }
 
         function flashPane(paneIndex) {
-            const pane = document.getElementById(`pane-${paneIndex}`);
-            if (pane && paneIndex !== activePane) {
-                pane.classList.add('attention');
-                setTimeout(() => pane.classList.remove('attention'), 2000);
-            }
+            // Flashing disabled - was causing constant visual distraction
+            // const pane = document.getElementById(`pane-${paneIndex}`);
+            // if (pane && paneIndex !== activePane) {
+            //     pane.classList.add('attention');
+            //     setTimeout(() => pane.classList.remove('attention'), 2000);
+            // }
         }
 
         // Load xterm.js dynamically
@@ -619,6 +2499,21 @@
             term.onData(data => {
                 window.electronAPI.terminal.write(id, data);
             });
+
+            // Auto-copy on selection (like PuTTY)
+            term.onSelectionChange(() => {
+                if (term.hasSelection()) {
+                    const selection = term.getSelection();
+                    if (selection) {
+                        navigator.clipboard.writeText(selection).then(() => {
+                            // Optional: brief visual feedback
+                            console.log('Selection copied to clipboard');
+                        }).catch(err => {
+                            console.error('Auto-copy failed:', err);
+                        });
+                    }
+                }
+            });
         }
 
         // Focus a pane
@@ -659,13 +2554,6 @@
             const grid = document.getElementById('terminalGrid');
             grid.className = 'terminal-grid layout-' + layout;
             currentLayout = layout;
-
-            // Update active button
-            document.querySelectorAll('.layout-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === String(layout) ||
-                    (layout === '2h' && btn.textContent === '2H') ||
-                    (layout === '2v' && btn.textContent === '2V'));
-            });
 
             // Show/hide panes based on layout
             const paneCount = layout === 1 ? 1 : layout === '2h' || layout === '2v' ? 2 : layout === 3 ? 3 : 4;
@@ -773,6 +2661,18 @@
             if (e.ctrlKey && e.key === 'l') {
                 // Let it pass through to terminal for native clear
             }
+
+            // Ctrl+V or Ctrl+Shift+V: Paste to terminal
+            if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+                e.preventDefault();
+                pasteToTerminal(activePane);
+            }
+
+            // Ctrl+Shift+C: Copy from terminal (Ctrl+C goes to shell)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+                copyFromTerminal(activePane);
+            }
         });
 
         // Handle resize with debounce and safety checks
@@ -819,6 +2719,2118 @@
             init();
         } else {
             window.addEventListener('load', init);
+        }
+
+        // ==========================================
+        // CONTEXT MENU & DYNAMIC PANES
+        // ==========================================
+
+        let contextMenuPane = null;
+        let paneCount = 4;
+        let maxPanes = 9; // Maximum number of panes
+
+        // Show context menu on right-click
+        document.addEventListener('contextmenu', (e) => {
+            const pane = e.target.closest('.terminal-pane');
+            if (!pane) {
+                hideContextMenu();
+                return;
+            }
+
+            e.preventDefault();
+            contextMenuPane = parseInt(pane.id.split('-')[1]);
+
+            const menu = document.getElementById('terminalContextMenu');
+            const closeItem = document.getElementById('contextClosePane');
+
+            // Disable close if only one pane
+            if (getVisiblePaneCount() <= 1) {
+                closeItem.classList.add('disabled');
+            } else {
+                closeItem.classList.remove('disabled');
+            }
+
+            // Position menu
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // Ensure menu stays within viewport
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('active');
+
+            // Adjust if overflowing
+            const rect = menu.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                menu.style.left = (window.innerWidth - rect.width - 10) + 'px';
+            }
+            if (rect.bottom > window.innerHeight) {
+                menu.style.top = (window.innerHeight - rect.height - 10) + 'px';
+            }
+        });
+
+        // Hide context menu
+        function hideContextMenu() {
+            document.getElementById('terminalContextMenu').classList.remove('active');
+            contextMenuPane = null;
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.terminal-context-menu')) {
+                hideContextMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideContextMenu();
+            }
+        });
+
+        // Get count of visible panes
+        function getVisiblePaneCount() {
+            return document.querySelectorAll('.terminal-pane.visible').length;
+        }
+
+        // Context menu actions
+        function contextMenuAction(action) {
+            // Save pane index before hiding menu (hideContextMenu sets it to null)
+            const paneIndex = contextMenuPane;
+            hideContextMenu();
+
+            if (paneIndex === null) return;
+
+            switch (action) {
+                case 'copy':
+                    copyFromTerminal(paneIndex);
+                    break;
+                case 'paste':
+                    pasteToTerminal(paneIndex);
+                    break;
+                case 'splitH':
+                    splitPane(paneIndex, 'horizontal');
+                    break;
+                case 'splitV':
+                    splitPane(paneIndex, 'vertical');
+                    break;
+                case 'newTab':
+                    addNewPane();
+                    break;
+                case 'close':
+                    if (getVisiblePaneCount() > 1) {
+                        closePane(paneIndex);
+                    }
+                    break;
+                case 'clear':
+                    clearPane(paneIndex);
+                    break;
+                case 'restart':
+                    restartPane(paneIndex);
+                    break;
+            }
+        }
+
+        // Copy selected text from terminal
+        function copyFromTerminal(paneIndex) {
+            const term = terminals[paneIndex];
+            if (term && term.hasSelection()) {
+                const selection = term.getSelection();
+                navigator.clipboard.writeText(selection).then(() => {
+                    console.log('Copied to clipboard');
+                }).catch(err => {
+                    console.error('Copy failed:', err);
+                });
+            }
+        }
+
+        // Paste from clipboard to terminal
+        async function pasteToTerminal(paneIndex) {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    const termId = paneIds[paneIndex];
+                    if (termId && window.electronAPI?.terminal?.write) {
+                        // Replace newlines with \r for terminal
+                        const sanitized = text.replace(/\r?\n/g, '\r');
+                        await window.electronAPI.terminal.write(termId, sanitized);
+                    }
+                }
+            } catch (err) {
+                console.error('Paste failed:', err);
+            }
+        }
+
+        // Add a new pane (creates new terminal)
+        async function addNewPane() {
+            const visibleCount = getVisiblePaneCount();
+            if (visibleCount >= maxPanes) {
+                console.log('Maximum panes reached');
+                return;
+            }
+
+            // Find first hidden pane or create new one
+            let newPaneIndex = -1;
+            for (let i = 0; i < maxPanes; i++) {
+                const pane = document.getElementById(`pane-${i}`);
+                if (!pane) {
+                    // Need to create this pane
+                    newPaneIndex = i;
+                    createPaneElement(i);
+                    break;
+                } else if (pane.classList.contains('hidden')) {
+                    newPaneIndex = i;
+                    break;
+                }
+            }
+
+            if (newPaneIndex === -1) return;
+
+            // Show the pane
+            const pane = document.getElementById(`pane-${newPaneIndex}`);
+            pane.classList.remove('hidden');
+            pane.classList.add('visible');
+
+            // Create terminal if not exists
+            if (!terminals[newPaneIndex]) {
+                await createTerminal(newPaneIndex);
+            }
+
+            // Update layout
+            updateDynamicLayout();
+            focusPane(newPaneIndex);
+        }
+
+        // Create a new pane DOM element
+        function createPaneElement(index) {
+            const grid = document.getElementById('terminalGrid');
+            const pane = document.createElement('div');
+            pane.className = 'terminal-pane hidden';
+            pane.id = `pane-${index}`;
+            pane.onclick = () => focusPane(index);
+
+            pane.innerHTML = `
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">${index + 1}</span>
+                        <span class="pane-shell" id="shell-${index}">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(${index})">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(${index})">Restart</button>
+                    </div>
+                </div>
+                <div class="pane-content" id="term-${index}"></div>
+            `;
+
+            grid.appendChild(pane);
+        }
+
+        // Close a pane
+        async function closePane(index) {
+            const pane = document.getElementById(`pane-${index}`);
+            if (!pane) return;
+
+            // Kill the terminal
+            const id = `term-${index}`;
+            await window.electronAPI.terminal.kill(id);
+
+            // Clear terminal instance
+            if (terminals[index]) {
+                terminals[index].dispose();
+                delete terminals[index];
+                delete fitAddons[index];
+            }
+
+            // Hide the pane
+            pane.classList.remove('visible', 'active');
+            pane.classList.add('hidden');
+
+            // Update layout
+            updateDynamicLayout();
+
+            // Focus another pane
+            const visiblePanes = document.querySelectorAll('.terminal-pane.visible');
+            if (visiblePanes.length > 0) {
+                const newActiveIndex = parseInt(visiblePanes[0].id.split('-')[1]);
+                focusPane(newActiveIndex);
+            }
+        }
+
+        // Split a pane (adds new pane)
+        function splitPane(index, direction) {
+            // For now, splitting just adds a new pane
+            // The layout will automatically adjust
+            addNewPane();
+        }
+
+        // Update layout dynamically based on visible panes
+        function updateDynamicLayout() {
+            const grid = document.getElementById('terminalGrid');
+            const visiblePanes = document.querySelectorAll('.terminal-pane.visible');
+            const count = visiblePanes.length;
+
+            // Remove all layout classes
+            grid.className = 'terminal-grid';
+
+            // Determine optimal grid layout
+            let cols, rows;
+            if (count === 1) {
+                cols = 1; rows = 1;
+            } else if (count === 2) {
+                cols = 2; rows = 1;
+            } else if (count <= 4) {
+                cols = 2; rows = 2;
+            } else if (count <= 6) {
+                cols = 3; rows = 2;
+            } else {
+                cols = 3; rows = 3;
+            }
+
+            // Apply dynamic grid
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            // Update status
+            document.getElementById('statusInfo').textContent = `${count} pane${count > 1 ? 's' : ''}`;
+
+            // Refit all visible terminals
+            setTimeout(() => {
+                visiblePanes.forEach(pane => {
+                    const index = parseInt(pane.id.split('-')[1]);
+                    if (fitAddons[index] && terminals[index]) {
+                        try {
+                            fitAddons[index].fit();
+                            const id = `term-${index}`;
+                            window.electronAPI.terminal.resize(id, terminals[index].cols, terminals[index].rows);
+                        } catch (e) {}
+                    }
+                });
+            }, 150);
+        }
+
+        // Override setLayout to work with dynamic system
+        const originalSetLayout = setLayout;
+        setLayout = function(layout) {
+            const grid = document.getElementById('terminalGrid');
+
+            // Determine target pane count
+            let targetCount;
+            if (layout === 1) targetCount = 1;
+            else if (layout === '2h' || layout === '2v') targetCount = 2;
+            else if (layout === 3) targetCount = 3;
+            else targetCount = 4;
+
+            const visiblePanes = document.querySelectorAll('.terminal-pane.visible');
+            const currentCount = visiblePanes.length;
+
+            // Show/hide panes to match target
+            if (currentCount < targetCount) {
+                // Need to show more panes
+                for (let i = 0; i < maxPanes && getVisiblePaneCount() < targetCount; i++) {
+                    const pane = document.getElementById(`pane-${i}`);
+                    if (pane && pane.classList.contains('hidden')) {
+                        pane.classList.remove('hidden');
+                        pane.classList.add('visible');
+                        if (!terminals[i]) {
+                            createTerminal(i);
+                        }
+                    }
+                }
+            } else if (currentCount > targetCount) {
+                // Need to hide panes (from the end)
+                let toHide = currentCount - targetCount;
+                for (let i = maxPanes - 1; i >= 0 && toHide > 0; i--) {
+                    const pane = document.getElementById(`pane-${i}`);
+                    if (pane && pane.classList.contains('visible')) {
+                        pane.classList.remove('visible');
+                        pane.classList.add('hidden');
+                        toHide--;
+                    }
+                }
+            }
+
+            // Apply specific layout style
+            grid.className = 'terminal-grid layout-' + layout;
+
+            // Reset inline styles
+            grid.style.gridTemplateColumns = '';
+            grid.style.gridTemplateRows = '';
+
+            currentLayout = layout;
+
+            // Update status
+            document.getElementById('statusInfo').textContent = `${targetCount} pane${targetCount > 1 ? 's' : ''}`;
+
+            // Make sure active pane is visible
+            const stillVisible = document.querySelectorAll('.terminal-pane.visible');
+            let activeIsVisible = false;
+            stillVisible.forEach(p => {
+                if (parseInt(p.id.split('-')[1]) === activePane) {
+                    activeIsVisible = true;
+                }
+            });
+            if (!activeIsVisible && stillVisible.length > 0) {
+                focusPane(parseInt(stillVisible[0].id.split('-')[1]));
+            }
+
+            // Refit terminals
+            setTimeout(() => {
+                stillVisible.forEach(pane => {
+                    const index = parseInt(pane.id.split('-')[1]);
+                    const container = document.getElementById(`term-${index}`);
+                    if (!container || container.offsetWidth < 50 || container.offsetHeight < 50) return;
+                    if (fitAddons[index] && terminals[index]) {
+                        try {
+                            fitAddons[index].fit();
+                            const id = `term-${index}`;
+                            window.electronAPI.terminal.resize(id, terminals[index].cols, terminals[index].rows);
+                        } catch (e) {}
+                    }
+                });
+            }, 150);
+        };
+
+        // ==========================================
+        // WORKSPACE MANAGEMENT
+        // ==========================================
+
+        const workspaces = [{
+            id: 0,
+            name: 'Workspace 1',
+            panes: [0, 1, 2, 3], // pane indices
+            layout: 4,
+            activePaneInWorkspace: 0
+        }];
+        let currentWorkspace = 0;
+        let nextWorkspaceId = 1;
+
+        function renderWorkspaceTabs() {
+            const container = document.getElementById('workspaceTabs');
+            container.innerHTML = workspaces.map((ws, idx) => {
+                const isActive = idx === currentWorkspace;
+                return `<button class="workspace-tab ${isActive ? 'active' : ''}" data-workspace="${idx}" onclick="switchWorkspace(${idx})">
+                    ${ws.name}
+                    <span class="workspace-tab-close" onclick="event.stopPropagation(); closeWorkspace(${idx})">&#x2715;</span>
+                </button>`;
+            }).join('');
+        }
+
+        function switchWorkspace(index) {
+            if (index < 0 || index >= workspaces.length) return;
+
+            // Save current workspace state
+            if (workspaces[currentWorkspace]) {
+                workspaces[currentWorkspace].activePaneInWorkspace = activePane;
+                workspaces[currentWorkspace].layout = currentLayout;
+                // Save which panes are visible
+                workspaces[currentWorkspace].panes = [];
+                document.querySelectorAll('.terminal-pane.visible').forEach(pane => {
+                    workspaces[currentWorkspace].panes.push(parseInt(pane.id.split('-')[1]));
+                });
+            }
+
+            currentWorkspace = index;
+            const ws = workspaces[index];
+
+            // Hide all panes
+            document.querySelectorAll('.terminal-pane').forEach(pane => {
+                pane.classList.remove('visible');
+                pane.classList.add('hidden');
+            });
+
+            // Show workspace panes
+            ws.panes.forEach(paneIdx => {
+                const pane = document.getElementById(`pane-${paneIdx}`);
+                if (pane) {
+                    pane.classList.remove('hidden');
+                    pane.classList.add('visible');
+                }
+            });
+
+            // Apply layout
+            updateDynamicLayout();
+
+            // Focus the workspace's active pane
+            if (ws.panes.length > 0) {
+                const paneToFocus = ws.panes.includes(ws.activePaneInWorkspace) ? ws.activePaneInWorkspace : ws.panes[0];
+                focusPane(paneToFocus);
+            }
+
+            renderWorkspaceTabs();
+        }
+
+        // Create pane HTML dynamically
+        function createPaneHTML(index) {
+            const grid = document.getElementById('terminalGrid');
+            const pane = document.createElement('div');
+            pane.className = 'terminal-pane hidden';
+            pane.id = `pane-${index}`;
+            pane.onclick = () => focusPane(index);
+            pane.innerHTML = `
+                <div class="pane-header">
+                    <div class="pane-title">
+                        <span class="pane-number">${index + 1}</span>
+                        <span class="pane-shell" id="shell-${index}">PowerShell</span>
+                    </div>
+                    <div class="pane-controls">
+                        <button class="pane-btn" onclick="clearPane(${index})">Clear</button>
+                        <button class="pane-btn" onclick="restartPane(${index})">Restart</button>
+                    </div>
+                </div>
+                <div class="pane-content" id="term-${index}"></div>
+            `;
+            grid.appendChild(pane);
+            return pane;
+        }
+
+        async function addWorkspace() {
+            const newId = nextWorkspaceId++;
+            const workspaceNum = workspaces.length + 1;
+
+            // Find first available pane slot that's not used by any workspace
+            const usedPanes = new Set();
+            workspaces.forEach(ws => ws.panes.forEach(p => usedPanes.add(p)));
+
+            let newPaneIdx = -1;
+            for (let i = 0; i < maxPanes; i++) {
+                if (!usedPanes.has(i)) {
+                    newPaneIdx = i;
+                    break;
+                }
+            }
+
+            // If no available pane, create a new one
+            if (newPaneIdx === -1) {
+                newPaneIdx = Math.max(...Array.from(usedPanes)) + 1;
+                if (newPaneIdx >= maxPanes) {
+                    alert('Maximum panes reached');
+                    return;
+                }
+            }
+
+            // Ensure pane exists
+            let pane = document.getElementById(`pane-${newPaneIdx}`);
+            if (!pane) {
+                createPaneHTML(newPaneIdx);
+            }
+
+            // Create terminal if needed
+            if (!terminals[newPaneIdx]) {
+                await createTerminal(newPaneIdx);
+            }
+
+            const newWorkspace = {
+                id: newId,
+                name: `Workspace ${workspaceNum}`,
+                panes: [newPaneIdx],
+                layout: 1,
+                activePaneInWorkspace: newPaneIdx
+            };
+
+            workspaces.push(newWorkspace);
+            switchWorkspace(workspaces.length - 1);
+        }
+
+        async function closeWorkspace(index) {
+            if (workspaces.length <= 1) {
+                alert('Cannot close the last workspace');
+                return;
+            }
+
+            const ws = workspaces[index];
+
+            // Kill terminals in this workspace (if not used elsewhere)
+            const usedElsewhere = new Set();
+            workspaces.forEach((w, i) => {
+                if (i !== index) w.panes.forEach(p => usedElsewhere.add(p));
+            });
+
+            for (const paneIdx of ws.panes) {
+                if (!usedElsewhere.has(paneIdx)) {
+                    const id = `term-${paneIdx}`;
+                    await window.electronAPI.terminal.kill(id);
+                    if (terminals[paneIdx]) {
+                        terminals[paneIdx].dispose();
+                        terminals[paneIdx] = null;
+                    }
+                    const pane = document.getElementById(`pane-${paneIdx}`);
+                    if (pane) {
+                        pane.classList.remove('visible');
+                        pane.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Remove workspace
+            workspaces.splice(index, 1);
+
+            // Switch to adjacent workspace
+            if (currentWorkspace >= workspaces.length) {
+                currentWorkspace = workspaces.length - 1;
+            } else if (currentWorkspace === index) {
+                currentWorkspace = Math.max(0, index - 1);
+            } else if (currentWorkspace > index) {
+                currentWorkspace--;
+            }
+
+            switchWorkspace(currentWorkspace);
+        }
+
+        // ==========================================
+        // SIDEBAR FUNCTIONALITY
+        // ==========================================
+
+        let currentPath = '';
+        let sidebarCollapsed = false;
+
+        // Toggle sidebar collapse
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebarCollapsed = !sidebarCollapsed;
+            sidebar.classList.toggle('collapsed', sidebarCollapsed);
+
+            // Refit terminals after sidebar toggle
+            setTimeout(() => {
+                Object.keys(fitAddons).forEach(key => {
+                    const index = parseInt(key);
+                    if (fitAddons[index] && terminals[index]) {
+                        try {
+                            fitAddons[index].fit();
+                            const id = `term-${index}`;
+                            window.electronAPI.terminal.resize(id, terminals[index].cols, terminals[index].rows);
+                        } catch (e) {}
+                    }
+                });
+            }, 250);
+        }
+
+        // Switch sidebar tabs
+        function switchSidebarTab(tabName) {
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.panel === tabName);
+            });
+            document.querySelectorAll('.sidebar-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `panel-${tabName}`);
+            });
+        }
+
+        // ==========================================
+        // FILE BROWSER
+        // ==========================================
+
+        const fileIcons = {
+            folder: '&#128193;',
+            file: '&#128196;',
+            image: '&#128444;',
+            video: '&#127916;',
+            audio: '&#127925;',
+            code: '&#128187;',
+            archive: '&#128230;',
+            pdf: '&#128213;',
+            text: '&#128221;'
+        };
+
+        function getFileIcon(name, isDir) {
+            if (isDir) return fileIcons.folder;
+            const ext = name.split('.').pop().toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext)) return fileIcons.image;
+            if (['mp4', 'avi', 'mkv', 'mov', 'webm'].includes(ext)) return fileIcons.video;
+            if (['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(ext)) return fileIcons.audio;
+            if (['js', 'ts', 'py', 'html', 'css', 'json', 'xml', 'java', 'cpp', 'c', 'h'].includes(ext)) return fileIcons.code;
+            if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return fileIcons.archive;
+            if (ext === 'pdf') return fileIcons.pdf;
+            if (['txt', 'md', 'log'].includes(ext)) return fileIcons.text;
+            return fileIcons.file;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return Math.round(bytes / (1024 * 1024)) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+        }
+
+        async function navigateTo(dirPath) {
+            if (!window.electronAPI?.filesystem?.readDir) {
+                console.log('Filesystem API not available');
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.filesystem.readDir(dirPath);
+                if (!result.success) {
+                    console.error('Failed to read directory:', result.error);
+                    return;
+                }
+
+                currentPath = result.path;
+                renderPathBar(result.path);
+                renderFileList(result.items);
+            } catch (err) {
+                console.error('Navigation error:', err);
+            }
+        }
+
+        function renderPathBar(fullPath) {
+            const pathBar = document.getElementById('pathBar');
+            const isWindows = fullPath.includes('\\');
+            const sep = isWindows ? '\\' : '/';
+            const parts = fullPath.split(sep).filter(p => p);
+
+            let html = '';
+            let buildPath = isWindows ? '' : '/';
+
+            parts.forEach((part, i) => {
+                buildPath += (i > 0 || isWindows ? sep : '') + part;
+                const clickPath = buildPath;
+                html += `<span class="path-segment" onclick="navigateTo('${clickPath.replace(/\\/g, '\\\\')}')">${part}</span>`;
+                if (i < parts.length - 1) {
+                    html += `<span class="path-sep">${sep}</span>`;
+                }
+            });
+
+            pathBar.innerHTML = html;
+        }
+
+        function renderFileList(items) {
+            const fileList = document.getElementById('fileList');
+
+            if (items.length === 0) {
+                fileList.innerHTML = '<div class="temp-empty">Empty folder</div>';
+                return;
+            }
+
+            // Sort: folders first, then by name
+            items.sort((a, b) => {
+                if (a.isDir !== b.isDir) return b.isDir - a.isDir;
+                return a.name.localeCompare(b.name);
+            });
+
+            fileList.innerHTML = items.map(item => {
+                const icon = getFileIcon(item.name, item.isDir);
+                const size = item.isDir ? '' : formatFileSize(item.size);
+                const fullPath = item.path.replace(/\\/g, '\\\\');
+
+                return `
+                    <div class="file-item"
+                         draggable="true"
+                         ondragstart="onFileDragStart(event, '${fullPath}')"
+                         ondblclick="${item.isDir ? `navigateTo('${fullPath}')` : `pastePathToTerminal('${fullPath}')`}"
+                         title="${item.name}">
+                        <span class="file-icon">${icon}</span>
+                        <span class="file-name">${item.name}</span>
+                        <span class="file-size">${size}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function navigateToQuick(location) {
+            if (!window.electronAPI?.filesystem?.getHomeDir) return;
+
+            try {
+                const homeDir = await window.electronAPI.filesystem.getHomeDir();
+                let targetPath = homeDir;
+
+                if (location === 'desktop') {
+                    targetPath = await window.electronAPI.filesystem.pathJoin(homeDir, 'Desktop');
+                } else if (location === 'downloads') {
+                    targetPath = await window.electronAPI.filesystem.pathJoin(homeDir, 'Downloads');
+                }
+
+                navigateTo(targetPath);
+            } catch (err) {
+                console.error('Quick nav error:', err);
+            }
+        }
+
+        function onFileDragStart(event, filePath) {
+            event.dataTransfer.setData('text/plain', filePath.replace(/\\\\/g, '\\'));
+            event.dataTransfer.effectAllowed = 'copy';
+        }
+
+        function pastePathToTerminal(filePath) {
+            const path = filePath.replace(/\\\\/g, '\\');
+            const quotedPath = path.includes(' ') ? `"${path}"` : path;
+            const id = `term-${activePane}`;
+            window.electronAPI.terminal.write(id, quotedPath);
+        }
+
+        // ==========================================
+        // DRAG & DROP TO TERMINAL
+        // ==========================================
+
+        function setupTerminalDropZones() {
+            // Use event delegation on the grid for dynamic panes
+            const grid = document.getElementById('terminalGrid');
+
+            grid.addEventListener('dragover', (e) => {
+                const pane = e.target.closest('.terminal-pane');
+                if (!pane) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                pane.style.outline = '2px solid var(--accent)';
+            });
+
+            grid.addEventListener('dragleave', (e) => {
+                const pane = e.target.closest('.terminal-pane');
+                if (!pane) return;
+                // Only remove outline if leaving the pane entirely
+                if (!pane.contains(e.relatedTarget)) {
+                    pane.style.outline = '';
+                }
+            });
+
+            grid.addEventListener('drop', (e) => {
+                const pane = e.target.closest('.terminal-pane');
+                if (!pane) return;
+                e.preventDefault();
+                pane.style.outline = '';
+
+                const filePath = e.dataTransfer.getData('text/plain');
+                if (filePath) {
+                    const index = parseInt(pane.id.split('-')[1]);
+                    const quotedPath = filePath.includes(' ') ? `"${filePath}"` : filePath;
+                    const id = `term-${index}`;
+                    window.electronAPI.terminal.write(id, quotedPath);
+                }
+            });
+        }
+
+        // ==========================================
+        // SNIPPING TOOL
+        // ==========================================
+
+        let snipState = {
+            isCapturing: false,
+            startX: 0,
+            startY: 0,
+            currentImage: null,
+            tool: 'select',
+            annotations: []
+        };
+
+        function startSnip() {
+            if (!window.electronAPI?.screenshot?.capture) {
+                alert('Screenshot API not available');
+                return;
+            }
+
+            const overlay = document.getElementById('snipOverlay');
+            const selection = document.getElementById('snipSelection');
+
+            overlay.classList.add('active');
+            selection.style.display = 'none';
+            snipState.isCapturing = true;
+        }
+
+        // Snip overlay mouse events
+        document.getElementById('snipOverlay')?.addEventListener('mousedown', (e) => {
+            if (!snipState.isCapturing) return;
+
+            snipState.startX = e.clientX;
+            snipState.startY = e.clientY;
+
+            const selection = document.getElementById('snipSelection');
+            selection.style.left = e.clientX + 'px';
+            selection.style.top = e.clientY + 'px';
+            selection.style.width = '0';
+            selection.style.height = '0';
+            selection.style.display = 'block';
+        });
+
+        document.getElementById('snipOverlay')?.addEventListener('mousemove', (e) => {
+            if (!snipState.isCapturing || !snipState.startX) return;
+
+            const selection = document.getElementById('snipSelection');
+            const x = Math.min(snipState.startX, e.clientX);
+            const y = Math.min(snipState.startY, e.clientY);
+            const w = Math.abs(e.clientX - snipState.startX);
+            const h = Math.abs(e.clientY - snipState.startY);
+
+            selection.style.left = x + 'px';
+            selection.style.top = y + 'px';
+            selection.style.width = w + 'px';
+            selection.style.height = h + 'px';
+        });
+
+        document.getElementById('snipOverlay')?.addEventListener('mouseup', async (e) => {
+            if (!snipState.isCapturing) return;
+
+            const overlay = document.getElementById('snipOverlay');
+            const selection = document.getElementById('snipSelection');
+
+            const x = Math.min(snipState.startX, e.clientX);
+            const y = Math.min(snipState.startY, e.clientY);
+            const w = Math.abs(e.clientX - snipState.startX);
+            const h = Math.abs(e.clientY - snipState.startY);
+
+            overlay.classList.remove('active');
+            selection.style.display = 'none';
+            snipState.isCapturing = false;
+            snipState.startX = 0;
+            snipState.startY = 0;
+
+            if (w > 10 && h > 10) {
+                // Capture the region - need to convert window-relative coords to screen coords
+                try {
+                    // Get window position on screen
+                    const screenX = window.screenX || window.screenLeft || 0;
+                    const screenY = window.screenY || window.screenTop || 0;
+
+                    const result = await window.electronAPI.screenshot.capture({
+                        x: Math.round((x + screenX) * window.devicePixelRatio),
+                        y: Math.round((y + screenY) * window.devicePixelRatio),
+                        width: Math.round(w * window.devicePixelRatio),
+                        height: Math.round(h * window.devicePixelRatio)
+                    });
+
+                    if (result.success) {
+                        openSnipEditor(result.dataUrl, w, h);
+                    }
+                } catch (err) {
+                    console.error('Screenshot error:', err);
+                }
+            }
+        });
+
+        // Cancel snip with Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (snipState.isCapturing) {
+                    document.getElementById('snipOverlay').classList.remove('active');
+                    snipState.isCapturing = false;
+                }
+                if (document.getElementById('snipEditor').classList.contains('active')) {
+                    closeSnipEditor();
+                }
+            }
+        });
+
+        function openSnipEditor(dataUrl, width, height) {
+            const editor = document.getElementById('snipEditor');
+            const canvas = document.getElementById('snipCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                snipState.currentImage = img;
+                snipState.annotations = [];
+                editor.classList.add('active');
+            };
+            img.src = dataUrl;
+        }
+
+        function closeSnipEditor() {
+            document.getElementById('snipEditor').classList.remove('active');
+            snipState.currentImage = null;
+            snipState.annotations = [];
+        }
+
+        function setSnipTool(tool) {
+            snipState.tool = tool;
+            document.querySelectorAll('.snip-tool-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === tool);
+            });
+        }
+
+        async function saveSnipAs() {
+            if (!snipState.currentImage) return;
+
+            const canvas = document.getElementById('snipCanvas');
+            const dataUrl = canvas.toDataURL('image/png');
+
+            try {
+                const result = await window.electronAPI.dialog.saveFile({
+                    defaultPath: `snip-${Date.now()}.png`,
+                    filters: [{ name: 'PNG Image', extensions: ['png'] }]
+                });
+
+                if (result.filePath) {
+                    await window.electronAPI.filesystem.writeFile(result.filePath, dataUrl);
+                    closeSnipEditor();
+                }
+            } catch (err) {
+                console.error('Save error:', err);
+            }
+        }
+
+        // Snips temp directory - save actual files here
+        const SNIPS_TEMP_DIR = 'C:\\Claude';
+
+        async function saveSnipToTemp() {
+            if (!snipState.currentImage) return;
+
+            const canvas = document.getElementById('snipCanvas');
+            const dataUrl = canvas.toDataURL('image/png');
+
+            // Generate temp filename
+            const timestamp = Date.now();
+            const filename = `snip-${timestamp}.png`;
+            const filePath = `${SNIPS_TEMP_DIR}\\${filename}`;
+
+            try {
+                // Save actual file to disk
+                const result = await window.electronAPI.filesystem.writeFile(filePath, dataUrl);
+                if (result.success) {
+                    renderTempItems();
+                    closeSnipEditor();
+                    switchSidebarTab('temp');
+                } else {
+                    console.error('Failed to save snip:', result.error);
+                    alert('Failed to save snip: ' + result.error);
+                }
+            } catch (err) {
+                console.error('Save snip error:', err);
+                alert('Failed to save snip: ' + err.message);
+            }
+        }
+
+        // ==========================================
+        // TEMP PANEL
+        // ==========================================
+
+        async function renderTempItems() {
+            const tempGrid = document.getElementById('tempGrid');
+
+            try {
+                // Read snip files from the temp directory
+                const result = await window.electronAPI.filesystem.readDir(SNIPS_TEMP_DIR);
+                if (!result.success) {
+                    tempGrid.innerHTML = '<div class="temp-empty">Could not read temp directory</div>';
+                    return;
+                }
+
+                // Filter for snip-*.png files
+                const snipFiles = result.items.filter(item =>
+                    !item.isDir && item.name.startsWith('snip-') && item.name.endsWith('.png')
+                ).sort((a, b) => b.name.localeCompare(a.name)); // Newest first
+
+                if (snipFiles.length === 0) {
+                    tempGrid.innerHTML = '<div class="temp-empty">No temp items. Save snips here for quick access.</div>';
+                    return;
+                }
+
+                tempGrid.innerHTML = snipFiles.map(item => {
+                    const filePath = item.path.replace(/\\/g, '\\\\');
+                    // Extract timestamp from filename for display
+                    const timestampMatch = item.name.match(/snip-(\d+)\.png/);
+                    const timestamp = timestampMatch ? new Date(parseInt(timestampMatch[1])).toLocaleString() : '';
+
+                    return `
+                        <div class="temp-item"
+                             draggable="true"
+                             ondragstart="onTempDragStart(event, '${filePath}')"
+                             title="${item.name}\\n${timestamp}">
+                            <img src="file:///${item.path.replace(/\\/g, '/')}" alt="Snip">
+                            <button class="temp-item-delete" onclick="deleteTempItem('${filePath}')">&#x2715;</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading temp items:', err);
+                tempGrid.innerHTML = '<div class="temp-empty">Error loading temp items</div>';
+            }
+        }
+
+        function onTempDragStart(event, filePath) {
+            // Paste the actual file path
+            const path = filePath.replace(/\\\\/g, '\\');
+            event.dataTransfer.setData('text/plain', path);
+            event.dataTransfer.effectAllowed = 'copy';
+        }
+
+        async function deleteTempItem(filePath) {
+            const path = filePath.replace(/\\\\/g, '\\');
+            try {
+                await window.electronAPI.filesystem.deleteFile(path);
+                renderTempItems();
+            } catch (err) {
+                console.error('Delete error:', err);
+            }
+        }
+
+        // ==========================================
+        // DEV TOOLS FUNCTIONALITY
+        // ==========================================
+
+        let currentTool = null;
+        let wsConnection = null;
+        let logTailWatchId = null;
+        let logTailInterval = null;
+        let allProcesses = [];
+
+        // Tool Category Toggle
+        function toggleToolCategory(category) {
+            const el = document.querySelector(`.tools-category[data-category="${category}"]`);
+            if (el) {
+                el.classList.toggle('expanded');
+            }
+        }
+
+        // Open/Close Tools
+        function openTool(toolName) {
+            // Hide categories, show tool panel
+            document.getElementById('toolsCategories').style.display = 'none';
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(`tool-${toolName}`);
+            if (panel) {
+                panel.classList.add('active');
+                currentTool = toolName;
+            }
+        }
+
+        function closeTool() {
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('toolsCategories').style.display = 'block';
+            currentTool = null;
+        }
+
+        // ==========================================
+        // HTTP TESTER
+        // ==========================================
+
+        async function sendHttpRequest() {
+            const method = document.getElementById('httpMethod').value;
+            const url = document.getElementById('httpUrl').value.trim();
+            const headersRaw = document.getElementById('httpHeaders').value.trim();
+            const body = document.getElementById('httpBody').value.trim();
+
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            let headers = {};
+            try {
+                if (headersRaw) headers = JSON.parse(headersRaw);
+            } catch (e) {
+                alert('Invalid JSON in headers');
+                return;
+            }
+
+            const responseEl = document.getElementById('httpResponse');
+            const statusEl = document.getElementById('httpStatus');
+            const timeEl = document.getElementById('httpTime');
+            const bodyEl = document.getElementById('httpResponseBody');
+
+            statusEl.textContent = 'Loading...';
+            statusEl.className = 'http-status';
+            responseEl.style.display = 'block';
+            bodyEl.textContent = '';
+
+            const startTime = Date.now();
+
+            try {
+                const options = { method, headers };
+                if (['POST', 'PUT', 'PATCH'].includes(method) && body) {
+                    options.body = body;
+                }
+
+                const response = await fetch(url, options);
+                const elapsed = Date.now() - startTime;
+                const text = await response.text();
+
+                let statusClass = 'success';
+                if (response.status >= 400) statusClass = 'error';
+                else if (response.status >= 300) statusClass = 'redirect';
+
+                statusEl.textContent = `${response.status} ${response.statusText}`;
+                statusEl.className = `http-status ${statusClass}`;
+                timeEl.textContent = `${elapsed}ms`;
+
+                // Try to pretty-print JSON
+                try {
+                    const json = JSON.parse(text);
+                    bodyEl.textContent = JSON.stringify(json, null, 2);
+                } catch {
+                    bodyEl.textContent = text;
+                }
+            } catch (err) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'http-status error';
+                timeEl.textContent = '';
+                bodyEl.textContent = err.message;
+            }
+        }
+
+        // ==========================================
+        // CURL BUILDER
+        // ==========================================
+
+        function updateCurlCommand() {
+            const method = document.getElementById('curlMethod').value;
+            const url = document.getElementById('curlUrl').value.trim() || 'https://api.example.com';
+            const headersRaw = document.getElementById('curlHeaders').value.trim();
+            const body = document.getElementById('curlBody').value.trim();
+
+            let cmd = 'curl';
+            if (method !== 'GET') cmd += ` -X ${method}`;
+
+            // Parse headers
+            if (headersRaw) {
+                headersRaw.split('\n').forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed && trimmed.includes(':')) {
+                        cmd += ` -H "${trimmed}"`;
+                    }
+                });
+            }
+
+            // Add body
+            if (body && ['POST', 'PUT', 'PATCH'].includes(method)) {
+                cmd += ` -d '${body.replace(/'/g, "'\\''")}'`;
+            }
+
+            cmd += ` "${url}"`;
+
+            const outputEl = document.getElementById('curlOutput');
+            outputEl.innerHTML = cmd + '<button class="tool-button secondary curl-copy-btn" onclick="copyCurlCommand()">Copy</button>';
+        }
+
+        function copyCurlCommand() {
+            const output = document.getElementById('curlOutput');
+            const text = output.textContent.replace('Copy', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = output.querySelector('.curl-copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
+            });
+        }
+
+        function runCurlInTerminal() {
+            const output = document.getElementById('curlOutput');
+            const cmd = output.textContent.replace('Copy', '').trim();
+            // Get active terminal and run command
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, cmd + '\n');
+            }
+        }
+
+        // ==========================================
+        // WEBSOCKET CLIENT
+        // ==========================================
+
+        function toggleWebSocket() {
+            if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+                wsConnection.close();
+            } else {
+                connectWebSocket();
+            }
+        }
+
+        function connectWebSocket() {
+            const url = document.getElementById('wsUrl').value.trim();
+            if (!url) {
+                alert('Please enter a WebSocket URL');
+                return;
+            }
+
+            const indicator = document.getElementById('wsIndicator');
+            const statusText = document.getElementById('wsStatusText');
+            const connectBtn = document.getElementById('wsConnectBtn');
+
+            indicator.className = 'ws-indicator connecting';
+            statusText.textContent = 'Connecting...';
+
+            try {
+                wsConnection = new WebSocket(url);
+
+                wsConnection.onopen = () => {
+                    indicator.className = 'ws-indicator connected';
+                    statusText.textContent = 'Connected';
+                    connectBtn.textContent = 'Disconnect';
+                    addWsMessage('Connected to ' + url, 'system');
+                };
+
+                wsConnection.onclose = () => {
+                    indicator.className = 'ws-indicator';
+                    statusText.textContent = 'Disconnected';
+                    connectBtn.textContent = 'Connect';
+                    addWsMessage('Disconnected', 'system');
+                };
+
+                wsConnection.onerror = () => {
+                    indicator.className = 'ws-indicator error';
+                    statusText.textContent = 'Error';
+                    addWsMessage('Connection error', 'system');
+                };
+
+                wsConnection.onmessage = (event) => {
+                    addWsMessage('← ' + event.data, 'received');
+                };
+            } catch (err) {
+                indicator.className = 'ws-indicator error';
+                statusText.textContent = 'Error';
+                addWsMessage('Error: ' + err.message, 'system');
+            }
+        }
+
+        function sendWsMessage() {
+            const input = document.getElementById('wsMessage');
+            const msg = input.value.trim();
+            if (!msg || !wsConnection || wsConnection.readyState !== WebSocket.OPEN) return;
+
+            wsConnection.send(msg);
+            addWsMessage('→ ' + msg, 'sent');
+            input.value = '';
+        }
+
+        function addWsMessage(text, type) {
+            const container = document.getElementById('wsMessages');
+            const div = document.createElement('div');
+            div.className = `ws-message ${type}`;
+            div.textContent = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ==========================================
+        // LOG TAIL
+        // ==========================================
+
+        let logTailActive = false;
+        let logLastSize = 0;
+
+        async function toggleLogTail() {
+            const btn = document.getElementById('logTailBtn');
+            if (logTailActive) {
+                stopLogTail();
+                btn.textContent = 'Start';
+            } else {
+                await startLogTail();
+                btn.textContent = 'Stop';
+            }
+        }
+
+        async function startLogTail() {
+            const filePath = document.getElementById('logFilePath').value.trim();
+            if (!filePath) {
+                alert('Please enter a log file path');
+                return;
+            }
+
+            logTailActive = true;
+            logLastSize = 0;
+            const output = document.getElementById('logOutput');
+            output.innerHTML = '';
+
+            // Initial read
+            await readLogFile(filePath);
+
+            // Set up polling (file watch alternative)
+            logTailInterval = setInterval(() => readLogFile(filePath), 1000);
+        }
+
+        async function readLogFile(filePath) {
+            if (!logTailActive) return;
+
+            try {
+                const result = await window.electronAPI.filesystem.readFile(filePath);
+                if (result.success) {
+                    const lines = result.content.split('\n');
+                    const output = document.getElementById('logOutput');
+                    const filter = document.getElementById('logFilter').value.toLowerCase();
+                    const autoScroll = document.getElementById('logAutoScroll').checked;
+
+                    output.innerHTML = '';
+                    lines.forEach(line => {
+                        if (!filter || line.toLowerCase().includes(filter)) {
+                            const div = document.createElement('div');
+                            div.className = 'log-line';
+                            if (line.toLowerCase().includes('error')) div.classList.add('error');
+                            else if (line.toLowerCase().includes('warn')) div.classList.add('warn');
+                            else if (line.toLowerCase().includes('info')) div.classList.add('info');
+                            if (filter && line.toLowerCase().includes(filter)) div.classList.add('highlight');
+                            div.textContent = line;
+                            output.appendChild(div);
+                        }
+                    });
+
+                    if (autoScroll) {
+                        output.scrollTop = output.scrollHeight;
+                    }
+                }
+            } catch (err) {
+                console.error('Error reading log file:', err);
+            }
+        }
+
+        function stopLogTail() {
+            logTailActive = false;
+            if (logTailInterval) {
+                clearInterval(logTailInterval);
+                logTailInterval = null;
+            }
+        }
+
+        function filterLogLines() {
+            if (logTailActive) {
+                const filePath = document.getElementById('logFilePath').value.trim();
+                readLogFile(filePath);
+            }
+        }
+
+        async function browseLogFile() {
+            // For now just prompt - could use dialog API
+            const path = prompt('Enter log file path:');
+            if (path) {
+                document.getElementById('logFilePath').value = path;
+            }
+        }
+
+        // ==========================================
+        // DIFF TOOL
+        // ==========================================
+
+        function computeDiff() {
+            const left = document.getElementById('diffLeft').value;
+            const right = document.getElementById('diffRight').value;
+            const output = document.getElementById('diffOutput');
+
+            if (!left && !right) {
+                output.innerHTML = '<span style="color:var(--text-dim);">Enter text in both sides to compare</span>';
+                return;
+            }
+
+            const leftLines = left.split('\n');
+            const rightLines = right.split('\n');
+            const maxLen = Math.max(leftLines.length, rightLines.length);
+
+            let html = '';
+            for (let i = 0; i < maxLen; i++) {
+                const l = leftLines[i] || '';
+                const r = rightLines[i] || '';
+
+                if (l === r) {
+                    html += `<div>  ${escapeHtml(l)}</div>`;
+                } else {
+                    if (l) html += `<div class="diff-remove">- ${escapeHtml(l)}</div>`;
+                    if (r) html += `<div class="diff-add">+ ${escapeHtml(r)}</div>`;
+                }
+            }
+
+            output.innerHTML = html || '<span style="color:var(--text-dim);">No differences</span>';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==========================================
+        // MARKDOWN PREVIEW
+        // ==========================================
+
+        function renderMarkdown() {
+            const input = document.getElementById('mdEditor').value;
+            const output = document.getElementById('mdPreview');
+
+            // Simple markdown parser
+            let html = input
+                // Code blocks
+                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                // Inline code
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                // Headers
+                .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                // Bold and italic
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                // Blockquotes
+                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+                // Unordered lists
+                .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+                // Ordered lists
+                .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+                // Paragraphs
+                .replace(/\n\n/g, '</p><p>')
+                // Line breaks
+                .replace(/\n/g, '<br>');
+
+            // Wrap in paragraph
+            html = '<p>' + html + '</p>';
+
+            // Wrap lists
+            html = html.replace(/(<li>.*?<\/li>)+/gs, '<ul>$&</ul>');
+
+            output.innerHTML = html;
+        }
+
+        async function browseMdFile() {
+            const path = document.getElementById('mdFilePath').value.trim();
+            if (!path) {
+                alert('Please enter a markdown file path');
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.filesystem.readFile(path);
+                if (result.success) {
+                    document.getElementById('mdEditor').value = result.content;
+                    renderMarkdown();
+                } else {
+                    alert('Error loading file: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // ==========================================
+        // COMMAND PALETTE
+        // ==========================================
+
+        const commandHistory = [];
+
+        function searchCommands() {
+            const query = document.getElementById('cmdSearch').value.toLowerCase();
+            const results = document.getElementById('cmdResults');
+
+            const filtered = commandHistory.filter(cmd =>
+                cmd.text.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                results.innerHTML = '<p style="color:var(--text-dim); padding:12px;">No commands found</p>';
+                return;
+            }
+
+            results.innerHTML = filtered.slice(0, 20).map(cmd => `
+                <div class="cmd-palette-item" onclick="runHistoryCommand('${escapeHtml(cmd.text)}')">
+                    <span class="cmd-palette-item-icon">&#9658;</span>
+                    <span class="cmd-palette-item-text">${escapeHtml(cmd.text)}</span>
+                    <span class="cmd-palette-item-source">pane ${cmd.pane}</span>
+                </div>
+            `).join('');
+        }
+
+        function runHistoryCommand(cmd) {
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, cmd + '\n');
+            }
+        }
+
+        // ==========================================
+        // SNIPPETS MANAGER
+        // ==========================================
+
+        let snippets = JSON.parse(localStorage.getItem('terminalSnippets') || '[]');
+
+        function renderSnippets() {
+            const container = document.getElementById('snippetsList');
+            if (snippets.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-dim);">No snippets saved yet</p>';
+                return;
+            }
+
+            container.innerHTML = snippets.map((s, i) => `
+                <div class="snippet-item">
+                    <div class="snippet-header">
+                        <span class="snippet-name">${escapeHtml(s.name)}</span>
+                        ${s.hotkey ? `<span class="snippet-hotkey">${s.hotkey}</span>` : ''}
+                    </div>
+                    <div class="snippet-content">${escapeHtml(s.content)}</div>
+                    <div class="snippet-actions">
+                        <button class="tool-button" onclick="runSnippet(${i})">Run</button>
+                        <button class="tool-button secondary" onclick="editSnippet(${i})">Edit</button>
+                        <button class="tool-button secondary" onclick="deleteSnippet(${i})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addSnippet() {
+            const name = prompt('Snippet name:');
+            if (!name) return;
+            const content = prompt('Snippet content (command):');
+            if (!content) return;
+            const hotkey = prompt('Hotkey (optional, e.g. Ctrl+Shift+1):');
+
+            snippets.push({ name, content, hotkey: hotkey || '' });
+            localStorage.setItem('terminalSnippets', JSON.stringify(snippets));
+            renderSnippets();
+        }
+
+        function runSnippet(index) {
+            const snippet = snippets[index];
+            if (!snippet) return;
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, snippet.content + '\n');
+            }
+        }
+
+        function editSnippet(index) {
+            const s = snippets[index];
+            const name = prompt('Snippet name:', s.name);
+            if (!name) return;
+            const content = prompt('Snippet content:', s.content);
+            if (!content) return;
+            const hotkey = prompt('Hotkey:', s.hotkey);
+
+            snippets[index] = { name, content, hotkey: hotkey || '' };
+            localStorage.setItem('terminalSnippets', JSON.stringify(snippets));
+            renderSnippets();
+        }
+
+        function deleteSnippet(index) {
+            if (!confirm('Delete this snippet?')) return;
+            snippets.splice(index, 1);
+            localStorage.setItem('terminalSnippets', JSON.stringify(snippets));
+            renderSnippets();
+        }
+
+        // ==========================================
+        // SSH MANAGER
+        // ==========================================
+
+        let sshConnections = JSON.parse(localStorage.getItem('sshConnections') || '[]');
+
+        function renderSshConnections() {
+            const container = document.getElementById('sshConnectionsList');
+            if (sshConnections.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-dim);">No SSH connections saved</p>';
+                return;
+            }
+
+            container.innerHTML = sshConnections.map((c, i) => `
+                <div class="ssh-connection">
+                    <div class="ssh-connection-info">
+                        <span class="ssh-connection-name">${escapeHtml(c.name)}</span>
+                        <span class="ssh-connection-host">${escapeHtml(c.user)}@${escapeHtml(c.host)}:${c.port}</span>
+                    </div>
+                    <div style="display:flex; gap:4px;">
+                        <button class="ssh-connect-btn" onclick="connectSsh(${i})">Connect</button>
+                        <button class="tool-button secondary" onclick="deleteSshConnection(${i})">&#x2715;</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addSshConnection() {
+            const name = prompt('Connection name:');
+            if (!name) return;
+            const host = prompt('Host:');
+            if (!host) return;
+            const user = prompt('Username:', 'root');
+            if (!user) return;
+            const port = prompt('Port:', '22');
+
+            sshConnections.push({ name, host, user, port: port || '22' });
+            localStorage.setItem('sshConnections', JSON.stringify(sshConnections));
+            renderSshConnections();
+        }
+
+        function connectSsh(index) {
+            const c = sshConnections[index];
+            const cmd = `ssh ${c.user}@${c.host} -p ${c.port}`;
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, cmd + '\n');
+            }
+        }
+
+        function deleteSshConnection(index) {
+            if (!confirm('Delete this connection?')) return;
+            sshConnections.splice(index, 1);
+            localStorage.setItem('sshConnections', JSON.stringify(sshConnections));
+            renderSshConnections();
+        }
+
+        // ==========================================
+        // ALIASES MANAGER
+        // ==========================================
+
+        let aliases = [];
+
+        async function loadAliases() {
+            const container = document.getElementById('aliasesList');
+            container.innerHTML = '<p style="color:var(--text-dim);">Loading aliases...</p>';
+
+            try {
+                const isWindows = window.electronAPI?.platform === 'win32';
+                const cmd = isWindows ? 'Get-Alias | Format-Table -Property Name,Definition -AutoSize' : 'alias';
+                const result = await window.electronAPI.shell.exec(cmd);
+
+                if (result.success) {
+                    parseAndRenderAliases(result.stdout, isWindows);
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-dim);">Could not load aliases</p>';
+                }
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+            }
+        }
+
+        function parseAndRenderAliases(output, isWindows) {
+            const container = document.getElementById('aliasesList');
+            aliases = [];
+
+            const lines = output.split('\n').filter(l => l.trim());
+
+            if (isWindows) {
+                // Skip header lines
+                lines.slice(2).forEach(line => {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length >= 2) {
+                        aliases.push({ name: parts[0], command: parts.slice(1).join(' ') });
+                    }
+                });
+            } else {
+                lines.forEach(line => {
+                    const match = line.match(/alias\s+(\w+)='(.+)'/);
+                    if (match) {
+                        aliases.push({ name: match[1], command: match[2] });
+                    }
+                });
+            }
+
+            renderAliases();
+        }
+
+        function renderAliases() {
+            const container = document.getElementById('aliasesList');
+            if (aliases.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-dim);">No aliases found</p>';
+                return;
+            }
+
+            container.innerHTML = aliases.slice(0, 50).map(a => `
+                <div class="git-file">
+                    <span style="color:var(--accent); font-weight:bold;">${escapeHtml(a.name)}</span>
+                    <span style="color:var(--text-dim);">→</span>
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(a.command)}</span>
+                </div>
+            `).join('');
+        }
+
+        function addAlias() {
+            const name = prompt('Alias name:');
+            if (!name) return;
+            const command = prompt('Command:');
+            if (!command) return;
+
+            const isWindows = window.electronAPI?.platform === 'win32';
+            const cmd = isWindows
+                ? `Set-Alias -Name ${name} -Value "${command}"`
+                : `alias ${name}='${command}'`;
+
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, cmd + '\n');
+            }
+        }
+
+        // ==========================================
+        // GIT STATUS
+        // ==========================================
+
+        async function refreshGitStatus() {
+            const container = document.getElementById('gitStatusContent');
+            container.innerHTML = '<p style="color:var(--text-dim);">Loading...</p>';
+
+            try {
+                const branchResult = await window.electronAPI.shell.exec('git branch --show-current');
+                const statusResult = await window.electronAPI.shell.exec('git status --porcelain');
+
+                let html = '';
+
+                // Branch
+                const branch = branchResult.stdout.trim() || 'unknown';
+                html += `<div class="git-branch"><span class="git-branch-icon">&#128194;</span><span class="git-branch-name">${escapeHtml(branch)}</span></div>`;
+
+                // Parse status
+                const lines = statusResult.stdout.split('\n').filter(l => l.trim());
+
+                if (lines.length === 0) {
+                    html += '<p style="color:var(--text-dim);">Working tree clean</p>';
+                } else {
+                    const staged = [];
+                    const unstaged = [];
+                    const untracked = [];
+
+                    lines.forEach(line => {
+                        const index = line[0];
+                        const work = line[1];
+                        const file = line.slice(3);
+
+                        if (index === '?') {
+                            untracked.push(file);
+                        } else if (index !== ' ') {
+                            staged.push({ status: index, file });
+                        }
+                        if (work !== ' ' && work !== '?') {
+                            unstaged.push({ status: work, file });
+                        }
+                    });
+
+                    if (staged.length > 0) {
+                        html += `<div class="git-section">
+                            <div class="git-section-title">Staged <span class="git-section-count">${staged.length}</span></div>
+                            ${staged.map(s => `<div class="git-file"><span class="git-file-status added">${s.status}</span>${escapeHtml(s.file)}</div>`).join('')}
+                        </div>`;
+                    }
+
+                    if (unstaged.length > 0) {
+                        html += `<div class="git-section">
+                            <div class="git-section-title">Modified <span class="git-section-count">${unstaged.length}</span></div>
+                            ${unstaged.map(s => `<div class="git-file"><span class="git-file-status modified">${s.status}</span>${escapeHtml(s.file)}</div>`).join('')}
+                        </div>`;
+                    }
+
+                    if (untracked.length > 0) {
+                        html += `<div class="git-section">
+                            <div class="git-section-title">Untracked <span class="git-section-count">${untracked.length}</span></div>
+                            ${untracked.map(f => `<div class="git-file"><span class="git-file-status untracked">?</span>${escapeHtml(f)}</div>`).join('')}
+                        </div>`;
+                    }
+                }
+
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+            }
+        }
+
+        // ==========================================
+        // GIT GRAPH
+        // ==========================================
+
+        async function loadGitGraph() {
+            const count = document.getElementById('gitGraphCount').value || 20;
+            const output = document.getElementById('gitGraphOutput');
+            output.innerHTML = 'Loading...';
+
+            try {
+                const result = await window.electronAPI.shell.exec(
+                    `git log --oneline --graph --all -n ${count}`
+                );
+
+                if (result.success) {
+                    // Add colors to the graph
+                    let html = result.stdout
+                        .replace(/\*/g, '<span style="color:#4ade80;">*</span>')
+                        .replace(/\|/g, '<span style="color:#60a5fa;">|</span>')
+                        .replace(/\\/g, '<span style="color:#facc15;">\\</span>')
+                        .replace(/\//g, '<span style="color:#facc15;">/</span>');
+                    output.innerHTML = html;
+                } else {
+                    output.innerHTML = 'Not a git repository or error occurred';
+                }
+            } catch (err) {
+                output.innerHTML = 'Error: ' + err.message;
+            }
+        }
+
+        // ==========================================
+        // GIT DIFF
+        // ==========================================
+
+        async function loadGitDiff() {
+            const diffType = document.getElementById('gitDiffType').value;
+            const output = document.getElementById('gitDiffOutput');
+            output.innerHTML = 'Loading...';
+
+            try {
+                const cmd = diffType ? `git diff ${diffType}` : 'git diff';
+                const result = await window.electronAPI.shell.exec(cmd);
+
+                if (result.success && result.stdout.trim()) {
+                    // Colorize diff output
+                    let html = result.stdout.split('\n').map(line => {
+                        if (line.startsWith('+') && !line.startsWith('+++')) {
+                            return `<div class="diff-add">${escapeHtml(line)}</div>`;
+                        } else if (line.startsWith('-') && !line.startsWith('---')) {
+                            return `<div class="diff-remove">${escapeHtml(line)}</div>`;
+                        } else if (line.startsWith('@@')) {
+                            return `<div style="color:#60a5fa;">${escapeHtml(line)}</div>`;
+                        } else if (line.startsWith('diff') || line.startsWith('index')) {
+                            return `<div style="color:var(--text-dim);">${escapeHtml(line)}</div>`;
+                        }
+                        return `<div>${escapeHtml(line)}</div>`;
+                    }).join('');
+                    output.innerHTML = html;
+                } else {
+                    output.innerHTML = '<p style="color:var(--text-dim);">No changes</p>';
+                }
+            } catch (err) {
+                output.innerHTML = 'Error: ' + err.message;
+            }
+        }
+
+        // ==========================================
+        // PROCESS MONITOR
+        // ==========================================
+
+        async function refreshProcesses() {
+            const container = document.getElementById('processesTable');
+            container.innerHTML = 'Loading...';
+
+            try {
+                const isWindows = window.electronAPI?.platform === 'win32';
+                const cmd = isWindows
+                    ? 'Get-Process | Sort-Object -Property CPU -Descending | Select-Object -First 50 Id,ProcessName,CPU,WorkingSet | ConvertTo-Csv -NoTypeInformation'
+                    : 'ps aux --sort=-%cpu | head -51';
+
+                const result = await window.electronAPI.shell.exec(cmd);
+
+                if (result.success) {
+                    allProcesses = parseProcesses(result.stdout, isWindows);
+                    renderProcesses();
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-dim);">Could not load processes</p>';
+                }
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+            }
+        }
+
+        function parseProcesses(output, isWindows) {
+            const processes = [];
+            const lines = output.split('\n').filter(l => l.trim());
+
+            if (isWindows) {
+                // CSV format
+                lines.slice(1).forEach(line => {
+                    const parts = line.replace(/"/g, '').split(',');
+                    if (parts.length >= 4) {
+                        processes.push({
+                            pid: parts[0],
+                            name: parts[1],
+                            cpu: parseFloat(parts[2] || 0).toFixed(1),
+                            mem: (parseInt(parts[3] || 0) / 1024 / 1024).toFixed(1) + ' MB'
+                        });
+                    }
+                });
+            } else {
+                lines.slice(1).forEach(line => {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length >= 11) {
+                        processes.push({
+                            pid: parts[1],
+                            name: parts[10],
+                            cpu: parts[2] + '%',
+                            mem: parts[3] + '%'
+                        });
+                    }
+                });
+            }
+
+            return processes;
+        }
+
+        function renderProcesses() {
+            const container = document.getElementById('processesTable');
+            const filter = document.getElementById('processFilter').value.toLowerCase();
+
+            const filtered = filter
+                ? allProcesses.filter(p => p.name.toLowerCase().includes(filter))
+                : allProcesses;
+
+            container.innerHTML = `
+                <table class="process-table">
+                    <thead>
+                        <tr><th>PID</th><th>Name</th><th>CPU</th><th>Memory</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        ${filtered.map(p => `
+                            <tr>
+                                <td>${p.pid}</td>
+                                <td>${escapeHtml(p.name)}</td>
+                                <td>${p.cpu}</td>
+                                <td>${p.mem}</td>
+                                <td><button class="process-kill" onclick="killProcess('${p.pid}')">Kill</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterProcesses() {
+            renderProcesses();
+        }
+
+        async function killProcess(pid) {
+            if (!confirm(`Kill process ${pid}?`)) return;
+
+            const isWindows = window.electronAPI?.platform === 'win32';
+            const cmd = isWindows ? `Stop-Process -Id ${pid} -Force` : `kill -9 ${pid}`;
+
+            try {
+                await window.electronAPI.shell.exec(cmd);
+                refreshProcesses();
+            } catch (err) {
+                alert('Error killing process: ' + err.message);
+            }
+        }
+
+        // ==========================================
+        // PORT VIEWER
+        // ==========================================
+
+        async function refreshPorts() {
+            const container = document.getElementById('portsTable');
+            container.innerHTML = 'Loading...';
+
+            try {
+                const isWindows = window.electronAPI?.platform === 'win32';
+                const cmd = isWindows
+                    ? 'Get-NetTCPConnection -State Listen | Select-Object LocalPort,OwningProcess | Sort-Object LocalPort | ConvertTo-Csv -NoTypeInformation'
+                    : 'netstat -tlnp 2>/dev/null || ss -tlnp';
+
+                const result = await window.electronAPI.shell.exec(cmd);
+
+                if (result.success) {
+                    renderPorts(result.stdout, isWindows);
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-dim);">Could not load ports</p>';
+                }
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+            }
+        }
+
+        function renderPorts(output, isWindows) {
+            const container = document.getElementById('portsTable');
+            const ports = [];
+
+            if (isWindows) {
+                const lines = output.split('\n').filter(l => l.trim());
+                lines.slice(1).forEach(line => {
+                    const parts = line.replace(/"/g, '').split(',');
+                    if (parts.length >= 2) {
+                        ports.push({ port: parts[0], pid: parts[1], process: '-' });
+                    }
+                });
+            } else {
+                const lines = output.split('\n').filter(l => l.includes('LISTEN') || l.includes('listen'));
+                lines.forEach(line => {
+                    const match = line.match(/:(\d+)\s+.*?(\d+)\/(\S+)/);
+                    if (match) {
+                        ports.push({ port: match[1], pid: match[2], process: match[3] });
+                    }
+                });
+            }
+
+            container.innerHTML = `
+                <table class="port-table">
+                    <thead>
+                        <tr><th>Port</th><th>PID</th><th>Process</th></tr>
+                    </thead>
+                    <tbody>
+                        ${ports.map(p => `
+                            <tr>
+                                <td>${p.port}</td>
+                                <td>${p.pid}</td>
+                                <td>${escapeHtml(p.process)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // ==========================================
+        // DOCKER DASHBOARD
+        // ==========================================
+
+        async function refreshDocker() {
+            const container = document.getElementById('dockerContainers');
+            container.innerHTML = 'Loading...';
+
+            try {
+                const result = await window.electronAPI.shell.exec('docker ps -a --format "{{.ID}}|{{.Names}}|{{.Image}}|{{.Status}}|{{.State}}"');
+
+                if (result.success && result.stdout.trim()) {
+                    const containers = result.stdout.trim().split('\n').map(line => {
+                        const [id, name, image, status, state] = line.split('|');
+                        return { id, name, image, status, state };
+                    });
+
+                    container.innerHTML = containers.map(c => `
+                        <div class="docker-container">
+                            <div class="docker-container-header">
+                                <div class="docker-container-info">
+                                    <span class="docker-status ${c.state}"></span>
+                                    <span class="docker-container-name">${escapeHtml(c.name)}</span>
+                                    <span class="docker-container-image">${escapeHtml(c.image)}</span>
+                                </div>
+                                <div class="docker-container-controls">
+                                    ${c.state === 'running'
+                                        ? `<button class="docker-btn" onclick="dockerAction('stop', '${c.id}')">Stop</button>`
+                                        : `<button class="docker-btn" onclick="dockerAction('start', '${c.id}')">Start</button>`
+                                    }
+                                    <button class="docker-btn" onclick="dockerLogs('${c.id}')">Logs</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else if (result.stderr && result.stderr.includes('docker')) {
+                    container.innerHTML = '<p style="color:var(--text-dim);">Docker is not running or not installed</p>';
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-dim);">No containers found</p>';
+                }
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+            }
+        }
+
+        async function dockerAction(action, containerId) {
+            try {
+                await window.electronAPI.shell.exec(`docker ${action} ${containerId}`);
+                refreshDocker();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function dockerLogs(containerId) {
+            const termId = paneIds[activePane];
+            if (termId && window.electronAPI?.terminal?.write) {
+                window.electronAPI.terminal.write(termId, `docker logs -f ${containerId}\n`);
+            }
+        }
+
+        // ==========================================
+        // SIDEBAR INITIALIZATION
+        // ==========================================
+
+        async function initSidebar() {
+            // Setup drop zones on terminals
+            setupTerminalDropZones();
+
+            // Load temp items
+            renderTempItems();
+
+            // Initialize file browser with home directory
+            if (window.electronAPI?.filesystem?.getHomeDir) {
+                try {
+                    const homeDir = await window.electronAPI.filesystem.getHomeDir();
+                    navigateTo(homeDir);
+                } catch (err) {
+                    console.log('Could not initialize file browser:', err);
+                }
+            }
+        }
+
+        // Init sidebar when DOM is ready
+        if (document.readyState === 'complete') {
+            initSidebar();
+        } else {
+            window.addEventListener('load', initSidebar);
         }
     </script>
 </body>

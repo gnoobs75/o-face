@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain, screen, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, dialog, desktopCapturer } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const http = require('http');
+const { exec, spawn } = require('child_process');
 
 // Hardware acceleration enabled (MIDI player was causing crashes, now disabled)
 
@@ -294,6 +295,186 @@ ipcMain.handle('dialog:openAudioFiles', async () => {
         ]
     });
     return result.canceled ? [] : result.filePaths;
+});
+
+// Save file dialog
+ipcMain.handle('dialog:saveFile', async (event, options) => {
+    const result = await dialog.showSaveDialog(options);
+    return result;
+});
+
+// ==========================================
+// FILESYSTEM HANDLERS
+// ==========================================
+
+ipcMain.handle('fs:readDir', async (event, dirPath) => {
+    try {
+        const items = fs.readdirSync(dirPath, { withFileTypes: true });
+        const result = items
+            .filter(item => !item.name.startsWith('.')) // Hide hidden files
+            .map(item => {
+                const fullPath = path.join(dirPath, item.name);
+                let size = 0;
+                try {
+                    if (!item.isDirectory()) {
+                        size = fs.statSync(fullPath).size;
+                    }
+                } catch (e) {}
+                return {
+                    name: item.name,
+                    path: fullPath,
+                    isDir: item.isDirectory(),
+                    size: size
+                };
+            });
+        return { success: true, path: dirPath, items: result };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('fs:getHomeDir', () => os.homedir());
+
+ipcMain.handle('fs:pathJoin', (event, ...args) => path.join(...args));
+
+ipcMain.handle('fs:writeFile', async (event, filePath, dataUrl) => {
+    try {
+        // Convert data URL to buffer
+        const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+        fs.writeFileSync(filePath, buffer);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('fs:deleteFile', async (event, filePath) => {
+    try {
+        fs.unlinkSync(filePath);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// ==========================================
+// SHELL EXECUTION HANDLER
+// ==========================================
+
+ipcMain.handle('shell:exec', async (event, command, options = {}) => {
+    return new Promise((resolve) => {
+        const timeout = options.timeout || 30000; // 30s default
+        const cwd = options.cwd || process.env.HOME || process.env.USERPROFILE;
+
+        exec(command, { timeout, cwd, maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+            resolve({
+                success: !error,
+                stdout: stdout || '',
+                stderr: stderr || '',
+                error: error?.message || null,
+                code: error?.code || 0
+            });
+        });
+    });
+});
+
+// Read file contents (for diff, log tail, etc.)
+ipcMain.handle('fs:readFile', async (event, filePath, options = {}) => {
+    try {
+        const encoding = options.encoding || 'utf8';
+        const content = fs.readFileSync(filePath, encoding);
+        return { success: true, content };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// Watch file for changes (log tail)
+const fileWatchers = new Map();
+
+ipcMain.handle('fs:watchFile', async (event, filePath, watchId) => {
+    try {
+        // Clear existing watcher if any
+        if (fileWatchers.has(watchId)) {
+            fileWatchers.get(watchId).close();
+        }
+
+        const watcher = fs.watch(filePath, (eventType) => {
+            if (eventType === 'change') {
+                const win = BrowserWindow.fromWebContents(event.sender);
+                if (win && !win.isDestroyed()) {
+                    win.webContents.send('fs:fileChanged', { watchId, filePath });
+                }
+            }
+        });
+
+        fileWatchers.set(watchId, watcher);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('fs:unwatchFile', async (event, watchId) => {
+    if (fileWatchers.has(watchId)) {
+        fileWatchers.get(watchId).close();
+        fileWatchers.delete(watchId);
+    }
+    return { success: true };
+});
+
+// Get file stats
+ipcMain.handle('fs:stat', async (event, filePath) => {
+    try {
+        const stats = fs.statSync(filePath);
+        return {
+            success: true,
+            size: stats.size,
+            mtime: stats.mtime.toISOString(),
+            isFile: stats.isFile(),
+            isDirectory: stats.isDirectory()
+        };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// ==========================================
+// SCREENSHOT HANDLER
+// ==========================================
+
+ipcMain.handle('screenshot:capture', async (event, bounds) => {
+    try {
+        const sources = await desktopCapturer.getSources({
+            types: ['screen'],
+            thumbnailSize: {
+                width: screen.getPrimaryDisplay().workAreaSize.width * 2,
+                height: screen.getPrimaryDisplay().workAreaSize.height * 2
+            }
+        });
+
+        if (sources.length === 0) {
+            return { success: false, error: 'No screen sources available' };
+        }
+
+        // Get the primary screen source
+        const source = sources[0];
+        const thumbnail = source.thumbnail;
+
+        // Crop to the selected region
+        const cropped = thumbnail.crop({
+            x: bounds.x,
+            y: bounds.y,
+            width: bounds.width,
+            height: bounds.height
+        });
+
+        const dataUrl = cropped.toDataURL();
+        return { success: true, dataUrl };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
 });
 
 // Start HTTP server for external sound triggers

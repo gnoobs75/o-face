@@ -65,7 +65,7 @@
 
         .nav-btn {
             padding: 6px 14px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             background: transparent;
             border: 1px solid transparent;
@@ -348,7 +348,7 @@
 
         .hint {
             color: var(--accent);
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             margin-top: 16px;
         }
 
@@ -383,7 +383,7 @@
 
         .terminal-btn {
             padding: 4px 12px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             background: var(--bg-input);
             border: 1px solid var(--border);
             color: var(--text-secondary);
@@ -811,7 +811,7 @@
             right: 0;
             background: linear-gradient(transparent, rgba(0,0,0,0.9));
             color: white;
-            font-size: 10px;
+            font-size: 11px;
             padding: 20px 8px 8px;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1221,8 +1221,8 @@
             position: absolute;
             bottom: 4px;
             right: 8px;
-            font-size: 9px;
-            opacity: 0.5;
+            font-size: 10px;
+            opacity: 0.6;
             pointer-events: none;
             text-transform: uppercase;
         }
@@ -1771,6 +1771,7 @@
             <button class="nav-btn whiteboard-btn" onclick="goToWhiteboard()">Whiteboard</button>
             <button class="nav-btn kabuki-btn" onclick="goToKabuki()">Kabuki</button>
             <button class="nav-btn arcade-btn" onclick="goToArcade()">Arcade</button>
+            <button class="nav-btn scorched-btn" onclick="goToScorched()">Scorched</button>
             <button class="nav-btn" onclick="goToSoundboard()">Soundboard</button>
             <button class="nav-btn terminal-btn" data-btn-id="terminal" draggable="true" onclick="openTerminal()">&gt;_ Terminal</button>
             <button class="nav-btn music-btn" data-btn-id="music" draggable="true" onclick="togglePlayer()">&#9835; Music</button>
@@ -2029,6 +2030,10 @@
 
         function goToArcade() {
             navigateTo('arcade.html', 'arcade');
+        }
+
+        function goToScorched() {
+            navigateTo('scorched.html', 'scorched');
         }
 
         function goToSoundboard() {
