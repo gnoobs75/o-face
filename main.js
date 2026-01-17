@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen, dialog, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, dialog, desktopCapturer, clipboard } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -335,16 +335,54 @@ ipcMain.handle('fs:readDir', async (event, dirPath) => {
 
 ipcMain.handle('fs:getHomeDir', () => os.homedir());
 
+ipcMain.handle('fs:getDrives', async () => {
+    if (os.platform() !== 'win32') {
+        // On Mac/Linux, just return root
+        return { success: true, drives: [{ letter: '/', label: 'Root', path: '/' }] };
+    }
+
+    try {
+        // On Windows, check common drive letters
+        const drives = [];
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+        for (const letter of letters) {
+            const drivePath = `${letter}:\\`;
+            try {
+                fs.accessSync(drivePath, fs.constants.R_OK);
+                drives.push({
+                    letter: letter,
+                    label: `${letter}: Drive`,
+                    path: drivePath
+                });
+            } catch (e) {
+                // Drive doesn't exist or not accessible
+            }
+        }
+
+        return { success: true, drives };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
 ipcMain.handle('fs:pathJoin', (event, ...args) => path.join(...args));
 
 ipcMain.handle('fs:writeFile', async (event, filePath, dataUrl) => {
     try {
+        // Ensure parent directory exists
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
         // Convert data URL to buffer
         const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
         fs.writeFileSync(filePath, buffer);
         return { success: true };
     } catch (err) {
+        console.error('fs:writeFile error:', err);
         return { success: false, error: err.message };
     }
 });
@@ -441,16 +479,42 @@ ipcMain.handle('fs:stat', async (event, filePath) => {
 });
 
 // ==========================================
+// CLIPBOARD HANDLER
+// ==========================================
+
+ipcMain.handle('clipboard:readText', async () => {
+    try {
+        const text = clipboard.readText();
+        return { success: true, text };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('clipboard:writeText', async (event, text) => {
+    try {
+        clipboard.writeText(text);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// ==========================================
 // SCREENSHOT HANDLER
 // ==========================================
 
 ipcMain.handle('screenshot:capture', async (event, bounds) => {
     try {
+        const primaryDisplay = screen.getPrimaryDisplay();
+        const scaleFactor = primaryDisplay.scaleFactor || 1;
+        const { width: screenWidth, height: screenHeight } = primaryDisplay.size;
+
         const sources = await desktopCapturer.getSources({
             types: ['screen'],
             thumbnailSize: {
-                width: screen.getPrimaryDisplay().workAreaSize.width * 2,
-                height: screen.getPrimaryDisplay().workAreaSize.height * 2
+                width: Math.round(screenWidth * scaleFactor),
+                height: Math.round(screenHeight * scaleFactor)
             }
         });
 
@@ -462,12 +526,12 @@ ipcMain.handle('screenshot:capture', async (event, bounds) => {
         const source = sources[0];
         const thumbnail = source.thumbnail;
 
-        // Crop to the selected region
+        // Crop to the selected region (bounds already scaled by renderer)
         const cropped = thumbnail.crop({
-            x: bounds.x,
-            y: bounds.y,
-            width: bounds.width,
-            height: bounds.height
+            x: Math.round(bounds.x),
+            y: Math.round(bounds.y),
+            width: Math.round(bounds.width),
+            height: Math.round(bounds.height)
         });
 
         const dataUrl = cropped.toDataURL();

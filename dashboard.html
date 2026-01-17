@@ -2671,9 +2671,9 @@
         }
 
         function openDicePanel() {
-            // Reset transform before opening
-            dicePanel.style.transform = 'scale(0)';
-            dicePanel.style.opacity = '0';
+            // Clear any inline styles so CSS class takes effect
+            dicePanel.style.transform = '';
+            dicePanel.style.opacity = '';
             dicePanel.classList.add('open');
             // Close drawer if open
             if (leftDrawer.classList.contains('open')) {

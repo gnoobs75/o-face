@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     filesystem: {
         readDir: (dirPath) => ipcRenderer.invoke('fs:readDir', dirPath),
         getHomeDir: () => ipcRenderer.invoke('fs:getHomeDir'),
+        getDrives: () => ipcRenderer.invoke('fs:getDrives'),
         pathJoin: (...args) => ipcRenderer.invoke('fs:pathJoin', ...args),
         writeFile: (filePath, dataUrl) => ipcRenderer.invoke('fs:writeFile', filePath, dataUrl),
         deleteFile: (filePath) => ipcRenderer.invoke('fs:deleteFile', filePath),
@@ -45,6 +46,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     },
     screenshot: {
         capture: (bounds) => ipcRenderer.invoke('screenshot:capture', bounds)
+    },
+    clipboard: {
+        readText: () => ipcRenderer.invoke('clipboard:readText'),
+        writeText: (text) => ipcRenderer.invoke('clipboard:writeText', text)
     },
     sound: {
         onPlayDone: (callback) => {

@@ -453,7 +453,101 @@
             display: flex;
         }
 
-        /* File Browser Panel */
+        /* Explorer-Style File Browser */
+        .explorer-toolbar {
+            display: flex;
+            gap: 2px;
+            padding: 6px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .explorer-btn {
+            width: 28px;
+            height: 24px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .explorer-btn:hover:not(:disabled) {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .explorer-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .explorer-address {
+            display: flex;
+            padding: 4px 6px;
+            gap: 4px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .address-input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 8px;
+            font-size: 11px;
+            font-family: monospace;
+            border-radius: 3px;
+        }
+
+        .address-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .address-go {
+            width: 28px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .address-go:hover {
+            background: var(--accent-hover);
+        }
+
+        .explorer-shortcuts {
+            display: flex;
+            gap: 2px;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .shortcut-btn {
+            flex: 1;
+            padding: 6px 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .shortcut-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        /* Legacy path-bar kept for compatibility */
         .path-bar {
             padding: 8px;
             background: var(--bg-dark);
@@ -638,10 +732,9 @@
             flex: 1;
             overflow-y: auto;
             padding: 8px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            align-content: start;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .temp-item {
@@ -694,6 +787,39 @@
             padding: 20px;
             color: var(--text-dim);
             font-size: 11px;
+        }
+
+        .temp-snip-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .temp-snip-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .temp-snip-container .temp-item {
+            width: 150px;
+            height: 150px;
+            cursor: grab;
+        }
+
+        .temp-snip-container .temp-item:active {
+            cursor: grabbing;
+        }
+
+        .temp-snip-path {
+            font-size: 9px;
+            color: var(--text-dim);
+            font-family: monospace;
+            word-break: break-all;
+            text-align: center;
+            max-width: 180px;
         }
 
         /* Dev Tools Category System */
@@ -1241,6 +1367,130 @@
 
         .port-table tr:hover { background: var(--border); }
 
+        /* System Table Container */
+        .system-table-container {
+            overflow: auto;
+            max-height: 400px;
+        }
+
+        .system-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .system-row:hover {
+            background: var(--bg-dark);
+        }
+
+        .system-row.selected {
+            background: var(--accent);
+            color: white;
+        }
+
+        .system-row-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .system-row-title {
+            font-weight: 500;
+            font-family: 'Consolas', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .system-row-desc {
+            font-size: 9px;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .system-row-badge {
+            padding: 2px 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            font-size: 9px;
+            font-family: 'Consolas', monospace;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .system-row-badge.port {
+            background: #3b82f620;
+            color: #60a5fa;
+        }
+
+        .system-row-badge.pid {
+            background: #8b5cf620;
+            color: #a78bfa;
+        }
+
+        .system-row-badge.cpu {
+            background: #f59e0b20;
+            color: #fbbf24;
+        }
+
+        .system-row-badge.mem {
+            background: #10b98120;
+            color: #34d399;
+        }
+
+        /* File Context Menu */
+        .file-context-menu {
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 0;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            display: none;
+        }
+
+        .file-context-menu.active {
+            display: block;
+        }
+
+        .file-context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .file-context-menu-item:hover {
+            background: var(--accent);
+        }
+
+        .file-context-menu-item.danger {
+            color: #f87171;
+        }
+
+        .file-context-menu-item.danger:hover {
+            background: #f87171;
+            color: white;
+        }
+
+        .file-context-menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
         /* Docker Dashboard */
         .docker-container {
             background: var(--bg-dark);
@@ -1785,43 +2035,6 @@
                                 <button class="tool-btn" onclick="openTool('websocket')">WebSocket</button>
                             </div>
                         </div>
-                        <!-- File Tools -->
-                        <div class="tools-category" data-category="filetools">
-                            <div class="tools-category-header" onclick="toggleToolCategory('filetools')">
-                                <span class="tools-category-name">&#128196; File Tools</span>
-                                <span class="tools-category-icon">&#9654;</span>
-                            </div>
-                            <div class="tools-category-list">
-                                <button class="tool-btn" onclick="openTool('logtail')">Log Tail</button>
-                                <button class="tool-btn" onclick="openTool('diff')">Diff</button>
-                                <button class="tool-btn" onclick="openTool('markdown')">Markdown</button>
-                            </div>
-                        </div>
-                        <!-- Shell Tools -->
-                        <div class="tools-category" data-category="shell">
-                            <div class="tools-category-header" onclick="toggleToolCategory('shell')">
-                                <span class="tools-category-name">&#128187; Shell</span>
-                                <span class="tools-category-icon">&#9654;</span>
-                            </div>
-                            <div class="tools-category-list">
-                                <button class="tool-btn" onclick="openTool('cmdpalette')">Cmd Palette</button>
-                                <button class="tool-btn" onclick="openTool('snippets')">Snippets</button>
-                                <button class="tool-btn" onclick="openTool('ssh')">SSH</button>
-                                <button class="tool-btn" onclick="openTool('aliases')">Aliases</button>
-                            </div>
-                        </div>
-                        <!-- Git Tools -->
-                        <div class="tools-category" data-category="git">
-                            <div class="tools-category-header" onclick="toggleToolCategory('git')">
-                                <span class="tools-category-name">&#128736; Git</span>
-                                <span class="tools-category-icon">&#9654;</span>
-                            </div>
-                            <div class="tools-category-list">
-                                <button class="tool-btn" onclick="openTool('gitstatus')">Status</button>
-                                <button class="tool-btn" onclick="openTool('gitgraph')">Graph</button>
-                                <button class="tool-btn" onclick="openTool('gitdiff')">Diff</button>
-                            </div>
-                        </div>
                         <!-- System Tools -->
                         <div class="tools-category" data-category="system">
                             <div class="tools-category-header" onclick="toggleToolCategory('system')">
@@ -2127,7 +2340,7 @@
                                     <input type="text" class="tool-input" id="processFilter" placeholder="Filter by name..." oninput="filterProcesses()">
                                     <button class="tool-button" onclick="refreshProcesses()">Refresh</button>
                                 </div>
-                                <div id="processesTable" style="overflow:auto; max-height:400px;"></div>
+                                <div id="processesTable" class="system-table-container"></div>
                             </div>
                         </div>
 
@@ -2138,8 +2351,11 @@
                                 <button class="tool-panel-close" onclick="closeTool()">&#x2715;</button>
                             </div>
                             <div class="tool-panel-content">
-                                <button class="tool-button" onclick="refreshPorts()" style="margin-bottom:12px;">Refresh</button>
-                                <div id="portsTable" style="overflow:auto; max-height:400px;"></div>
+                                <div class="tool-row" style="margin-bottom:12px;">
+                                    <input type="text" class="tool-input" id="portFilter" placeholder="Filter by port or process..." oninput="filterPorts()">
+                                    <button class="tool-button" onclick="refreshPorts()">Refresh</button>
+                                </div>
+                                <div id="portsTable" class="system-table-container"></div>
                             </div>
                         </div>
 
@@ -2157,13 +2373,25 @@
                     </div>
                 </div>
 
-                <!-- Files Panel -->
+                <!-- Files Panel - Explorer Style -->
                 <div class="sidebar-panel" id="panel-files">
-                    <div class="path-bar" id="pathBar"></div>
-                    <div class="quick-nav">
-                        <button class="quick-nav-btn" onclick="navigateToQuick('home')">Home</button>
-                        <button class="quick-nav-btn" onclick="navigateToQuick('desktop')">Desktop</button>
-                        <button class="quick-nav-btn" onclick="navigateToQuick('downloads')">Downloads</button>
+                    <div class="explorer-toolbar">
+                        <button class="explorer-btn" id="btnBack" onclick="navigateBack()" title="Back">&#9664;</button>
+                        <button class="explorer-btn" id="btnForward" onclick="navigateForward()" title="Forward">&#9654;</button>
+                        <button class="explorer-btn" id="btnUp" onclick="navigateUp()" title="Up">&#9650;</button>
+                        <button class="explorer-btn" onclick="refreshFileList()" title="Refresh">&#8635;</button>
+                    </div>
+                    <div class="explorer-address">
+                        <input type="text" class="address-input" id="addressBar"
+                               placeholder="Enter path..."
+                               onkeydown="if(event.key==='Enter') navigateToAddress()">
+                        <button class="address-go" onclick="navigateToAddress()">&#10140;</button>
+                    </div>
+                    <div class="explorer-shortcuts">
+                        <button class="shortcut-btn" onclick="showDrives()" title="Computer">&#128187;</button>
+                        <button class="shortcut-btn" onclick="navigateToQuick('home')" title="Home">&#127968;</button>
+                        <button class="shortcut-btn" onclick="navigateToQuick('desktop')" title="Desktop">&#128421;</button>
+                        <button class="shortcut-btn" onclick="navigateToQuick('downloads')" title="Downloads">&#11015;</button>
                     </div>
                     <div class="file-list" id="fileList"></div>
                 </div>
@@ -2175,12 +2403,46 @@
                             <span>&#9986;</span> New Snip
                         </button>
                     </div>
-                    <div class="snip-list" id="snipList">
-                        <div class="temp-empty">No snips yet. Click "New Snip" to capture.</div>
+                    <div class="temp-grid" id="tempGrid">
+                        <div class="temp-empty">No snip saved yet.<br>Click "New Snip" to capture.</div>
                     </div>
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- File Context Menu -->
+    <div class="file-context-menu" id="fileContextMenu">
+        <div class="file-context-menu-item" onclick="fileContextAction('open')">
+            <span>&#128194;</span> Open in Explorer
+        </div>
+        <div class="file-context-menu-item" onclick="fileContextAction('copyPath')">
+            <span>&#128203;</span> Copy Path
+        </div>
+        <div class="file-context-menu-item" onclick="fileContextAction('pastePath')">
+            <span>&#128229;</span> Paste to Terminal
+        </div>
+        <div class="file-context-menu-divider"></div>
+        <div class="file-context-menu-item" onclick="fileContextAction('tail')">
+            <span>&#128196;</span> Tail File
+        </div>
+        <div class="file-context-menu-item" onclick="fileContextAction('edit')">
+            <span>&#9998;</span> Edit in Terminal
+        </div>
+    </div>
+
+    <!-- System Context Menu (for processes/ports) -->
+    <div class="file-context-menu" id="systemContextMenu">
+        <div class="file-context-menu-item" onclick="systemContextAction('info')">
+            <span>&#128712;</span> View Details
+        </div>
+        <div class="file-context-menu-item" onclick="systemContextAction('copy')">
+            <span>&#128203;</span> Copy Info
+        </div>
+        <div class="file-context-menu-divider"></div>
+        <div class="file-context-menu-item danger" onclick="systemContextAction('kill')">
+            <span>&#128683;</span> Kill Process
         </div>
     </div>
 
@@ -2263,6 +2525,14 @@
     </div>
 
     <script>
+        console.log('[DEBUG] Script started');
+        document.title = 'SCRIPT RUNNING';
+        window.onerror = function(msg, url, line, col, error) {
+            console.error('[DEBUG] Global error:', msg, 'at line', line);
+            document.title = 'ERROR: ' + msg;
+            alert('JavaScript Error at line ' + line + ': ' + msg);
+            return false;
+        };
         // Terminal state
         const terminals = {};
         const fitAddons = {};
@@ -2435,12 +2705,19 @@
 
         // Create a terminal in a pane
         async function createTerminal(paneIndex) {
+            console.log('[DEBUG] createTerminal called for pane', paneIndex);
             const id = `term-${paneIndex}`;
             const container = document.getElementById(id);
+            console.log('[DEBUG] Container found:', !!container, 'terminals[paneIndex]:', !!terminals[paneIndex]);
 
-            if (!container || terminals[paneIndex]) return;
+            if (!container || terminals[paneIndex]) {
+                console.log('[DEBUG] Skipping - container:', !!container, 'already exists:', !!terminals[paneIndex]);
+                return;
+            }
 
+            console.log('[DEBUG] Loading xterm...');
             await loadXterm();
+            console.log('[DEBUG] xterm loaded');
 
             const term = new Terminal({
                 theme: {
@@ -2597,7 +2874,9 @@
         }
 
         // Handle terminal data from main process
+        console.log('[DEBUG] electronAPI available:', !!window.electronAPI);
         if (window.electronAPI) {
+            console.log('[DEBUG] Setting up terminal.onData handler');
             window.electronAPI.terminal.onData((id, data) => {
                 const index = parseInt(id.split('-')[1]);
                 if (terminals[index]) {
@@ -2705,19 +2984,26 @@
 
         // Initialize with staggered terminal creation
         async function init() {
+            console.log('[DEBUG] init() called');
             // Create terminals with delays to avoid race conditions
             for (let i = 0; i < 4; i++) {
+                console.log('[DEBUG] Creating terminal', i);
                 await createTerminal(i);
+                console.log('[DEBUG] Created terminal', i);
                 // Wait between creating each terminal
                 await new Promise(r => setTimeout(r, 500));
             }
+            console.log('[DEBUG] All terminals created, focusing pane 0');
             focusPane(0);
         }
 
         // Wait for window to be ready
+        console.log('[DEBUG] Document readyState:', document.readyState);
         if (document.readyState === 'complete') {
+            console.log('[DEBUG] Calling init() immediately');
             init();
         } else {
+            console.log('[DEBUG] Adding load listener for init()');
             window.addEventListener('load', init);
         }
 
@@ -2794,17 +3080,24 @@
 
         // Context menu actions
         function contextMenuAction(action) {
+            console.log('contextMenuAction called:', action, 'contextMenuPane:', contextMenuPane);
             // Save pane index before hiding menu (hideContextMenu sets it to null)
             const paneIndex = contextMenuPane;
             hideContextMenu();
 
-            if (paneIndex === null) return;
+            if (paneIndex === null) {
+                console.error('paneIndex is null, cannot perform action');
+                return;
+            }
+
+            console.log('Performing action', action, 'on pane', paneIndex);
 
             switch (action) {
                 case 'copy':
                     copyFromTerminal(paneIndex);
                     break;
                 case 'paste':
+                    console.log('Calling pasteToTerminal with paneIndex:', paneIndex);
                     pasteToTerminal(paneIndex);
                     break;
                 case 'splitH':
@@ -2845,15 +3138,25 @@
 
         // Paste from clipboard to terminal
         async function pasteToTerminal(paneIndex) {
+            console.log('pasteToTerminal called with paneIndex:', paneIndex);
             try {
-                const text = await navigator.clipboard.readText();
+                // Use Electron's clipboard API which works reliably
+                const result = await window.electronAPI?.clipboard?.readText();
+                console.log('Clipboard read result:', result);
+                const text = result?.text || '';
                 if (text) {
-                    const termId = paneIds[paneIndex];
-                    if (termId && window.electronAPI?.terminal?.write) {
+                    const termId = `term-${paneIndex}`;
+                    console.log('Terminal ID:', termId, 'for pane:', paneIndex);
+                    if (window.electronAPI?.terminal?.write) {
                         // Replace newlines with \r for terminal
                         const sanitized = text.replace(/\r?\n/g, '\r');
+                        console.log('Writing to terminal:', sanitized.substring(0, 50) + '...');
                         await window.electronAPI.terminal.write(termId, sanitized);
+                    } else {
+                        console.error('No write API available');
                     }
+                } else {
+                    console.log('Clipboard was empty');
                 }
             } catch (err) {
                 console.error('Paste failed:', err);
@@ -3315,7 +3618,7 @@
         }
 
         // ==========================================
-        // FILE BROWSER
+        // FILE BROWSER (Explorer-Style)
         // ==========================================
 
         const fileIcons = {
@@ -3327,8 +3630,14 @@
             code: '&#128187;',
             archive: '&#128230;',
             pdf: '&#128213;',
-            text: '&#128221;'
+            text: '&#128221;',
+            drive: '&#128190;'
         };
+
+        // Navigation history
+        let navHistory = [];
+        let navHistoryIndex = -1;
+        let isNavigating = false; // Prevent history pollution during back/forward
 
         function getFileIcon(name, isDir) {
             if (isDir) return fileIcons.folder;
@@ -3351,6 +3660,149 @@
             return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
         }
 
+        function updateNavButtons() {
+            const btnBack = document.getElementById('btnBack');
+            const btnForward = document.getElementById('btnForward');
+            const btnUp = document.getElementById('btnUp');
+
+            if (btnBack) btnBack.disabled = navHistoryIndex <= 0;
+            if (btnForward) btnForward.disabled = navHistoryIndex >= navHistory.length - 1;
+            if (btnUp) btnUp.disabled = !currentPath || currentPath === '';
+        }
+
+        function updateAddressBar(path) {
+            const addressBar = document.getElementById('addressBar');
+            if (addressBar) {
+                addressBar.value = path || 'Computer';
+            }
+        }
+
+        function addToHistory(path) {
+            if (isNavigating) return;
+            // Remove any forward history when navigating to new location
+            if (navHistoryIndex < navHistory.length - 1) {
+                navHistory = navHistory.slice(0, navHistoryIndex + 1);
+            }
+            navHistory.push(path);
+            navHistoryIndex = navHistory.length - 1;
+            updateNavButtons();
+        }
+
+        function navigateBack() {
+            if (navHistoryIndex > 0) {
+                navHistoryIndex--;
+                isNavigating = true;
+                const path = navHistory[navHistoryIndex];
+                if (path === '') {
+                    showDrives();
+                } else {
+                    navigateTo(path);
+                }
+                isNavigating = false;
+                updateNavButtons();
+            }
+        }
+
+        function navigateForward() {
+            if (navHistoryIndex < navHistory.length - 1) {
+                navHistoryIndex++;
+                isNavigating = true;
+                const path = navHistory[navHistoryIndex];
+                if (path === '') {
+                    showDrives();
+                } else {
+                    navigateTo(path);
+                }
+                isNavigating = false;
+                updateNavButtons();
+            }
+        }
+
+        function navigateUp() {
+            if (!currentPath) return;
+            const isWindows = currentPath.includes('\\');
+            const sep = isWindows ? '\\' : '/';
+            const parts = currentPath.split(sep).filter(p => p);
+
+            if (parts.length <= 1) {
+                // At drive root, go to Computer
+                showDrives();
+            } else {
+                // Go up one level
+                parts.pop();
+                let parentPath = isWindows ? parts.join(sep) : '/' + parts.join(sep);
+                if (isWindows && parts.length === 1) parentPath += sep; // Keep C:\ format
+                navigateTo(parentPath);
+            }
+        }
+
+        function navigateToAddress() {
+            const addressBar = document.getElementById('addressBar');
+            if (!addressBar) return;
+            const path = addressBar.value.trim();
+            if (!path || path.toLowerCase() === 'computer') {
+                showDrives();
+            } else {
+                navigateTo(path);
+            }
+        }
+
+        function refreshFileList() {
+            if (currentPath) {
+                isNavigating = true; // Don't add to history
+                navigateTo(currentPath);
+                isNavigating = false;
+            } else {
+                showDrives();
+            }
+        }
+
+        // Show available drives (root level)
+        async function showDrives() {
+            if (!window.electronAPI?.filesystem?.getDrives) {
+                console.log('getDrives API not available');
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.filesystem.getDrives();
+                if (!result.success) {
+                    console.error('Failed to get drives:', result.error);
+                    return;
+                }
+
+                currentPath = '';
+                updateAddressBar('');
+                addToHistory('');
+                updateNavButtons();
+                renderDriveList(result.drives);
+            } catch (err) {
+                console.error('Get drives error:', err);
+            }
+        }
+
+        function renderDriveList(drives) {
+            const fileList = document.getElementById('fileList');
+
+            if (drives.length === 0) {
+                fileList.innerHTML = '<div class="temp-empty">No drives found</div>';
+                return;
+            }
+
+            fileList.innerHTML = drives.map(drive => {
+                const drivePath = drive.path.replace(/\\/g, '\\\\');
+                return `
+                    <div class="file-item"
+                         ondblclick="navigateTo('${drivePath}')"
+                         title="${drive.label}">
+                        <span class="file-icon">${fileIcons.drive}</span>
+                        <span class="file-name">${drive.letter}: Drive</span>
+                        <span class="file-size"></span>
+                    </div>
+                `;
+            }).join('');
+        }
+
         async function navigateTo(dirPath) {
             if (!window.electronAPI?.filesystem?.readDir) {
                 console.log('Filesystem API not available');
@@ -3361,36 +3813,20 @@
                 const result = await window.electronAPI.filesystem.readDir(dirPath);
                 if (!result.success) {
                     console.error('Failed to read directory:', result.error);
+                    // Show error in file list
+                    const fileList = document.getElementById('fileList');
+                    fileList.innerHTML = `<div class="temp-empty">Cannot access: ${dirPath}<br>${result.error}</div>`;
                     return;
                 }
 
                 currentPath = result.path;
-                renderPathBar(result.path);
+                updateAddressBar(result.path);
+                addToHistory(result.path);
+                updateNavButtons();
                 renderFileList(result.items);
             } catch (err) {
                 console.error('Navigation error:', err);
             }
-        }
-
-        function renderPathBar(fullPath) {
-            const pathBar = document.getElementById('pathBar');
-            const isWindows = fullPath.includes('\\');
-            const sep = isWindows ? '\\' : '/';
-            const parts = fullPath.split(sep).filter(p => p);
-
-            let html = '';
-            let buildPath = isWindows ? '' : '/';
-
-            parts.forEach((part, i) => {
-                buildPath += (i > 0 || isWindows ? sep : '') + part;
-                const clickPath = buildPath;
-                html += `<span class="path-segment" onclick="navigateTo('${clickPath.replace(/\\/g, '\\\\')}')">${part}</span>`;
-                if (i < parts.length - 1) {
-                    html += `<span class="path-sep">${sep}</span>`;
-                }
-            });
-
-            pathBar.innerHTML = html;
         }
 
         function renderFileList(items) {
@@ -3411,12 +3847,17 @@
                 const icon = getFileIcon(item.name, item.isDir);
                 const size = item.isDir ? '' : formatFileSize(item.size);
                 const fullPath = item.path.replace(/\\/g, '\\\\');
+                const isDir = item.isDir ? 'true' : 'false';
 
                 return `
                     <div class="file-item"
                          draggable="true"
+                         data-path="${fullPath}"
+                         data-isdir="${isDir}"
+                         data-name="${escapeHtml(item.name)}"
                          ondragstart="onFileDragStart(event, '${fullPath}')"
                          ondblclick="${item.isDir ? `navigateTo('${fullPath}')` : `pastePathToTerminal('${fullPath}')`}"
+                         oncontextmenu="showFileContextMenu(event, '${fullPath}', ${isDir})"
                          title="${item.name}">
                         <span class="file-icon">${icon}</span>
                         <span class="file-name">${item.name}</span>
@@ -3455,6 +3896,109 @@
             const quotedPath = path.includes(' ') ? `"${path}"` : path;
             const id = `term-${activePane}`;
             window.electronAPI.terminal.write(id, quotedPath);
+        }
+
+        // ==========================================
+        // FILE CONTEXT MENU
+        // ==========================================
+
+        let fileContextPath = null;
+        let fileContextIsDir = false;
+
+        function showFileContextMenu(event, filePath, isDir) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            fileContextPath = filePath.replace(/\\\\/g, '\\');
+            fileContextIsDir = isDir;
+
+            const menu = document.getElementById('fileContextMenu');
+            const tailItem = menu.querySelector('[onclick*="tail"]');
+            const editItem = menu.querySelector('[onclick*="edit"]');
+
+            // Show/hide items based on file type
+            if (tailItem) tailItem.style.display = isDir ? 'none' : 'flex';
+            if (editItem) editItem.style.display = isDir ? 'none' : 'flex';
+
+            // Position menu
+            menu.style.left = event.clientX + 'px';
+            menu.style.top = event.clientY + 'px';
+            menu.classList.add('active');
+
+            // Close on click outside
+            setTimeout(() => {
+                document.addEventListener('click', hideFileContextMenu, { once: true });
+            }, 0);
+        }
+
+        function hideFileContextMenu() {
+            document.getElementById('fileContextMenu').classList.remove('active');
+        }
+
+        async function fileContextAction(action) {
+            hideFileContextMenu();
+
+            if (!fileContextPath) return;
+
+            const quotedPath = fileContextPath.includes(' ') ? `"${fileContextPath}"` : fileContextPath;
+            const isWindows = fileContextPath.includes('\\');
+
+            switch (action) {
+                case 'open':
+                    // Open in system file explorer
+                    if (isWindows) {
+                        const dir = fileContextIsDir ? fileContextPath : fileContextPath.substring(0, fileContextPath.lastIndexOf('\\'));
+                        window.electronAPI.shell.exec(`explorer "${dir}"`);
+                    } else {
+                        const dir = fileContextIsDir ? fileContextPath : fileContextPath.substring(0, fileContextPath.lastIndexOf('/'));
+                        window.electronAPI.shell.exec(`open "${dir}"`);
+                    }
+                    break;
+
+                case 'copyPath':
+                    await window.electronAPI.clipboard.writeText(fileContextPath);
+                    break;
+
+                case 'pastePath':
+                    pastePathToTerminal(fileContextPath.replace(/\\/g, '\\\\'));
+                    break;
+
+                case 'tail':
+                    if (!fileContextIsDir) {
+                        tailFileInNewTerminal(fileContextPath);
+                    }
+                    break;
+
+                case 'edit':
+                    if (!fileContextIsDir) {
+                        // Open in terminal with default editor
+                        const id = `term-${activePane}`;
+                        const cmd = isWindows ? `notepad ${quotedPath}` : `${process.env.EDITOR || 'nano'} ${quotedPath}`;
+                        window.electronAPI.terminal.write(id, cmd + '\n');
+                    }
+                    break;
+            }
+        }
+
+        async function tailFileInNewTerminal(filePath) {
+            const isWindows = filePath.includes('\\');
+            const quotedPath = filePath.includes(' ') ? `"${filePath}"` : filePath;
+
+            // Create a new pane for tailing
+            const newPaneIndex = await addNewPane();
+            if (newPaneIndex === undefined) return;
+
+            // Wait a bit for terminal to initialize
+            await new Promise(r => setTimeout(r, 300));
+
+            // Run tail command
+            const id = `term-${newPaneIndex}`;
+            if (isWindows) {
+                // PowerShell Get-Content with -Wait is like tail -f
+                window.electronAPI.terminal.write(id, `Get-Content ${quotedPath} -Wait -Tail 50\n`);
+            } else {
+                window.electronAPI.terminal.write(id, `tail -f ${quotedPath}\n`);
+            }
         }
 
         // ==========================================
@@ -3566,6 +4110,7 @@
             const w = Math.abs(e.clientX - snipState.startX);
             const h = Math.abs(e.clientY - snipState.startY);
 
+            // Hide overlay FIRST
             overlay.classList.remove('active');
             selection.style.display = 'none';
             snipState.isCapturing = false;
@@ -3573,21 +4118,28 @@
             snipState.startY = 0;
 
             if (w > 10 && h > 10) {
-                // Capture the region - need to convert window-relative coords to screen coords
+                // Wait for overlay to actually disappear before capturing
+                await new Promise(resolve => setTimeout(resolve, 100));
+
                 try {
-                    // Get window position on screen
+                    // Get window position on screen - use screen position
                     const screenX = window.screenX || window.screenLeft || 0;
                     const screenY = window.screenY || window.screenTop || 0;
 
+                    // Get the actual scale factor from the screen
+                    const scaleFactor = window.devicePixelRatio || 1;
+
                     const result = await window.electronAPI.screenshot.capture({
-                        x: Math.round((x + screenX) * window.devicePixelRatio),
-                        y: Math.round((y + screenY) * window.devicePixelRatio),
-                        width: Math.round(w * window.devicePixelRatio),
-                        height: Math.round(h * window.devicePixelRatio)
+                        x: Math.round((x + screenX) * scaleFactor),
+                        y: Math.round((y + screenY) * scaleFactor),
+                        width: Math.round(w * scaleFactor),
+                        height: Math.round(h * scaleFactor)
                     });
 
                     if (result.success) {
                         openSnipEditor(result.dataUrl, w, h);
+                    } else {
+                        console.error('Screenshot failed:', result.error);
                     }
                 } catch (err) {
                     console.error('Screenshot error:', err);
@@ -3609,18 +4161,25 @@
         });
 
         function openSnipEditor(dataUrl, width, height) {
+            console.log('openSnipEditor called, dataUrl length:', dataUrl?.length);
             const editor = document.getElementById('snipEditor');
             const canvas = document.getElementById('snipCanvas');
             const ctx = canvas.getContext('2d');
 
             const img = new Image();
             img.onload = () => {
+                console.log('Image loaded, dimensions:', img.width, 'x', img.height);
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 snipState.currentImage = img;
                 snipState.annotations = [];
                 editor.classList.add('active');
+                console.log('Snip editor opened, currentImage set');
+            };
+            img.onerror = (err) => {
+                console.error('Failed to load snip image:', err);
+                alert('Failed to load captured image');
             };
             img.src = dataUrl;
         }
@@ -3659,33 +4218,34 @@
             }
         }
 
-        // Snips temp directory - save actual files here
-        const SNIPS_TEMP_DIR = 'C:\\Claude';
+        // Single temp snip file - always overwritten
+        const SNIP_TEMP_FILE = 'C:\\Claude\\snip.png';
+        let currentSnipDataUrl = null; // Store in memory for immediate display
 
         async function saveSnipToTemp() {
-            if (!snipState.currentImage) return;
+            if (!snipState.currentImage) {
+                alert('No image to save. Please capture a snip first.');
+                return;
+            }
 
             const canvas = document.getElementById('snipCanvas');
+            if (!canvas) return;
+
             const dataUrl = canvas.toDataURL('image/png');
 
-            // Generate temp filename
-            const timestamp = Date.now();
-            const filename = `snip-${timestamp}.png`;
-            const filePath = `${SNIPS_TEMP_DIR}\\${filename}`;
-
             try {
-                // Save actual file to disk
-                const result = await window.electronAPI.filesystem.writeFile(filePath, dataUrl);
+                // Save to fixed file path (overwrites previous)
+                const result = await window.electronAPI.filesystem.writeFile(SNIP_TEMP_FILE, dataUrl);
                 if (result.success) {
-                    renderTempItems();
+                    // Store dataUrl for immediate thumbnail display
+                    currentSnipDataUrl = dataUrl;
+                    renderTempSnip();
                     closeSnipEditor();
-                    switchSidebarTab('temp');
+                    switchSidebarTab('snip');
                 } else {
-                    console.error('Failed to save snip:', result.error);
                     alert('Failed to save snip: ' + result.error);
                 }
             } catch (err) {
-                console.error('Save snip error:', err);
                 alert('Failed to save snip: ' + err.message);
             }
         }
@@ -3694,46 +4254,64 @@
         // TEMP PANEL
         // ==========================================
 
-        async function renderTempItems() {
+        function renderTempSnip() {
+            const tempGrid = document.getElementById('tempGrid');
+
+            if (!currentSnipDataUrl) {
+                // Try to load from file if we don't have it in memory
+                loadTempSnipFromFile();
+                return;
+            }
+
+            tempGrid.innerHTML = `
+                <div class="temp-snip-container">
+                    <div class="temp-snip-label">Drag to prompt:</div>
+                    <div class="temp-item"
+                         draggable="true"
+                         ondragstart="onTempDragStart(event, '${SNIP_TEMP_FILE.replace(/\\/g, '\\\\')}')"
+                         title="snip.png - Drag to use">
+                        <img src="${currentSnipDataUrl}" alt="Snip">
+                    </div>
+                    <div class="temp-snip-path">${SNIP_TEMP_FILE}</div>
+                </div>
+            `;
+        }
+
+        async function loadTempSnipFromFile() {
             const tempGrid = document.getElementById('tempGrid');
 
             try {
-                // Read snip files from the temp directory
-                const result = await window.electronAPI.filesystem.readDir(SNIPS_TEMP_DIR);
-                if (!result.success) {
-                    tempGrid.innerHTML = '<div class="temp-empty">Could not read temp directory</div>';
-                    return;
-                }
-
-                // Filter for snip-*.png files
-                const snipFiles = result.items.filter(item =>
-                    !item.isDir && item.name.startsWith('snip-') && item.name.endsWith('.png')
-                ).sort((a, b) => b.name.localeCompare(a.name)); // Newest first
-
-                if (snipFiles.length === 0) {
-                    tempGrid.innerHTML = '<div class="temp-empty">No temp items. Save snips here for quick access.</div>';
-                    return;
-                }
-
-                tempGrid.innerHTML = snipFiles.map(item => {
-                    const filePath = item.path.replace(/\\/g, '\\\\');
-                    // Extract timestamp from filename for display
-                    const timestampMatch = item.name.match(/snip-(\d+)\.png/);
-                    const timestamp = timestampMatch ? new Date(parseInt(timestampMatch[1])).toLocaleString() : '';
-
-                    return `
-                        <div class="temp-item"
-                             draggable="true"
-                             ondragstart="onTempDragStart(event, '${filePath}')"
-                             title="${item.name}\\n${timestamp}">
-                            <img src="file:///${item.path.replace(/\\/g, '/')}" alt="Snip">
-                            <button class="temp-item-delete" onclick="deleteTempItem('${filePath}')">&#x2715;</button>
+                // Check if the snip file exists
+                const stat = await window.electronAPI.filesystem.stat(SNIP_TEMP_FILE);
+                if (stat.success && stat.isFile) {
+                    // File exists - show it with file:// URL (add cache buster)
+                    const cacheBuster = Date.now();
+                    tempGrid.innerHTML = `
+                        <div class="temp-snip-container">
+                            <div class="temp-snip-label">Drag to prompt:</div>
+                            <div class="temp-item"
+                                 draggable="true"
+                                 ondragstart="onTempDragStart(event, '${SNIP_TEMP_FILE.replace(/\\/g, '\\\\')}')"
+                                 title="snip.png - Drag to use">
+                                <img src="file:///${SNIP_TEMP_FILE.replace(/\\/g, '/')}?${cacheBuster}" alt="Snip">
+                            </div>
+                            <div class="temp-snip-path">${SNIP_TEMP_FILE}</div>
                         </div>
                     `;
-                }).join('');
+                } else {
+                    tempGrid.innerHTML = '<div class="temp-empty">No snip saved yet.<br>Use Snip tool to capture.</div>';
+                }
             } catch (err) {
-                console.error('Error loading temp items:', err);
-                tempGrid.innerHTML = '<div class="temp-empty">Error loading temp items</div>';
+                tempGrid.innerHTML = '<div class="temp-empty">No snip saved yet.<br>Use Snip tool to capture.</div>';
+            }
+        }
+
+        // Alias for backward compatibility
+        async function renderTempItems() {
+            if (currentSnipDataUrl) {
+                renderTempSnip();
+            } else {
+                loadTempSnipFromFile();
             }
         }
 
@@ -3742,16 +4320,6 @@
             const path = filePath.replace(/\\\\/g, '\\');
             event.dataTransfer.setData('text/plain', path);
             event.dataTransfer.effectAllowed = 'copy';
-        }
-
-        async function deleteTempItem(filePath) {
-            const path = filePath.replace(/\\\\/g, '\\');
-            try {
-                await window.electronAPI.filesystem.deleteFile(path);
-                renderTempItems();
-            } catch (err) {
-                console.error('Delete error:', err);
-            }
         }
 
         // ==========================================
@@ -3906,7 +4474,7 @@
             const output = document.getElementById('curlOutput');
             const cmd = output.textContent.replace('Copy', '').trim();
             // Get active terminal and run command
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, cmd + '\n');
             }
@@ -4216,7 +4784,7 @@
         }
 
         function runHistoryCommand(cmd) {
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, cmd + '\n');
             }
@@ -4266,7 +4834,7 @@
         function runSnippet(index) {
             const snippet = snippets[index];
             if (!snippet) return;
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, snippet.content + '\n');
             }
@@ -4336,7 +4904,7 @@
         function connectSsh(index) {
             const c = sshConnections[index];
             const cmd = `ssh ${c.user}@${c.host} -p ${c.port}`;
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, cmd + '\n');
             }
@@ -4427,7 +4995,7 @@
                 ? `Set-Alias -Name ${name} -Value "${command}"`
                 : `alias ${name}='${command}'`;
 
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, cmd + '\n');
             }
@@ -4576,12 +5144,12 @@
 
         async function refreshProcesses() {
             const container = document.getElementById('processesTable');
-            container.innerHTML = 'Loading...';
+            container.innerHTML = '<div class="temp-empty">Loading processes...</div>';
 
             try {
                 const isWindows = window.electronAPI?.platform === 'win32';
                 const cmd = isWindows
-                    ? 'Get-Process | Sort-Object -Property CPU -Descending | Select-Object -First 50 Id,ProcessName,CPU,WorkingSet | ConvertTo-Csv -NoTypeInformation'
+                    ? 'Get-Process | Sort-Object -Property CPU -Descending | Select-Object -First 50 Id,ProcessName,CPU,WorkingSet,Path,Description | ConvertTo-Csv -NoTypeInformation'
                     : 'ps aux --sort=-%cpu | head -51';
 
                 const result = await window.electronAPI.shell.exec(cmd);
@@ -4590,10 +5158,10 @@
                     allProcesses = parseProcesses(result.stdout, isWindows);
                     renderProcesses();
                 } else {
-                    container.innerHTML = '<p style="color:var(--text-dim);">Could not load processes</p>';
+                    container.innerHTML = '<div class="temp-empty">Could not load processes</div>';
                 }
             } catch (err) {
-                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+                container.innerHTML = `<div class="temp-empty" style="color:#f87171;">Error: ${err.message}</div>`;
             }
         }
 
@@ -4602,15 +5170,17 @@
             const lines = output.split('\n').filter(l => l.trim());
 
             if (isWindows) {
-                // CSV format
                 lines.slice(1).forEach(line => {
                     const parts = line.replace(/"/g, '').split(',');
                     if (parts.length >= 4) {
+                        const memBytes = parseInt(parts[3]) || 0;
                         processes.push({
                             pid: parts[0],
                             name: parts[1],
                             cpu: parseFloat(parts[2] || 0).toFixed(1),
-                            mem: (parseInt(parts[3] || 0) / 1024 / 1024).toFixed(1) + ' MB'
+                            mem: formatFileSize(memBytes),
+                            path: parts[4] || '',
+                            desc: parts[5] || ''
                         });
                     }
                 });
@@ -4621,13 +5191,14 @@
                         processes.push({
                             pid: parts[1],
                             name: parts[10],
-                            cpu: parts[2] + '%',
-                            mem: parts[3] + '%'
+                            cpu: parts[2],
+                            mem: parts[3] + '%',
+                            path: parts.slice(10).join(' '),
+                            desc: ''
                         });
                     }
                 });
             }
-
             return processes;
         }
 
@@ -4636,35 +5207,36 @@
             const filter = document.getElementById('processFilter').value.toLowerCase();
 
             const filtered = filter
-                ? allProcesses.filter(p => p.name.toLowerCase().includes(filter))
+                ? allProcesses.filter(p => p.name.toLowerCase().includes(filter) || (p.desc && p.desc.toLowerCase().includes(filter)))
                 : allProcesses;
 
-            container.innerHTML = `
-                <table class="process-table">
-                    <thead>
-                        <tr><th>PID</th><th>Name</th><th>CPU</th><th>Memory</th><th></th></tr>
-                    </thead>
-                    <tbody>
-                        ${filtered.map(p => `
-                            <tr>
-                                <td>${p.pid}</td>
-                                <td>${escapeHtml(p.name)}</td>
-                                <td>${p.cpu}</td>
-                                <td>${p.mem}</td>
-                                <td><button class="process-kill" onclick="killProcess('${p.pid}')">Kill</button></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="temp-empty">No processes found</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => {
+                const desc = p.desc || p.path || 'System process';
+                return `
+                    <div class="system-row" oncontextmenu="showSystemContextMenu(event, 'process', '${p.pid}', '${escapeHtml(p.name)}')">
+                        <div class="system-row-main">
+                            <div class="system-row-title">${escapeHtml(p.name)}</div>
+                            <div class="system-row-desc">${escapeHtml(desc.substring(0, 50))}</div>
+                        </div>
+                        <span class="system-row-badge cpu">${p.cpu}%</span>
+                        <span class="system-row-badge mem">${p.mem}</span>
+                        <span class="system-row-badge pid">${p.pid}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         function filterProcesses() {
             renderProcesses();
         }
 
-        async function killProcess(pid) {
-            if (!confirm(`Kill process ${pid}?`)) return;
+        async function killProcess(pid, name) {
+            if (!confirm(`Kill process "${name || pid}" (PID: ${pid})?`)) return;
 
             const isWindows = window.electronAPI?.platform === 'win32';
             const cmd = isWindows ? `Stop-Process -Id ${pid} -Force` : `kill -9 ${pid}`;
@@ -4681,38 +5253,42 @@
         // PORT VIEWER
         // ==========================================
 
+        let allPorts = [];
+
         async function refreshPorts() {
             const container = document.getElementById('portsTable');
-            container.innerHTML = 'Loading...';
+            container.innerHTML = '<div class="temp-empty">Loading ports...</div>';
 
             try {
                 const isWindows = window.electronAPI?.platform === 'win32';
-                const cmd = isWindows
-                    ? 'Get-NetTCPConnection -State Listen | Select-Object LocalPort,OwningProcess | Sort-Object LocalPort | ConvertTo-Csv -NoTypeInformation'
-                    : 'netstat -tlnp 2>/dev/null || ss -tlnp';
+                let cmd;
+                if (isWindows) {
+                    cmd = `Get-NetTCPConnection -State Listen | ForEach-Object { $proc = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; [PSCustomObject]@{Port=$_.LocalPort; PID=$_.OwningProcess; Name=if($proc){$proc.ProcessName}else{'-'}; Desc=if($proc){$proc.Description}else{''}} } | Sort-Object Port | ConvertTo-Csv -NoTypeInformation`;
+                } else {
+                    cmd = 'netstat -tlnp 2>/dev/null || ss -tlnp';
+                }
 
                 const result = await window.electronAPI.shell.exec(cmd);
 
                 if (result.success) {
-                    renderPorts(result.stdout, isWindows);
+                    allPorts = parsePorts(result.stdout, isWindows);
+                    renderPorts();
                 } else {
-                    container.innerHTML = '<p style="color:var(--text-dim);">Could not load ports</p>';
+                    container.innerHTML = '<div class="temp-empty">Could not load ports</div>';
                 }
             } catch (err) {
-                container.innerHTML = `<p style="color:#f87171;">Error: ${err.message}</p>`;
+                container.innerHTML = `<div class="temp-empty" style="color:#f87171;">Error: ${err.message}</div>`;
             }
         }
 
-        function renderPorts(output, isWindows) {
-            const container = document.getElementById('portsTable');
+        function parsePorts(output, isWindows) {
             const ports = [];
-
             if (isWindows) {
                 const lines = output.split('\n').filter(l => l.trim());
                 lines.slice(1).forEach(line => {
                     const parts = line.replace(/"/g, '').split(',');
-                    if (parts.length >= 2) {
-                        ports.push({ port: parts[0], pid: parts[1], process: '-' });
+                    if (parts.length >= 3) {
+                        ports.push({ port: parts[0], pid: parts[1], name: parts[2] || '-', desc: parts[3] || '' });
                     }
                 });
             } else {
@@ -4720,27 +5296,104 @@
                 lines.forEach(line => {
                     const match = line.match(/:(\d+)\s+.*?(\d+)\/(\S+)/);
                     if (match) {
-                        ports.push({ port: match[1], pid: match[2], process: match[3] });
+                        ports.push({ port: match[1], pid: match[2], name: match[3], desc: '' });
                     }
                 });
             }
+            return ports;
+        }
 
-            container.innerHTML = `
-                <table class="port-table">
-                    <thead>
-                        <tr><th>Port</th><th>PID</th><th>Process</th></tr>
-                    </thead>
-                    <tbody>
-                        ${ports.map(p => `
-                            <tr>
-                                <td>${p.port}</td>
-                                <td>${p.pid}</td>
-                                <td>${escapeHtml(p.process)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+        function getPortDescription(port) {
+            const commonPorts = {
+                '21': 'FTP', '22': 'SSH', '23': 'Telnet', '25': 'SMTP', '53': 'DNS',
+                '80': 'HTTP', '110': 'POP3', '143': 'IMAP', '443': 'HTTPS', '445': 'SMB',
+                '1433': 'SQL Server', '3000': 'Dev Server', '3306': 'MySQL', '3389': 'RDP',
+                '5000': 'Dev Server', '5432': 'PostgreSQL', '6379': 'Redis', '8080': 'HTTP Proxy',
+                '8443': 'HTTPS Alt', '27017': 'MongoDB'
+            };
+            return commonPorts[port] || '';
+        }
+
+        function renderPorts() {
+            const container = document.getElementById('portsTable');
+            const filter = document.getElementById('portFilter')?.value?.toLowerCase() || '';
+
+            const filtered = filter
+                ? allPorts.filter(p => p.port.includes(filter) || p.name.toLowerCase().includes(filter))
+                : allPorts;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="temp-empty">No listening ports found</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => {
+                const desc = p.desc || getPortDescription(p.port) || `Process: ${p.name}`;
+                return `
+                    <div class="system-row" oncontextmenu="showSystemContextMenu(event, 'port', '${p.pid}', '${escapeHtml(p.name)}', '${p.port}')">
+                        <div class="system-row-main">
+                            <div class="system-row-title">${escapeHtml(p.name)}</div>
+                            <div class="system-row-desc">${escapeHtml(desc)}</div>
+                        </div>
+                        <span class="system-row-badge port">:${p.port}</span>
+                        <span class="system-row-badge pid">${p.pid}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterPorts() {
+            renderPorts();
+        }
+
+        // ==========================================
+        // SYSTEM CONTEXT MENU
+        // ==========================================
+
+        let systemContextData = { type: '', pid: '', name: '', port: '' };
+
+        function showSystemContextMenu(event, type, pid, name, port = '') {
+            event.preventDefault();
+            event.stopPropagation();
+            systemContextData = { type, pid, name, port };
+
+            const menu = document.getElementById('systemContextMenu');
+            menu.style.left = event.clientX + 'px';
+            menu.style.top = event.clientY + 'px';
+            menu.classList.add('active');
+
+            setTimeout(() => {
+                document.addEventListener('click', hideSystemContextMenu, { once: true });
+            }, 0);
+        }
+
+        function hideSystemContextMenu() {
+            document.getElementById('systemContextMenu').classList.remove('active');
+        }
+
+        function systemContextAction(action) {
+            hideSystemContextMenu();
+            const { type, pid, name, port } = systemContextData;
+
+            switch (action) {
+                case 'info':
+                    const proc = allProcesses.find(p => p.pid === pid);
+                    if (type === 'port') {
+                        alert(`Port: ${port}\nProcess: ${name}\nPID: ${pid}\nService: ${getPortDescription(port) || 'Custom'}`);
+                    } else if (proc) {
+                        alert(`Process: ${proc.name}\nPID: ${proc.pid}\nCPU: ${proc.cpu}%\nMemory: ${proc.mem}\nPath: ${proc.path || 'N/A'}`);
+                    }
+                    break;
+                case 'copy':
+                    const info = type === 'port'
+                        ? `Port: ${port}, PID: ${pid}, Process: ${name}`
+                        : `PID: ${pid}, Name: ${name}`;
+                    window.electronAPI.clipboard.writeText(info);
+                    break;
+                case 'kill':
+                    killProcess(pid, name);
+                    break;
+            }
         }
 
         // ==========================================
@@ -4798,7 +5451,7 @@
         }
 
         function dockerLogs(containerId) {
-            const termId = paneIds[activePane];
+            const termId = `term-${activePane}`;
             if (termId && window.electronAPI?.terminal?.write) {
                 window.electronAPI.terminal.write(termId, `docker logs -f ${containerId}\n`);
             }
@@ -4815,11 +5468,13 @@
             // Load temp items
             renderTempItems();
 
-            // Initialize file browser with home directory
-            if (window.electronAPI?.filesystem?.getHomeDir) {
+            // Initialize file browser with drive selection (Computer view)
+            if (window.electronAPI?.filesystem?.getDrives) {
                 try {
-                    const homeDir = await window.electronAPI.filesystem.getHomeDir();
-                    navigateTo(homeDir);
+                    // Reset navigation history
+                    navHistory = [];
+                    navHistoryIndex = -1;
+                    showDrives();
                 } catch (err) {
                     console.log('Could not initialize file browser:', err);
                 }
