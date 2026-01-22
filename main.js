@@ -541,6 +541,246 @@ ipcMain.handle('screenshot:capture', async (event, bounds) => {
     }
 });
 
+// ==========================================
+// FULLSCREEN SNIP OVERLAY
+// ==========================================
+
+let snipOverlayWindow = null;
+
+ipcMain.handle('snip:startFullscreen', async (event) => {
+    try {
+        // Get all displays and calculate bounding box
+        const displays = screen.getAllDisplays();
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+        displays.forEach(display => {
+            const { x, y, width, height } = display.bounds;
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + width);
+            maxY = Math.max(maxY, y + height);
+        });
+
+        const totalWidth = maxX - minX;
+        const totalHeight = maxY - minY;
+
+        // Create fullscreen transparent overlay window
+        snipOverlayWindow = new BrowserWindow({
+            x: minX,
+            y: minY,
+            width: totalWidth,
+            height: totalHeight,
+            frame: false,
+            transparent: true,
+            alwaysOnTop: true,
+            skipTaskbar: true,
+            resizable: false,
+            movable: false,
+            focusable: true,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                preload: path.join(__dirname, 'preload.js')
+            }
+        });
+
+        // Load a minimal HTML for the snip overlay
+        snipOverlayWindow.loadURL(`data:text/html,${encodeURIComponent(`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: crosshair;
+    user-select: none;
+}
+.selection {
+    position: absolute;
+    border: 2px solid #C52638;
+    background: rgba(197, 38, 56, 0.2);
+    display: none;
+}
+.instructions {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px;
+    z-index: 1000;
+}
+</style>
+</head>
+<body>
+<div class="instructions">Click and drag to select area. Press Escape to cancel.</div>
+<div class="selection" id="selection"></div>
+<script>
+let startX, startY, isSelecting = false;
+const selection = document.getElementById('selection');
+
+document.addEventListener('mousedown', (e) => {
+    startX = e.screenX - ${minX};
+    startY = e.screenY - ${minY};
+    isSelecting = true;
+    selection.style.left = startX + 'px';
+    selection.style.top = startY + 'px';
+    selection.style.width = '0';
+    selection.style.height = '0';
+    selection.style.display = 'block';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isSelecting) return;
+    const currentX = e.screenX - ${minX};
+    const currentY = e.screenY - ${minY};
+    const x = Math.min(startX, currentX);
+    const y = Math.min(startY, currentY);
+    const w = Math.abs(currentX - startX);
+    const h = Math.abs(currentY - startY);
+    selection.style.left = x + 'px';
+    selection.style.top = y + 'px';
+    selection.style.width = w + 'px';
+    selection.style.height = h + 'px';
+});
+
+document.addEventListener('mouseup', async (e) => {
+    if (!isSelecting) return;
+    isSelecting = false;
+    const currentX = e.screenX - ${minX};
+    const currentY = e.screenY - ${minY};
+    const x = Math.min(startX, currentX);
+    const y = Math.min(startY, currentY);
+    const w = Math.abs(currentX - startX);
+    const h = Math.abs(currentY - startY);
+
+    if (w > 5 && h > 5) {
+        // Send selection back to main process
+        window.electronAPI.snip.complete({
+            x: x + ${minX},
+            y: y + ${minY},
+            width: w,
+            height: h
+        });
+    } else {
+        window.electronAPI.snip.cancel();
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        window.electronAPI.snip.cancel();
+    }
+});
+</script>
+</body>
+</html>
+        `)}`);
+
+        snipOverlayWindow.on('closed', () => {
+            snipOverlayWindow = null;
+        });
+
+        return { success: true, bounds: { x: minX, y: minY, width: totalWidth, height: totalHeight } };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('snip:complete', async (event, bounds) => {
+    try {
+        // Close the overlay window
+        if (snipOverlayWindow && !snipOverlayWindow.isDestroyed()) {
+            snipOverlayWindow.close();
+            snipOverlayWindow = null;
+        }
+
+        // Small delay to ensure overlay is gone before capture
+        await new Promise(r => setTimeout(r, 100));
+
+        // Find which display contains the selection center
+        const displays = screen.getAllDisplays();
+        const centerX = bounds.x + bounds.width / 2;
+        const centerY = bounds.y + bounds.height / 2;
+
+        let targetDisplay = screen.getPrimaryDisplay();
+        for (const display of displays) {
+            const { x, y, width, height } = display.bounds;
+            if (centerX >= x && centerX < x + width && centerY >= y && centerY < y + height) {
+                targetDisplay = display;
+                break;
+            }
+        }
+
+        const scaleFactor = targetDisplay.scaleFactor || 1;
+
+        // Capture all screens
+        const sources = await desktopCapturer.getSources({
+            types: ['screen'],
+            thumbnailSize: {
+                width: Math.round(targetDisplay.bounds.width * scaleFactor),
+                height: Math.round(targetDisplay.bounds.height * scaleFactor)
+            }
+        });
+
+        if (sources.length === 0) {
+            return { success: false, error: 'No screen sources available' };
+        }
+
+        // Find the correct source for this display
+        let source = sources[0];
+        for (const s of sources) {
+            if (s.display_id === targetDisplay.id.toString()) {
+                source = s;
+                break;
+            }
+        }
+
+        const thumbnail = source.thumbnail;
+
+        // Adjust bounds relative to the display
+        const relX = bounds.x - targetDisplay.bounds.x;
+        const relY = bounds.y - targetDisplay.bounds.y;
+
+        const cropped = thumbnail.crop({
+            x: Math.round(relX * scaleFactor),
+            y: Math.round(relY * scaleFactor),
+            width: Math.round(bounds.width * scaleFactor),
+            height: Math.round(bounds.height * scaleFactor)
+        });
+
+        const dataUrl = cropped.toDataURL();
+
+        // Send result to terminal window
+        if (terminalWindow && !terminalWindow.isDestroyed()) {
+            terminalWindow.webContents.send('snip:result', { success: true, dataUrl });
+        }
+
+        return { success: true, dataUrl };
+    } catch (err) {
+        if (terminalWindow && !terminalWindow.isDestroyed()) {
+            terminalWindow.webContents.send('snip:result', { success: false, error: err.message });
+        }
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('snip:cancel', async () => {
+    if (snipOverlayWindow && !snipOverlayWindow.isDestroyed()) {
+        snipOverlayWindow.close();
+        snipOverlayWindow = null;
+    }
+    return { success: true };
+});
+
 // Start HTTP server for external sound triggers
 function startSoundServer() {
     if (soundServer) {

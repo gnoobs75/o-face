@@ -2753,6 +2753,23 @@
             term.loadAddon(fitAddon);
             term.open(container);
 
+            // Custom key handler for Ctrl+V paste (intercept before xterm processes it)
+            term.attachCustomKeyEventHandler((e) => {
+                // Ctrl+V: Paste from clipboard
+                if (e.ctrlKey && (e.key === 'v' || e.key === 'V') && e.type === 'keydown') {
+                    e.preventDefault();
+                    pasteToTerminal(paneIndex);
+                    return false; // Prevent xterm from processing this key
+                }
+                // Ctrl+Shift+C: Copy (Ctrl+C goes to shell as interrupt)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'c' || e.key === 'C') && e.type === 'keydown') {
+                    e.preventDefault();
+                    copyFromTerminal(paneIndex);
+                    return false;
+                }
+                return true; // Let xterm handle other keys
+            });
+
             terminals[paneIndex] = term;
             fitAddons[paneIndex] = fitAddon;
 
@@ -4055,12 +4072,44 @@
             annotations: []
         };
 
-        function startSnip() {
-            if (!window.electronAPI?.screenshot?.capture) {
-                alert('Screenshot API not available');
+        async function startSnip() {
+            // Use fullscreen snip overlay that works across all screens
+            if (!window.electronAPI?.snip?.startFullscreen) {
+                // Fallback to old method if new API not available
+                if (!window.electronAPI?.screenshot?.capture) {
+                    alert('Screenshot API not available');
+                    return;
+                }
+                startSnipLegacy();
                 return;
             }
 
+            try {
+                const result = await window.electronAPI.snip.startFullscreen();
+                if (!result.success) {
+                    console.error('Failed to start fullscreen snip:', result.error);
+                    alert('Failed to start snip: ' + result.error);
+                }
+                // Result will come via snip:result event
+            } catch (err) {
+                console.error('Snip error:', err);
+                alert('Snip error: ' + err.message);
+            }
+        }
+
+        // Listen for snip results from fullscreen overlay
+        if (window.electronAPI?.snip?.onResult) {
+            window.electronAPI.snip.onResult((result) => {
+                if (result.success && result.dataUrl) {
+                    openSnipEditor(result.dataUrl);
+                } else if (result.error) {
+                    console.error('Snip failed:', result.error);
+                }
+            });
+        }
+
+        // Legacy snip function for fallback (constrained to window)
+        function startSnipLegacy() {
             const overlay = document.getElementById('snipOverlay');
             const selection = document.getElementById('snipSelection');
 
@@ -4069,7 +4118,7 @@
             snipState.isCapturing = true;
         }
 
-        // Snip overlay mouse events
+        // Legacy snip overlay mouse events (fallback only)
         document.getElementById('snipOverlay')?.addEventListener('mousedown', (e) => {
             if (!snipState.isCapturing) return;
 
@@ -4169,6 +4218,7 @@
             const img = new Image();
             img.onload = () => {
                 console.log('Image loaded, dimensions:', img.width, 'x', img.height);
+                // Use image dimensions (width/height params are optional now)
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
@@ -4179,7 +4229,6 @@
             };
             img.onerror = (err) => {
                 console.error('Failed to load snip image:', err);
-                alert('Failed to load captured image');
             };
             img.src = dataUrl;
         }

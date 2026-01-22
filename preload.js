@@ -47,6 +47,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     screenshot: {
         capture: (bounds) => ipcRenderer.invoke('screenshot:capture', bounds)
     },
+    snip: {
+        startFullscreen: () => ipcRenderer.invoke('snip:startFullscreen'),
+        complete: (bounds) => ipcRenderer.invoke('snip:complete', bounds),
+        cancel: () => ipcRenderer.invoke('snip:cancel'),
+        onResult: (callback) => {
+            ipcRenderer.on('snip:result', (event, data) => callback(data));
+        }
+    },
     clipboard: {
         readText: () => ipcRenderer.invoke('clipboard:readText'),
         writeText: (text) => ipcRenderer.invoke('clipboard:writeText', text)
