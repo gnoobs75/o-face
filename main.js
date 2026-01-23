@@ -113,6 +113,92 @@ ipcMain.handle('window:openTerminal', () => {
     return { success: true };
 });
 
+// Track portmaster process
+let portmasterProcess = null;
+
+// Open PortMaster application
+ipcMain.handle('window:openPortmaster', () => {
+    // If already running, don't spawn another
+    if (portmasterProcess && !portmasterProcess.killed) {
+        console.log('[PortMaster] Already running');
+        return { success: true, message: 'Already running' };
+    }
+
+    const portmasterPath = path.join(__dirname, 'portmaster');
+    const pythonScript = path.join(portmasterPath, 'main.py');
+
+    // Check if Python script exists
+    if (!fs.existsSync(pythonScript)) {
+        console.error('[PortMaster] Script not found:', pythonScript);
+        return { success: false, error: 'PortMaster script not found' };
+    }
+
+    // Try python or python3
+    const pythonCmd = os.platform() === 'win32' ? 'python' : 'python3';
+
+    portmasterProcess = spawn(pythonCmd, [pythonScript], {
+        cwd: portmasterPath,
+        detached: false,
+        stdio: 'ignore'
+    });
+
+    portmasterProcess.on('error', (err) => {
+        console.error('[PortMaster] Failed to start:', err.message);
+        portmasterProcess = null;
+    });
+
+    portmasterProcess.on('exit', (code) => {
+        console.log('[PortMaster] Exited with code:', code);
+        portmasterProcess = null;
+    });
+
+    console.log('[PortMaster] Started with PID:', portmasterProcess.pid);
+    return { success: true, pid: portmasterProcess.pid };
+});
+
+// Track VRAM Spy process
+let vramSpyProcess = null;
+
+// Open VRAM Spy application
+ipcMain.handle('window:openVramSpy', () => {
+    // If already running, don't spawn another
+    if (vramSpyProcess && !vramSpyProcess.killed) {
+        console.log('[VRAM Spy] Already running');
+        return { success: true, message: 'Already running' };
+    }
+
+    const vramSpyPath = path.join(__dirname, 'vram_spy');
+    const pythonScript = path.join(vramSpyPath, 'main.py');
+
+    // Check if Python script exists
+    if (!fs.existsSync(pythonScript)) {
+        console.error('[VRAM Spy] Script not found:', pythonScript);
+        return { success: false, error: 'VRAM Spy script not found' };
+    }
+
+    // Try python or python3
+    const pythonCmd = os.platform() === 'win32' ? 'python' : 'python3';
+
+    vramSpyProcess = spawn(pythonCmd, [pythonScript], {
+        cwd: vramSpyPath,
+        detached: false,
+        stdio: 'ignore'
+    });
+
+    vramSpyProcess.on('error', (err) => {
+        console.error('[VRAM Spy] Failed to start:', err.message);
+        vramSpyProcess = null;
+    });
+
+    vramSpyProcess.on('exit', (code) => {
+        console.log('[VRAM Spy] Exited with code:', code);
+        vramSpyProcess = null;
+    });
+
+    console.log('[VRAM Spy] Started with PID:', vramSpyProcess.pid);
+    return { success: true, pid: vramSpyProcess.pid };
+});
+
 // Create a new PTY process
 ipcMain.handle('terminal:create', async (event, terminalId) => {
     if (!pty) {

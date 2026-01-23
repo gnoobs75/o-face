@@ -1966,6 +1966,14 @@
                     <span class="drawer-item-icon">>_</span>
                     <span class="drawer-item-label"><span style="color: var(--accent);">ō</span>-term</span>
                 </div>
+                <div class="drawer-item" onclick="openPortmaster()">
+                    <span class="drawer-item-icon">🔌</span>
+                    <span class="drawer-item-label">P<span style="color: var(--accent);">ō</span>rtmaster</span>
+                </div>
+                <div class="drawer-item" onclick="openVramSpy()">
+                    <span class="drawer-item-icon">🎮</span>
+                    <span class="drawer-item-label">VRAM Sp<span style="color: var(--accent);">ȳ</span></span>
+                </div>
                 <div class="drawer-item" onclick="navigateTo('whiteboard.html', 'whiteboard')">
                     <span class="drawer-item-icon">📝</span>
                     <span class="drawer-item-label">Whiteb<span style="color: var(--accent);">ō</span>ard</span>
@@ -2347,6 +2355,22 @@
                 toggleDrawer();
             }
             if (window.electronAPI) window.electronAPI.window.openTerminal();
+        }
+
+        // Open PortMaster in separate window
+        function openPortmaster() {
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+            if (window.electronAPI) window.electronAPI.window.openPortmaster();
+        }
+
+        // Open VRAM Spy in separate window
+        function openVramSpy() {
+            if (leftDrawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+            if (window.electronAPI) window.electronAPI.window.openVramSpy();
         }
 
         // Music player toggle (for full player in iframe)

@@ -20,6 +20,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
         maximize: () => ipcRenderer.invoke('window:maximize'),
         close: () => ipcRenderer.invoke('window:close'),
         openTerminal: () => ipcRenderer.invoke('window:openTerminal'),
+        openPortmaster: () => ipcRenderer.invoke('window:openPortmaster'),
+        openVramSpy: () => ipcRenderer.invoke('window:openVramSpy'),
         openDevTools: () => ipcRenderer.invoke('window:openDevTools')
     },
     dialog: {

@@ -1,0 +1,18 @@
+# VRAM Spy - NVIDIA GPU Monitoring Utility
+# Install with: pip install -r requirements.txt
+
+# NVIDIA Management Library Python bindings
+# Note: pynvml is the import name, nvidia-ml-py is the package name on PyPI
+pynvml>=11.5.0
+
+# GUI Framework
+PyQt6>=6.6.0
+
+# Real-time plotting
+pyqtgraph>=0.13.3
+
+# For process name resolution
+psutil>=5.9.0
+
+# NumPy for data handling
+numpy>=1.24.0

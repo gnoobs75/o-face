@@ -3169,6 +3169,8 @@
                         const sanitized = text.replace(/\r?\n/g, '\r');
                         console.log('Writing to terminal:', sanitized.substring(0, 50) + '...');
                         await window.electronAPI.terminal.write(termId, sanitized);
+                        // Focus the pane we pasted to (cursor will be at end of pasted text)
+                        focusPane(paneIndex);
                     } else {
                         console.error('No write API available');
                     }

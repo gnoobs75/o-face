@@ -1,3 +1,28 @@
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│     ▄▄▄▄▄   ▄▄▄▄▄▄  ▄▄▄▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄                                   │
+│    ██   ██  ██      ██   ██ ██     ██                                        │
+│    ██   ██  █████   ██████  ██     █████    ō-face                           │
+│    ██   ██  ██      ██   ██ ██     ██       Electron 28 + node-pty + xterm   │
+│     █████   ██      ██   ██  █████ ██████                                    │
+│                                                                              │
+│        ,_                                                                    │
+│       /  \      ░▒▓█ THE UNOFFICIAL HOMEPAGE OF RONIN █▓▒░                   │
+│      / ◡ \                                                                   │
+│     /  △  \     Commands:                                                    │
+│    /───────\      npm start     - Launch the app                             │
+│       ███        npm run dev   - Dev mode with DevTools                      │
+│      █████                                                                   │
+│     ███████      Pages:                                                      │
+│    █████████       meme.html, terminals.html, whiteboard.html                │
+│     ███ ███        arcade.html, soundboard.html, ronin.html                  │
+│    ████ ████                                                                 │
+│                  "Death is lighter than a feather."                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
 # o-face Project
 
 The Unofficial Homepage of Ronin - A retro-styled personal dashboard combining meme generation, GIF search, and multi-terminal management in an Electron app.
